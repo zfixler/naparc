@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Denomination {
+  id            String         @id @default(uuid())
+  slug          String         @unique
+  name          String
+  abbr          String
+  congregations Congregation[]
+}
+
+model Congregation {
+  id             String       @id @default(uuid())
+  pastor         String
+  name           String
+  website        String
+  phone          String
+  email          String
+  location       Location     @relation(fields: [locationId], references: [id])
+  locationId     String       @unique
+  denomination   Denomination @relation(fields: [denominationId], references: [id])
+  denominationId String
+}
+
+model Location {
+  id             String        @id @default(uuid())
+  street         String
+  number         Int
+  city           String
+  country        String
+  zip            String
+  lang           String
+  lat            String
+  congregation   Congregation?
+  congregationId String        @unique
+}
