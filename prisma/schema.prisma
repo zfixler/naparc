@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -16,27 +16,16 @@ model Denomination {
 }
 
 model Congregation {
-  id             String       @id @default(uuid())
-  pastor         String
-  name           String
-  website        String
-  phone          String
-  email          String
-  location       Location     @relation(fields: [locationId], references: [id])
-  locationId     String       @unique
-  denomination   Denomination @relation(fields: [denominationId], references: [id])
-  denominationId String
-}
-
-model Location {
-  id             String        @id @default(uuid())
-  street         String
-  number         Int
-  city           String
-  country        String
-  zip            String
-  lang           String
-  lat            String
-  congregation   Congregation?
-  congregationId String        @unique
+  id               String       @id @default(uuid())
+  pastor           String?
+  name             String?
+  website          String?
+  phone            String?
+  email            String?
+  address          String?
+  contact          String?
+  long             String?
+  lat              String?
+  denomination     Denomination? @relation(fields: [denominationSlug], references: [slug])
+  denominationSlug String?
 }
