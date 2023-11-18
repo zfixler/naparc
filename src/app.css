@@ -1,0 +1,82 @@
+html, 
+body {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+	font-size: 62.5%;
+}
+
+:root {
+	--ff-body: 'Arvo', serif;
+	--fw-bold: 700;
+	--fw-regular: 400;
+
+	--fs-h1: 2.402rem;
+	--fs-h2: 2.202rem;
+	--fs-h3: 2.024rem;
+	--fs-h4: 1.866rem;
+	--fs-h5: 1.725rem;
+	--fs-regular: 1.6rem;
+	--fs-small: 1.2rem;
+
+	--primary: #2b2d42;
+	--secondary: #edf2f4;
+	--accent: #8d99ae;
+	--accent-dark: #6e7786;
+	--accent-bright: #359dff;
+
+	--box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(131, 89, 89, 0.08) 0px 0px 0px 1px;
+
+	--container-width: min(90%, 700px);
+}
+
+
+/* Typography */
+
+body {
+	background-color: var(--secondary);
+	color: var(--primary);
+	font-family: var(--ff-body);
+	font-weight: var(--fw-regular);
+	font-size: var(--fs-regular);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: var(--ff-head);
+	font-weight: var(--fw-bold);
+	position: relative;
+	width: fit-content;
+}
+
+h1 {
+	font-size: var(--fs-h1);
+}
+
+h2 {
+	font-size: var(--fs-h2);
+}
+
+h3 {
+	font-size: var(--fs-h3);
+}
+
+h4 {
+	font-size: var(--fs-h4);
+}
+
+h5 {
+	font-size: var(--fs-h5);
+}
+
+small {
+	font-size: var(--fs-small);
+}
+
+p {
+	font-size: var(--fs-regular);
+}
