@@ -3,13 +3,12 @@ import * as cheerio from 'cheerio';
 import FormData from 'form-data';
 import { prisma } from '../prisma.js';
 import {
-	getChurchId,
 	getPastorName,
 	getContactEmailAddress,
 	getContactName,
 	getContactPhoneNumber,
 	getWebsiteUrl,
-} from './utils.js';
+} from '../utils/scraper.js';
 
 /**
  * Initiate scrape of OPC directory and upsert congregations inside the database.
@@ -35,6 +34,20 @@ const presbyteryIds = [
 	'17',
 	'18',
 ];
+
+/**
+ * Extracts the church ID from the provided text.
+ * @param {string|null} text - The input text to extract the church ID from.
+ * @returns {string|undefined} The church ID or undefined if not found.
+ */
+function getChurchId(text) {
+    if (!text) return;
+    const churchIdRegex = /church_id=(\d+)/;
+    const matches = text.match(churchIdRegex);
+    if (matches) {
+        return matches[1];
+    }
+}
 
 /**
  * @param {string} presbyteryId
