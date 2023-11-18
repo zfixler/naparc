@@ -19,7 +19,7 @@ export function getPastorName(text) {
  */
 export function getContactName(text) {
     if (!text) return;
-    const regex = /Contact:\s*([A-Z][a-z]+ [A-Z][a-z]+)/;
+    const regex = /Contact:\s*([A-Z][a-zA-Z. ]+)/;
     const match = text.match(regex);
     if (match) {
         return match[1];
@@ -40,19 +40,6 @@ export function getContactEmailAddress(text) {
     }
 }
 
-/**
- * Extracts the church ID from the provided text.
- * @param {string|null} text - The input text to extract the church ID from.
- * @returns {string|undefined} The church ID or undefined if not found.
- */
-export function getChurchId(text) {
-    if (!text) return;
-    const churchIdRegex = /church_id=(\d+)/;
-    const matches = text.match(churchIdRegex);
-    if (matches) {
-        return matches[1];
-    }
-}
 
 /**
  * Extracts the contact phone number from the provided text.
