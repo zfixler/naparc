@@ -12,11 +12,19 @@ model Denomination {
   slug          String         @unique
   name          String
   abbr          String
-  congregations Congregation[]
+  presbyteries  Presbytery[]
+}
+
+model Presbytery {
+  id               String         @id @default(uuid())
+  name             String
+  denomination     Denomination  @relation(fields: [denominationSlug], references: [slug])
+  denominationSlug String
+  congregations    Congregation[]
 }
 
 model Congregation {
-  id               String       @id @default(uuid())
+  id               String        @id @default(uuid())
   pastor           String?
   name             String?
   website          String?
@@ -26,6 +34,6 @@ model Congregation {
   contact          String?
   long             String?
   lat              String?
-  denomination     Denomination? @relation(fields: [denominationSlug], references: [slug])
-  denominationSlug String?
+  presbytery       Presbytery    @relation(fields: [presbyteryId], references: [id])
+  presbyteryId     String
 }
