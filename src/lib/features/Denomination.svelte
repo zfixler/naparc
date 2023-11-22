@@ -1,11 +1,18 @@
 <script>
+    import { goto } from "$app/navigation";
+    import { page } from '$app/stores';
     export let denomination;
     const { id, slug, name, abbr, description, presbyteries } = denomination;
-    let shouldShowDetails = false;
+    
+    function openDenomination() {
+        goto(`?show=${slug}`)
+    }
+    
+    $: shouldShowDetails = $page.url.searchParams.get('show') === slug;
 </script>
 
 <section>
-    <button on:click={() => shouldShowDetails = !shouldShowDetails}>{name}</button>
+    <button on:click={openDenomination}>{name}</button>
     <div class={shouldShowDetails ? 'show' : 'hide'}>
         <p>{description}</p>
         <p>
