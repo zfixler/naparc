@@ -8,32 +8,33 @@ datasource db {
 }
 
 model Denomination {
-  id            String         @id @default(uuid())
-  slug          String         @unique
-  name          String
-  abbr          String
-  presbyteries  Presbytery[]
+  id           String       @id @default(uuid())
+  slug         String       @unique
+  name         String
+  abbr         String
+  description  String?
+  presbyteries Presbytery[]
 }
 
 model Presbytery {
   id               String         @id @default(uuid())
   name             String
-  denomination     Denomination  @relation(fields: [denominationSlug], references: [slug])
+  denomination     Denomination   @relation(fields: [denominationSlug], references: [slug])
   denominationSlug String
   congregations    Congregation[]
 }
 
 model Congregation {
-  id               String        @id @default(uuid())
-  pastor           String?
-  name             String?
-  website          String?
-  phone            String?
-  email            String?
-  address          String?
-  contact          String?
-  long             String?
-  lat              String?
-  presbytery       Presbytery    @relation(fields: [presbyteryId], references: [id])
-  presbyteryId     String
+  id           String     @id @default(uuid())
+  pastor       String?
+  name         String?
+  website      String?
+  phone        String?
+  email        String?
+  address      String?
+  contact      String?
+  long         String?
+  lat          String?
+  presbytery   Presbytery @relation(fields: [presbyteryId], references: [id])
+  presbyteryId String
 }

@@ -7,11 +7,21 @@ async function main() {
     console.log('Start seeding...');
 
     for (const d of denominations) {
-        const denomination = await prisma.denomination.create({
-            data: {
+        const denomination = await prisma.denomination.upsert({
+            where: {
+              slug: d.slug,
+            },
+            update: {
+              name: d.name,
+              slug: d.slug,
+              abbr: d.abbr,
+              description: d.description,
+            },
+            create: {
                 name: d.name,
                 slug: d.slug,
                 abbr: d.abbr,
+                description: d.description,
             }
         });
 
