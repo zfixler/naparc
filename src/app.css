@@ -1,13 +1,16 @@
-html, 
-body {
+* {
 	padding: 0;
 	margin: 0;
 	box-sizing: border-box;
+}
+
+html, 
+body {
 	font-size: 62.5%;
 }
 
 :root {
-	--ff-body: 'Arvo', serif;
+	--ff-body: 'Outfit Variable', sans-serif;
 	--fw-bold: 700;
 	--fw-regular: 400;
 
@@ -19,22 +22,52 @@ body {
 	--fs-regular: 1.6rem;
 	--fs-small: 1.2rem;
 
-	--primary: #2b2d42;
-	--secondary: #edf2f4;
-	--accent: #8d99ae;
-	--accent-dark: #6e7786;
-	--accent-bright: #359dff;
+	/* Colors */
+	--black-1: #161616;
+	--black-2: #0A0F0D;
+	--black-3: #080C0B;
 
-	--box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(131, 89, 89, 0.08) 0px 0px 0px 1px;
+	--gray-1: #F4F5F5;
+	--gray-2: #EAECEC;
+	--gray-3: #dfdfdf;
 
-	--container-width: min(90%, 700px);
+	--red-1: #F66451;
+	--red-2: #F5533D;
+	--red-3: #F4412A;
+
+	--blue-1: #8591FF;
+	--blue-2: #707EFF;
+	--blue-3: #5C6CFF;
+
+
+	--primary: var(--black-3);
+	--secondary: var(--gray-1);
+	--accent: var(--blue-3);
+	--bg-ff: var(--gray-1);
+	--bg-bg: var(--gray-2);
+
+	--box-shadow: var(--gray-2) 0px 6px 24px 0px, var(--gray-2) 0px 0px 0px 1px;
+
+	--container-width: min(90%, 800px);
+	--margin: 24px;
+	--padding: 24px;
+	--brad: 4px; 
 }
 
+@media (prefers-color-scheme: dark) {
+	:root {
+		--primary: var(--gray-3);
+		--secondary: var(--gray-1);
+		--bg-ff: var(--black-1);
+		--bg-bg: var(--black-3);
+		--box-shadow: --box-shadow: var(--black-3) 0px 6px 24px 0px, var(--black-3) 0px 0px 0px 1px;
+	}
+}
 
 /* Typography */
 
 body {
-	background-color: var(--secondary);
+	background-color: var(--bg-bg);
 	color: var(--primary);
 	font-family: var(--ff-body);
 	font-weight: var(--fw-regular);
@@ -51,6 +84,8 @@ h6 {
 	font-weight: var(--fw-bold);
 	position: relative;
 	width: fit-content;
+	margin: 0;
+	text-transform: uppercase;
 }
 
 h1 {
@@ -79,4 +114,20 @@ small {
 
 p {
 	font-size: var(--fs-regular);
+	margin: 0;
+}
+
+a {
+	color: var(--primary);
+	text-decoration: none;
+	transition: color ease .25s;
+}
+
+a:focus,
+a:hover {
+	color: var(--accent);
+}
+
+a:visited {
+	color: var(--blue-1);
 }

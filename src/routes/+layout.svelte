@@ -1,5 +1,5 @@
 <script>
-import '@fontsource/arvo';
+import '@fontsource-variable/outfit';
 import '../app.css';
 </script>
 <slot />
