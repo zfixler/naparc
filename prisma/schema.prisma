@@ -19,9 +19,9 @@ model Denomination {
 model Presbytery {
   id               String         @id @default(uuid())
   name             String
-  denomination     Denomination   @relation(fields: [denominationSlug], references: [slug])
   denominationSlug String
   congregations    Congregation[]
+  denomination     Denomination   @relation(fields: [denominationSlug], references: [slug])
 }
 
 model Congregation {
@@ -32,9 +32,12 @@ model Congregation {
   phone        String?
   email        String?
   address      String?
+  addressLabel String?
   contact      String?
   long         String?
   lat          String?
-  presbytery   Presbytery @relation(fields: [presbyteryId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
   presbyteryId String
+  presbytery   Presbytery @relation(fields: [presbyteryId], references: [id])
 }
