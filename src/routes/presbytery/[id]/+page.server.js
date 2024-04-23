@@ -2,7 +2,7 @@ import { prisma } from '$lib/prisma';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ params }) {
-	const presbytery = prisma.presbytery.findUnique({
+	const presbytery = await prisma.presbytery.findUnique({
 		where: {
 			id: params.id,
 		},
