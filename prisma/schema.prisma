@@ -36,8 +36,8 @@ model Congregation {
   contact      String?
   long         String?
   lat          String?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
   presbyteryId String
   presbytery   Presbytery @relation(fields: [presbyteryId], references: [id])
+  createdAt    DateTime?   @default(now())
+  updatedAt    DateTime?   @updatedAt
 }
