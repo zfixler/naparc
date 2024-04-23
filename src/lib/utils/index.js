@@ -32,3 +32,26 @@ export function handleOutsideClick(node) {
 		},
 	};
 }
+
+/**
+ * Retrieves the regional title associated with the given slug.
+ * @param {string} slug - The slug representing the regional affiliation.
+ * @returns {string|undefined} The regional title if found, otherwise undefined.
+ */
+export function getRegionalTitle(slug) {
+	/** @type {{ [key: string]: string[] }} */
+	const titles = {
+		Presbytery: [
+			'opc',
+			'pca',
+			'rpcna'
+		],
+		Classis: [
+			'urcna'
+		]
+	};
+
+	for (const key in titles) {
+		if (titles[key].includes(slug)) return key;
+	};
+} 
