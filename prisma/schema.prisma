@@ -19,6 +19,7 @@ model Denomination {
 model Presbytery {
   id               String         @id @default(uuid())
   name             String
+  slug             String
   denominationSlug String
   congregations    Congregation[]
   denomination     Denomination   @relation(fields: [denominationSlug], references: [slug])

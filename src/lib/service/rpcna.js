@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { v5 as uuidv5 } from 'uuid';
-import { upsertCongregation } from '../utils/service.js';
+import { upsertCongregation, slugify } from '../utils/service.js';
 
 /**
  * Extracts congregation URLs from HTML content.
@@ -111,6 +111,7 @@ async function getDenomination(urls) {
 				denominationSlug,
 				name: presbytery,
 				id: presbyteryUuid,
+				slug: slugify(presbytery),
 			},
 			contact: null,
             updatedAt: null,

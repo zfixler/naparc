@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { v5 as uuidv5 } from 'uuid';
-import { upsertCongregation } from '../utils/service.js';
+import { upsertCongregation, slugify } from '../utils/service.js';
 
 async function buildUrcnaDenomination() {
 	const url =
@@ -51,6 +51,7 @@ async function buildUrcnaDenomination() {
 				id: presbyteryUuid,
 				name: presbytery,
 				denominationSlug,
+				slug: slugify(presbytery),
 			},
 			contact: null,
             updatedAt: null,

@@ -8,6 +8,7 @@ import {
 	getContactPhoneNumber,
 	getWebsiteUrl,
 	upsertCongregation,
+	slugify
 } from '../utils/service.js';
 
 /**
@@ -118,6 +119,7 @@ async function buildOpcDenomination() {
 					id: presbyteryUuid,
 					name: presbyteryName,
 					denominationSlug,
+					slug: slugify(presbyteryName),
 				},
 			};
 

@@ -1,5 +1,5 @@
 import { v5 as uuidv5 } from 'uuid';
-import { upsertCongregation } from '../utils/service.js';
+import { upsertCongregation, slugify } from '../utils/service.js';
 
 /**
  * @typedef {Object} LocationData
@@ -92,6 +92,7 @@ async function buildPcaDenomination() {
 				denominationSlug,
 				name: presbytery,
 				id: presbyteryUuid,
+				slug: slugify(presbytery),
 			},
             updatedAt: null,
             createdAt: null,

@@ -71,6 +71,20 @@ export function getWebsiteUrl(text) {
 	}
 }
 
+/**
+ * Return a slugified version of a string.
+ * @param {string} str 
+ * @returns {string}
+ */
+export function slugify(str) {
+	return str
+	  .toLowerCase()
+	  .replace(/\s+/g, '-') // Replace spaces with dashes
+	  .replace(/[^a-z0-9-]/g, '') // Remove non-alphanumeric characters except dashes
+	  .replace(/-{2,}/g, '-') // Replace multiple dashes with single dash
+	  .replace(/^-+|-+$/g, ''); // Remove leading/trailing dashes
+  }
+
 /** @typedef {import("@prisma/client").Presbytery} Presbytery */
 
 /** @typedef {import("@prisma/client").Congregation & {presbytery: Presbytery}} Congregation */
@@ -97,6 +111,7 @@ export async function upsertCongregation(congregation) {
 			phone: congregation.phone,
 			presbytery: {
 				update: {
+					slug: congregation.presbytery.slug,
 					id: congregation.presbytery.id,
 					name: congregation.presbytery.name,
 					denominationSlug: congregation.presbytery.denominationSlug,
@@ -122,6 +137,7 @@ export async function upsertCongregation(congregation) {
 					},
 					create: {
 						id: congregation.presbytery.id,
+						slug: congregation.presbytery.slug,
 						name: congregation.presbytery.name,
 						denominationSlug: congregation.presbytery.denominationSlug,
 					},
