@@ -1,7 +1,8 @@
 <script>
 	export let address = '';
 	export let addressLabel = '';
-	const url = `https://www.google.com/maps/search/?api=1&query=${encodeURI(address)}`;
+    export let name = '';
+	const url = `https://www.google.com/maps/search/?api=1&query=${encodeURI(`${name} ${address}`)}`;
 </script>
 
 {#if address}
