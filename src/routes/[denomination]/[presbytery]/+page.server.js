@@ -4,14 +4,15 @@ import { prisma } from '$lib/prisma';
 export async function load({ params }) {
 	const presbytery = await prisma.presbytery.findUnique({
 		where: {
-			id: params.id,
+			slugs: {
+				denominationSlug: params.denomination,
+				slug: params.presbytery,
+			}
 		},
 		include: {
 			congregations: true,
-            denomination: true,
+			denomination: true,
 		},
 	});
-	return {
-		presbytery,
-	};
+	return { presbytery };
 }

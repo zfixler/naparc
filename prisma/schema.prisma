@@ -23,6 +23,8 @@ model Presbytery {
   denominationSlug String
   congregations    Congregation[]
   denomination     Denomination   @relation(fields: [denominationSlug], references: [slug])
+  
+  @@unique(name: "slugs", [denominationSlug, slug])
 }
 
 model Congregation {
