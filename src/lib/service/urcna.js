@@ -40,7 +40,7 @@ async function buildUrcnaDenomination() {
 			name: valuesArray[1][1],
 			address,
 			addressLabel,
-			website: valuesArray[15][1].replace('http%3A%2F%2F', ''),
+			website: 'https://' + valuesArray[15][1].replace('http%3A%2F%2F', ''),
 			phone: valuesArray[12][1],
 			email: valuesArray[14][1].replace('%40', '@'),
 			pastor: valuesArray[17][1].replace('Rev. ', ''),
