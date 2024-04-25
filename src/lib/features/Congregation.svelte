@@ -63,4 +63,19 @@
 		flex-direction: column;
 		gap: 16px;
 	}
+
+    @media (max-width: 800px) {
+        .content {
+            flex-direction: column;
+        }
+
+        .content-left,
+        .content-right {
+            width: 100%;
+        }
+        
+        .content-right {
+            margin-top: var(--margin);
+        }
+    }
 </style>

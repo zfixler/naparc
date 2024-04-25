@@ -14,9 +14,12 @@
 <style>
     .icon {
         fill: currentColor;
+        height: 24px;
+        width: 24px;
     }
 
 	.link {
+        width: 100%;
 		display: flex;
 		align-items: center;
 		gap: 8px;

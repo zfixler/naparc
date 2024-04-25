@@ -64,6 +64,18 @@ body {
 	}
 }
 
+@media (max-width: 800px) {
+	:root {
+		--fs-h1: 2.202rem;
+		--fs-h2: 2.024rem;
+		--fs-h3: 1.866rem;
+		--fs-h4: 1.725rem;
+		--fs-h5: 1.6rem;
+		--fs-regular: 1.2rem;
+		--fs-small: 1rem;
+	}
+}
+
 /* Typography */
 
 body {
