@@ -25,6 +25,10 @@
 {/if}
 
 <style>
+    .icon {
+        fill: currentColor;
+    }
+
 	.link {
 		display: flex;
 		align-items: center;
