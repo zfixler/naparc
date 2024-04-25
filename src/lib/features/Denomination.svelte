@@ -20,7 +20,7 @@
                 Presbyteries:
                 <ul>
                     {#each presbyteries as presbytery}
-                        <li><a href={`/presbytery/${presbytery.id}`}>{presbytery.name}</a></li>
+                        <li><a href={`/${slug}/${presbytery.slug}`}>{presbytery.name}</a></li>
                     {/each}
                 </ul>
             {:else}
