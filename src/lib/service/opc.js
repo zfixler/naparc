@@ -1,4 +1,3 @@
-import puppeteer from 'puppeteer';
 import * as cheerio from 'cheerio';
 import { v5 as uuidv5 } from 'uuid';
 import {
@@ -8,15 +7,13 @@ import {
 	getContactPhoneNumber,
 	getWebsiteUrl,
 	upsertCongregation,
-	slugify
+	slugify,
 } from '../utils/service.js';
 
 /**
  * Initiate scrape of OPC directory and upsert congregations inside the database.
  */
 async function buildOpcDenomination() {
-	const browser = await puppeteer.launch();
-
 	const presbyteryIds = [
 		'1',
 		'2',
@@ -58,12 +55,25 @@ async function buildOpcDenomination() {
 	async function makeRequest(presbyteryId) {
 		try {
 			const url = `https://opc.org/locator.html?search_go=Y&presbytery_id=${presbyteryId}`;
-			const page = await browser.newPage();
-			await page.goto(url, { waitUntil: ['domcontentloaded'] });
-			const html = await page.content();
-			await page.close();
+			const response = await fetch(url, {
+				headers: {
+					'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+					'accept-language': 'en-US,en;q=0.9',
+					'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+					'sec-ch-ua-mobile': '?0',
+					'sec-ch-ua-platform': '"Windows"',
+					'sec-fetch-dest': 'document',
+					'sec-fetch-mode': 'navigate',
+					'sec-fetch-site': 'none',
+					'sec-fetch-user': '?1',
+					'upgrade-insecure-requests': '1',
+				},
+				referrerPolicy: 'strict-origin-when-cross-origin',
+				body: null,
+				method: 'GET',
+			});
 
-			return html;
+			return await response.text();
 		} catch (error) {
 			console.log(error);
 		}
@@ -147,7 +157,6 @@ async function buildOpcDenomination() {
 		}
 	}
 
-	await browser.close();
 	return denomination.length;
 }
 

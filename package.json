@@ -27,7 +27,6 @@
 		"@fontsource-variable/outfit": "^5.0.8",
 		"@prisma/client": "^5.13.0",
 		"cheerio": "^1.0.0-rc.12",
-		"puppeteer": "^22.6.5",
 		"uuid": "^9.0.1"
 	}
 }
