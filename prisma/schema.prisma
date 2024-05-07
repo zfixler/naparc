@@ -23,7 +23,7 @@ model Presbytery {
   denominationSlug String
   congregations    Congregation[]
   denomination     Denomination   @relation(fields: [denominationSlug], references: [slug])
-  
+
   @@unique(name: "slugs", [denominationSlug, slug])
 }
 
@@ -37,10 +37,10 @@ model Congregation {
   address      String?
   addressLabel String?
   contact      String?
-  long         String?
-  lat          String?
+  lon          Float?
+  lat          Float?
   presbyteryId String
   presbytery   Presbytery @relation(fields: [presbyteryId], references: [id])
-  createdAt    DateTime?   @default(now())
-  updatedAt    DateTime?   @updatedAt
+  createdAt    DateTime?  @default(now())
+  updatedAt    DateTime?  @updatedAt
 }

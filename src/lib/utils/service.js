@@ -99,7 +99,7 @@ export async function upsertCongregation(congregation) {
 			id: congregation.id,
 		},
 		update: {
-			long: congregation.long,
+			lon: congregation.lon,
 			lat: congregation.lat,
 			name: congregation.name,
 			website: congregation.website,
@@ -120,7 +120,7 @@ export async function upsertCongregation(congregation) {
 		},
 		create: {
 			id: congregation.id,
-			long: congregation.long,
+			lon: congregation.lon,
 			lat: congregation.lat,
 			name: congregation.name,
 			website: congregation.website,

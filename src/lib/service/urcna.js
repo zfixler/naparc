@@ -44,8 +44,8 @@ async function buildUrcnaDenomination() {
 			phone: valuesArray[12][1],
 			email: valuesArray[14][1].replace('%40', '@'),
 			pastor: valuesArray[17][1].replace('Rev. ', ''),
-			lat: valuesArray[20][1],
-			long: valuesArray[21][1],
+			lat: parseFloat(valuesArray[20][1]),
+			lon: parseFloat(valuesArray[21][1]),
 			presbyteryId: presbyteryUuid,
 			presbytery: {
 				id: presbyteryUuid,

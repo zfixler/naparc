@@ -77,8 +77,8 @@ async function buildPcaDenomination() {
 
 		return {
 			id,
-			long: String(value.ln),
-			lat: String(value.lt),
+			lon: value.ln,
+			lat: value.lt,
 			name: value.t,
 			website: value.u.length ? `https://${value.u}` : null,
 			address: value.addr,

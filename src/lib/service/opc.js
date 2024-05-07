@@ -100,8 +100,8 @@ async function buildOpcDenomination() {
 
 		const congregations = captures?.map((capture) => {
 			const detailsArray = capture.split("'");
-			const long = detailsArray[1];
-			const lat = detailsArray[3];
+			const lon = parseFloat(detailsArray[1]);
+			const lat = parseFloat(detailsArray[3]);
 			const detailsNode = cheerio.load(detailsArray[7]);
 			const name = detailsNode('h5').text();
 			const website = getWebsiteUrl(detailsArray[7]);
@@ -115,7 +115,7 @@ async function buildOpcDenomination() {
 			const phone = getContactPhoneNumber(table);
 			const congregation = {
 				id: `opc_${getChurchId(table)}`,
-				long,
+				lon,
 				lat,
 				name,
 				website,

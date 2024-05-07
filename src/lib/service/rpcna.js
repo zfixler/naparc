@@ -28,7 +28,7 @@ function getCongregationUrls(html) {
 /**
  * Parses latitude and longitude values from a string.
  * @param {string} string - The input string containing latitude and longitude in the format "[latitude, longitude]".
- * @returns {Array<string>} An array containing latitude and longitude values.
+ * @returns {Array<Number>} An array containing latitude and longitude values.
  */
 function parseLatLong(string) {
 	const pattern = /\[(.*?)\]/;
@@ -36,7 +36,7 @@ function parseLatLong(string) {
 	if (!match) return [];
 
 	const values = match[1].split(',');
-	return values.map((str) => str);
+	return values.map((str) => parseFloat(str));
 }
 
 /**
@@ -60,7 +60,7 @@ async function getDenomination(urls) {
 		const addressDiv = $('.address');
 		const addressInput = $('[name="daddr"]');
 
-		const [lat, long] = parseLatLong(mapScript);
+		const [lat, lon] = parseLatLong(mapScript);
 
 		let phone = null;
 		let website = null;
@@ -105,7 +105,7 @@ async function getDenomination(urls) {
 			phone,
 			website,
 			lat,
-			long,
+			lon,
 			presbyteryId: presbyteryUuid,
 			presbytery: {
 				denominationSlug,
