@@ -1,9 +1,26 @@
 <script>
 	let inputValue = '';
-	/** @type {number} */
+	/** @type {NodeJS.Timeout|number|undefined} */
 	let debounceTimer;
 	/** @type {Array<OptionObject>}*/
-	let options = [];
+	let options = [
+		{
+			id: '512bb7fea7ac0554c0599101ea1736944440f00101f901dddf020000000000c00208',
+			body: {
+				lat: 41.1579008,
+				lon: -80.0886631,
+				label: 'Grove City, PA, United States of America',
+			},
+		},
+		{
+			id: '512c6519e2580554c0595c2041f163944440c00206e2031e77686f736f6e66697273743a6c6f63616c6974793a313031373138313039',
+			body: {
+				lat: 41.1593,
+				lon: -80.08355,
+				label: 'Grove City, Grove City, PA, United States of America',
+			},
+		},
+	];
 
 	/**
 	 * @typedef {Object} ResultObject
@@ -48,6 +65,7 @@
 				const response = await fetch(url);
 				const data = await response.json();
 				options = formatOptions(data);
+				console.log(options);
 			} catch (err) {
 				console.error(err);
 			}
@@ -103,45 +121,69 @@
 
 <style>
 	.search-bar {
+		background-color: var(--bg-ff);
+		border: 1.5px solid;
+		border-color: inherit;
+		border-radius: var(--brad) 0 0 var(--brad);
+		box-shadow: var(--box-shadow);
 		display: flex;
 		gap: 4px;
-		box-shadow: var(--box-shadow);
-		color: var(--gray-3);
-		border: var(--gray-3) 1.5px solid;
-		padding: 8px 16px;
-		border-radius: var(--brad) 0 0 var(--brad);
-		padding: 8px 16px;
-		background-color: var(--bg-ff);
+		padding: 10px 10px 11px 10px;
 	}
 
-	.search-bar:focus-within {
+	.form {
+		border-color: var(--gray-3);
+	}
+
+	.form:focus-within {
+
 		color: var(--accent);
-		border-color: var(--accent);
+	}
+
+	.glass {
+		color: inherit;
 	}
 
 	.input {
-		font-family: inherit;
+		background-color: var(--bg-ff);
+		border: none;
 		color: var(--primary);
+		font-family: inherit;
 		font-size: inherit;
 		outline: none;
-		border: none;
-		background-color: var(--bg-ff);
 	}
 
 	.menu {
+		background-color: var(--bg-ff);
+		border: 1.5px solid;
+		border-color: inherit;
+		border-radius: 0 0 var(--brad) var(--brad);
 		display: flex;
 		flex-direction: column;
-		background-color: white;
+		margin-top: -3px;
+		padding-top: 6px;
 		position: relative;
 	}
 
 	.radio {
-		visibility: hidden;
 		position: absolute;
+		visibility: hidden;
 	}
 
 	.label {
+		background-color: var(--bg-ff);
 		display: block;
+		padding: 8px;
 		width: 100%;
+		color: var(--primary);
+	}
+
+	.label:hover {
+		color: var(--accent);
+		cursor: pointer;
+	}
+
+	.option:nth-last-child(-n + 1) .label {
+		border-radius: 0 0 var(--brad) var(--brad);
 	}
 </style>
