@@ -109,7 +109,7 @@ async function buildOpcDenomination() {
 			const address = addressLabel?.split('<br>').join(' ');
 			const key = website ? website : name.toUpperCase();
 			const table = $(`.churchCard:contains(${key})`).html();
-			const pastor = getPastorName(table);
+			const pastor = getPastorName(table, 'Pastor:');
 			const contact = pastor ? pastor : getContactName(table);
 			const email = getContactEmailAddress(table);
 			const phone = getContactPhoneNumber(table);

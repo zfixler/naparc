@@ -47,7 +47,8 @@ export function getRegionalTitle(slug) {
 			'rpcna'
 		],
 		Classis: [
-			'urcna'
+			'urcna',
+			'rcus'
 		]
 	};
 
