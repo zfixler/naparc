@@ -1,4 +1,6 @@
 <script>
+	import { ClickOutside } from '$lib/components';
+
 	let inputValue = '';
 	/** @type {NodeJS.Timeout|number|undefined} */
 	let debounceTimer;
@@ -21,6 +23,7 @@
 			},
 		},
 	];
+	let shouldShowMenu = false;
 
 	/**
 	 * @typedef {Object} ResultObject
@@ -65,58 +68,58 @@
 				const response = await fetch(url);
 				const data = await response.json();
 				options = formatOptions(data);
-				console.log(options);
+				if (options) shouldShowMenu = true;
 			} catch (err) {
 				console.error(err);
 			}
 		}, 450);
 	}
-
-	$: shouldShowMenu = options.length;
 </script>
 
 <form
 	class="form"
 	action="/search"
 >
-	<div class="search-bar">
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			height="24"
-			viewBox="0 -960 960 960"
-			width="24"
-			class="glass"
-			><path
-				d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"
-				fill="currentColor"
-			/></svg
-		>
-		<input
-			class="input"
-			type="text"
-			on:input={fetchLocationOptions}
-			bind:value={inputValue}
-		/>
-	</div>
-	{#if shouldShowMenu}
-		<div class="menu">
-			{#each options as option}
-				<div class="option">
-					<input
-						class="radio"
-						type="radio"
-						id={option.id}
-						name="coord"
-						value={`${option.body.lat},${option.body.lon}`}
-					/>
-					<label
-						class="label"
-						for={option.id}>{option.body.label}</label
-					>
-				</div>
-			{/each}
+	<ClickOutside bind:shouldShowContainer={shouldShowMenu}>
+		<div class="search-bar">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				height="24"
+				viewBox="0 -960 960 960"
+				width="24"
+				class="glass"
+				><path
+					d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"
+					fill="currentColor"
+				/></svg
+			>
+			<input
+				class="input"
+				type="text"
+				on:input={fetchLocationOptions}
+				bind:value={inputValue}
+			/>
 		</div>
-	{/if}
+		{#if shouldShowMenu}
+			<div class="menu">
+				{#each options as option}
+					<div class="option">
+						<input
+							class="radio"
+							type="radio"
+							id={option.id}
+							name="coord"
+							value={`${option.body.lat},${option.body.lon}`}
+						/>
+						<label
+							class="label"
+							for={option.id}>{option.body.label}</label
+						>
+					</div>
+				{/each}
+			</div>
+		{/if}
+	</ClickOutside>
 </form>
 
 <style>
@@ -136,7 +139,6 @@
 	}
 
 	.form:focus-within {
-
 		color: var(--accent);
 	}
 
