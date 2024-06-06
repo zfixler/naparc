@@ -25,9 +25,9 @@
 {/if}
 
 <style>
-    .icon {
-        fill: currentColor;
-    }
+	.icon {
+		fill: currentColor;
+	}
 
 	.link {
 		display: flex;

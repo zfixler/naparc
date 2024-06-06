@@ -1,7 +1,7 @@
 <script>
 	export let address = '';
 	export let addressLabel = '';
-    export let name = '';
+	export let name = '';
 	const url = `https://www.google.com/maps/search/?api=1&query=${encodeURI(`${name} ${address}`)}`;
 </script>
 
@@ -28,15 +28,15 @@
 {/if}
 
 <style>
-    .link {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
+	.link {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
 
-    .icon {
-        fill: currentColor;
-    }
+	.icon {
+		fill: currentColor;
+	}
 
 	.map {
 		align-self: flex-start;
