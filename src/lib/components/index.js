@@ -5,3 +5,4 @@ export { default as Phone } from './Phone.svelte';
 export { default as Email } from './Email.svelte';
 export { default as ClickOutside } from './ClickOutside.svelte';
 export { default as Location } from './Location.svelte';
+export { default as Settings } from './Settings.svelte';

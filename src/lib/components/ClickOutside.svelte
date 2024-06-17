@@ -3,7 +3,6 @@
 
 	/**
 	 * Attaches an event listener to detect clicks outside a specified DOM node.
-	 *
 	 * @param {HTMLElement} node - The DOM node to monitor for outside clicks.
 	 * @returns {object} An object with a `destroy` method to remove the event listener.
 	 */
@@ -18,7 +17,11 @@
 		 * @param {MouseEvent & {target: HTMLElement}} e - The click event to handle.
 		 */
 		function handleClick(e) {
-			if (!node.contains(e.target)) {
+			if (
+				!node.contains(e.target) &&
+				// Add .js-click-outside-toggle to any toggle buttons outside .inner-container
+				!e.target.classList.contains('js-click-outside-toggle')
+			) {
 				node.dispatchEvent(new CustomEvent('outside_click'));
 			}
 		}
