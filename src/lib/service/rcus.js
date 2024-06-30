@@ -108,6 +108,7 @@ async function buildRcusDenomination() {
 				id: presbyteryUuid,
 				slug: slugify(presbyteryName),
 			},
+			denominationSlug,
 		};
 
 		await upsertCongregation(congregation).catch(err => console.log(err));

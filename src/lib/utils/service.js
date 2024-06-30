@@ -10,7 +10,6 @@ export function getPastorName(text, title) {
 	if (!text) return null;
 	const regex = new RegExp(`${title}\\s*([A-Z][a-zA-Z. ]+)`, 'g');
 	const match = text.match(regex);
-	console.log('regex:', regex, 'match:', match);
 	if (match) {
 		return match[0].replace(title, '').trim();
 	}
@@ -100,10 +99,14 @@ export function slugify(str) {
 export function getAddressLabel(addressString) {
 	if (!addressString) return null;
 	const index = addressString.indexOf(',');
-    if (index !== -1) {
-        return addressString.slice(0, index + 1) + '<br>' + addressString.slice(index + 1);
-    }
-    return addressString;
+	if (index !== -1) {
+		return (
+			addressString.slice(0, index + 1) +
+			'<br>' +
+			addressString.slice(index + 1)
+		);
+	}
+	return addressString;
 }
 
 /** @typedef {import("@prisma/client").Presbytery} Presbytery */
@@ -162,6 +165,11 @@ export async function upsertCongregation(congregation) {
 						name: congregation.presbytery.name,
 						denominationSlug: congregation.presbytery.denominationSlug,
 					},
+				},
+			},
+			denomination: {
+				connect: {
+					slug: congregation.denominationSlug,
 				},
 			},
 		},

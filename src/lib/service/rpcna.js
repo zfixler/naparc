@@ -113,6 +113,7 @@ async function getDenomination(urls) {
 				id: presbyteryUuid,
 				slug: slugify(presbytery),
 			},
+			denominationSlug,
 			contact: null,
             updatedAt: null,
             createdAt: null,

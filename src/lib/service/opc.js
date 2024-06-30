@@ -131,6 +131,7 @@ async function buildOpcDenomination() {
 					denominationSlug,
 					slug: slugify(presbyteryName),
 				},
+				denominationSlug
 			};
 
 			return congregation;

@@ -94,6 +94,7 @@ async function buildPcaDenomination() {
 				id: presbyteryUuid,
 				slug: slugify(presbytery),
 			},
+			denominationSlug,
             updatedAt: null,
             createdAt: null,
 		};
