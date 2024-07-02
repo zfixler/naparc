@@ -118,60 +118,64 @@ export function getAddressLabel(addressString) {
  * @param {Congregation} congregation
  */
 export async function upsertCongregation(congregation) {
-	await prisma.congregation.upsert({
-		where: {
-			id: congregation.id,
-		},
-		update: {
-			lon: congregation.lon,
-			lat: congregation.lat,
-			name: congregation.name,
-			website: congregation.website,
-			address: congregation.address,
-			addressLabel: congregation.addressLabel,
-			pastor: congregation.pastor,
-			contact: congregation.contact,
-			email: congregation.email,
-			phone: congregation.phone,
-			presbytery: {
-				update: {
-					slug: congregation.presbytery.slug,
-					id: congregation.presbytery.id,
-					name: congregation.presbytery.name,
-					denominationSlug: congregation.presbytery.denominationSlug,
-				},
+	try {
+		await prisma.congregation.upsert({
+			where: {
+				id: congregation.id,
 			},
-		},
-		create: {
-			id: congregation.id,
-			lon: congregation.lon,
-			lat: congregation.lat,
-			name: congregation.name,
-			website: congregation.website,
-			address: congregation.address,
-			addressLabel: congregation.addressLabel,
-			pastor: congregation.pastor,
-			contact: congregation.contact,
-			email: congregation.email,
-			phone: congregation.phone,
-			presbytery: {
-				connectOrCreate: {
-					where: {
-						id: congregation.presbytery.id,
-					},
-					create: {
-						id: congregation.presbytery.id,
+			update: {
+				lon: congregation.lon,
+				lat: congregation.lat,
+				name: congregation.name,
+				website: congregation.website,
+				address: congregation.address,
+				addressLabel: congregation.addressLabel,
+				pastor: congregation.pastor,
+				contact: congregation.contact,
+				email: congregation.email,
+				phone: congregation.phone,
+				presbytery: {
+					update: {
 						slug: congregation.presbytery.slug,
+						id: congregation.presbytery.id,
 						name: congregation.presbytery.name,
 						denominationSlug: congregation.presbytery.denominationSlug,
 					},
 				},
 			},
-			denomination: {
-				connect: {
-					slug: congregation.denominationSlug,
+			create: {
+				id: congregation.id,
+				lon: congregation.lon,
+				lat: congregation.lat,
+				name: congregation.name,
+				website: congregation.website,
+				address: congregation.address,
+				addressLabel: congregation.addressLabel,
+				pastor: congregation.pastor,
+				contact: congregation.contact,
+				email: congregation.email,
+				phone: congregation.phone,
+				presbytery: {
+					connectOrCreate: {
+						where: {
+							id: congregation.presbytery.id,
+						},
+						create: {
+							id: congregation.presbytery.id,
+							slug: congregation.presbytery.slug,
+							name: congregation.presbytery.name,
+							denominationSlug: congregation.presbytery.denominationSlug,
+						},
+					},
+				},
+				denomination: {
+					connect: {
+						slug: congregation.denominationSlug,
+					},
 				},
 			},
-		},
-	});
+		});
+	} catch (error) {
+		console.log('Upsert error:', error);
+	}
 }

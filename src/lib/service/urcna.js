@@ -127,7 +127,7 @@ async function buildUrcnaDenomination() {
 				congregation.classis,
 				denominationNamespace
 			);
-			const id = uuidv5(congregation.id, presbyteryUuid);
+			const id = congregation.id && uuidv5(congregation.id, presbyteryUuid);
 			return {
 				id,
 				name: congregation.church,
@@ -159,7 +159,7 @@ async function buildUrcnaDenomination() {
 	});
 
 	for await (const congregation of denomination) {
-		if (congregation.id) upsertCongregation(congregation);
+		if (congregation.id) await upsertCongregation(congregation);
 	}
 
 	return denomination.length;
