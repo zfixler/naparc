@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Denomination {
@@ -29,21 +30,21 @@ model Presbytery {
 }
 
 model Congregation {
-  id             String        @id @default(uuid())
-  pastor         String?
-  name           String?
-  website        String?
-  phone          String?
-  email          String?
-  address        String?
-  addressLabel   String?
-  contact        String?
-  lon            Float?
-  lat            Float?
-  presbyteryId   String?
-  presbytery     Presbytery?   @relation(fields: [presbyteryId], references: [id])
+  id               String       @id @default(uuid())
+  pastor           String?
+  name             String?
+  website          String?
+  phone            String?
+  email            String?
+  address          String?
+  addressLabel     String?
+  contact          String?
+  lon              Float?
+  lat              Float?
+  presbyteryId     String?
+  presbytery       Presbytery?  @relation(fields: [presbyteryId], references: [id])
   denominationSlug String
-  denomination   Denomination @relation(fields: [denominationSlug], references: [slug])
-  createdAt      DateTime?     @default(now())
-  updatedAt      DateTime?     @updatedAt
+  denomination     Denomination @relation(fields: [denominationSlug], references: [slug])
+  createdAt        DateTime?    @default(now())
+  updatedAt        DateTime?    @updatedAt
 }
