@@ -84,11 +84,6 @@ async function buildUrcnaDenomination() {
 		const match = decoded.match(regex);
 
 		if (match) {
-			const queryString = match[1];
-
-			// Parse the query string into key-value pairs
-			const params = new URLSearchParams(queryString);
-
 			const congregation = {
 				id: '',
 				church: '',
@@ -114,6 +109,11 @@ async function buildUrcnaDenomination() {
 				lng: '',
 				upd: '',
 			};
+	
+			const queryString = match[1];
+
+			// Parse the query string into key-value pairs
+			const params = new URLSearchParams(queryString);
 
 			// Convert the key-value pairs into a JavaScript object
 			for (const [key, value] of params.entries()) {
@@ -127,7 +127,7 @@ async function buildUrcnaDenomination() {
 				congregation.classis,
 				denominationNamespace
 			);
-			const id = congregation.id && uuidv5(congregation.id, presbyteryUuid);
+			const id = congregation.id ? uuidv5(congregation.id, presbyteryUuid) : '';
 			return {
 				id,
 				name: congregation.church,
@@ -154,12 +154,12 @@ async function buildUrcnaDenomination() {
 				createdAt: null,
 			};
 		} else {
-			return {};
+			return null;
 		}
 	});
 
 	for await (const congregation of denomination) {
-		if (congregation.id) await upsertCongregation(congregation);
+		if (congregation && congregation.id) await upsertCongregation(congregation);
 	}
 
 	return denomination.length;
