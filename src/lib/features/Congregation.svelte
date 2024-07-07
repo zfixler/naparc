@@ -42,7 +42,7 @@
 	.container {
 		background: var(--bg-ff);
 		padding: var(--padding);
-		margin: var(--margin);
+		margin-top: var(--margin);
 		box-shadow: var(--box-shadow);
 		border-radius: var(--brad);
 	}

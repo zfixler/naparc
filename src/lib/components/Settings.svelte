@@ -14,7 +14,7 @@
 		};
 	});
 
-	settings.radius = 25;
+	settings.radius = '25';
 
 	let shouldShowSettings = false;
 </script>
@@ -44,37 +44,48 @@
 </button>
 {#if shouldShowSettings}
 	<ClickOutside bind:shouldShowContainer={shouldShowSettings}>
-		<div class="container">
-			<h2 class="title">Settings</h2>
-			<main class="main">
-				<section class="section">
-					<h3 class="subtitle">Denominations</h3>
-					{#each settings.included as denom}
-						<label
-							class="label"
-							for={denom.slug}
+		<div class="wrapper">
+			<div class="container">
+				<h2 class="title">Settings</h2>
+				<main class="main">
+					<section class="section">
+						<h3 class="subtitle">Denominations</h3>
+						{#each settings.included as denom}
+							<label
+								class="label"
+								for={denom.slug}
+							>
+								<input
+									class="checkbox"
+									id={denom.slug}
+									type="checkbox"
+									value={denom.slug}
+									bind:checked={denom.checked}
+								/>
+								{denom.abbr}
+							</label>
+						{/each}
+					</section>
+					<section class="section">
+						<h3 class="subtitle">Radius</h3>
+						<select
+							class="select"
+							name="radius"
+							bind:value={settings.radius}
 						>
-							<input
-								class="checkbox"
-								id={denom.slug}
-								type="checkbox"
-								value={denom.slug}
-								bind:checked={denom.checked}
-							/>
-							{denom.abbr}
-						</label>
-					{/each}
-				</section>
-				<section class="section">
-					<h3 class="subtitle">Radius</h3>
-					<select class="select" name="radius" bind:value={settings.radius}>
-						<option value="10">10 Miles</option>
-						<option value="25">25 Miles</option>
-						<option value="50">50 Miles</option>
-					</select>
-				</section>
-				<button type="button" class="save">Save Settings</button>
-			</main>
+							<option value="10">10 Miles</option>
+							<option value="25">25 Miles</option>
+							<option value="50">50 Miles</option>
+						</select>
+					</section>
+					<button
+						type="button"
+						class="save"
+						on:click={() => (shouldShowSettings = !shouldShowSettings)}
+						>Save Settings</button
+					>
+				</main>
+			</div>
 		</div>
 	</ClickOutside>
 {/if}
@@ -95,16 +106,23 @@
 		color: var(--accent);
 	}
 
+	.wrapper {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 135px;
+		z-index: 1000;
+		display: flex;
+		justify-content: center;
+	}
+
 	.container {
 		background-color: var(--bg-ff);
 		border-radius: var(--brad);
 		color: var(--primary);
-		left: 0;
-		left: 32px;
 		padding: 18px;
-		position: absolute;
-		right: 32px;
-		top: 135px;
+		margin: 0 auto;
+		width: min(800px, 90%);
 	}
 
 	.main {
@@ -119,7 +137,6 @@
 
 	.title {
 		margin-bottom: 8px;
-		height: 100%;
 	}
 
 	.subtitle {
@@ -148,15 +165,15 @@
 		border-radius: var(--brad);
 		border: none;
 		box-shadow: var(--box-shadow);
-		color: #FFF;
+		color: #fff;
 		cursor: pointer;
 		font-family: inherit;
 		font-weight: bold;
 		grid-column: 2;
 		justify-self: end;
-		letter-spacing: 1px;		
+		letter-spacing: 1px;
 		padding: 8px 16px;
-		transition: background-color ease .25s;
+		transition: background-color ease 0.25s;
 	}
 
 	.save:focus,

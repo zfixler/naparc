@@ -54,3 +54,7 @@ ALTER TABLE "Congregation" ADD CONSTRAINT "Congregation_presbyteryId_fkey" FOREI
 
 -- AddForeignKey
 ALTER TABLE "Congregation" ADD CONSTRAINT "Congregation_denominationSlug_fkey" FOREIGN KEY ("denominationSlug") REFERENCES "Denomination"("slug") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Add extensions
+CREATE EXTENSION IF NOT EXISTS cube;
+CREATE EXTENSION IF NOT EXISTS earthdistance;

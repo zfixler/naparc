@@ -1,12 +1,20 @@
 <script>
 	import { Location, Settings } from '$lib/components';
+	import { goto } from '$app/navigation';
 
 	export let denominations;
 
 	/** @type {HTMLFormElement}*/
 	let form;
 
-	/** @type {Object}*/
+	/**
+	 * @typedef {Object} Location
+	 * @property {string} label - The label for the location.
+	 * @property {string} lon - The longitude of the location.
+	 * @property {string} lat - The latitude of the location.
+	 */
+
+	/** @type {Location}*/
 	let location;
 
 	/**
@@ -19,17 +27,50 @@
 	/**
 	 * @typedef {Object} Settings
 	 * @property {SettingItem[]} included - An array of setting items.
-	 * @property {number} radius - Distance to search
+	 * @property {string} radius - Distance to search
 	 */
 
 	/** @type {Settings} */
 	let settings;
+
+	$: {
+		if (location?.label && location?.lat && location?.lon && settings?.radius)
+			triggerSubmit();
+	}
+
+	/**
+	 *
+	 * @param {Event & { currentTarget: EventTarget & HTMLFormElement;}} e
+	 */
+	function handleSubmit(e) {
+		const url = new URL(e.currentTarget.action);
+		const params = new URLSearchParams();
+
+		params.append('label', location.label);
+		params.append('lon', location.lon);
+		params.append('lat', location.lat);
+		params.append('rad', settings.radius);
+
+		url.search = params.toString();
+		goto(url.href);
+	}
+
+	const triggerSubmit = () => {
+		if (form) {
+			const event = new Event('submit', {
+				bubbles: true,
+				cancelable: true,
+			});
+			form.dispatchEvent(event);
+		}
+	};
 </script>
 
 <form
 	class="form"
 	action="/search"
 	bind:this={form}
+	on:submit|preventDefault={handleSubmit}
 >
 	<div class="first">
 		<Location bind:results={location} />
