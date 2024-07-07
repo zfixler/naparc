@@ -49,6 +49,9 @@ async function buildOpcDenomination() {
 		}
 	}
 
+	/** @type {Array<string>} */
+	const congregationIds = [];
+
 	/**
 	 * @param {string} presbyteryId
 	 */
@@ -57,9 +60,11 @@ async function buildOpcDenomination() {
 			const url = `https://opc.org/locator.html?search_go=Y&presbytery_id=${presbyteryId}`;
 			const response = await fetch(url, {
 				headers: {
-					'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+					accept:
+						'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
 					'accept-language': 'en-US,en;q=0.9',
-					'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+					'sec-ch-ua':
+						'"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
 					'sec-ch-ua-mobile': '?0',
 					'sec-ch-ua-platform': '"Windows"',
 					'sec-fetch-dest': 'document',
@@ -100,8 +105,8 @@ async function buildOpcDenomination() {
 
 		const congregations = captures?.map((capture) => {
 			const detailsArray = capture.split("'");
-			const lon = parseFloat(detailsArray[1]);
-			const lat = parseFloat(detailsArray[3]);
+			const lon = parseFloat(detailsArray[3]);
+			const lat = parseFloat(detailsArray[1]);
 			const detailsNode = cheerio.load(detailsArray[7]);
 			const name = detailsNode('h5').text();
 			const website = getWebsiteUrl(detailsArray[7]);
@@ -131,8 +136,15 @@ async function buildOpcDenomination() {
 					denominationSlug,
 					slug: slugify(presbyteryName),
 				},
-				denominationSlug
+				denominationSlug,
 			};
+
+			if (congregationIds.includes(congregation.id)) {
+				congregation.id = congregation.id + 'a';
+				congregationIds.push(congregation.id);
+			} else {
+				congregationIds.push(congregation.id);
+			}
 
 			return congregation;
 		});
