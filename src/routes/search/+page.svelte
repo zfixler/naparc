@@ -2,11 +2,13 @@
 	import { page } from '$app/stores';
 	import { Congregation } from '$lib/features';
 	export let data;
+
+	$: results = data.congregations?.length || 0;
 </script>
 
 <section class="result-header">
 	<h2>Search Results:</h2>
-	<span>{data.location}, within {data.radius} miles</span>
+	<span>{data.location}, {results} results within {data.radius} miles</span>
 </section>
 
 {#if data.congregations}
@@ -22,5 +24,6 @@
 		display: flex;
 		gap: 16px;
 		align-items: baseline;
+		margin-top: 16px;
 	}
 </style>
