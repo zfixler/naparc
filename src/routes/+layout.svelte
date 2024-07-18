@@ -2,6 +2,7 @@
 import '@fontsource-variable/outfit';
 import '../app.css';
 import { Search } from '$lib/features';
+import { SchemeToggle } from '$lib/components';
 export let data;
 </script>
 
@@ -11,6 +12,9 @@ export let data;
         <Search denominations={data.denominations} />
     </header>
     <slot />
+    <footer>
+        <SchemeToggle />
+    </footer>
 </main>
 
 <style>

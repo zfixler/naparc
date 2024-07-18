@@ -54,14 +54,12 @@ body {
 	--brad: 4px; 
 }
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--primary: var(--gray-3);
-		--secondary: var(--gray-1);
-		--bg-ff: var(--black-1);
-		--bg-bg: var(--black-3);
-		--box-shadow: --box-shadow: var(--black-3) 0px 6px 24px 0px, var(--black-3) 0px 0px 0px 1px;
-	}
+html[data-scheme='dark'] {
+	--primary: var(--gray-3);
+	--secondary: var(--gray-1);
+	--bg-ff: var(--black-1);
+	--bg-bg: var(--black-3);
+	--box-shadow: --box-shadow: var(--black-3) 0px 6px 24px 0px, var(--black-3) 0px 0px 0px 1px;
 }
 
 @media (max-width: 800px) {
