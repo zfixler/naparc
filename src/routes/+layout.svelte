@@ -7,7 +7,7 @@ export let data;
 
 <main class="app">
     <header class="header">
-        <h1 class="title">NAPARC Search</h1>
+        <h1 class="title"><a href="/">NAPARC Search</a></h1>
         <Search denominations={data.denominations} />
     </header>
     <slot />
@@ -24,5 +24,9 @@ export let data;
     .app {
         width: min(800px, 90%);
         margin: 0 auto;
+    }
+
+    .title a {
+        color: inherit; 
     }
 </style>
