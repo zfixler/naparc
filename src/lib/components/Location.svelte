@@ -113,18 +113,20 @@
 </div>
 {#if shouldShowMenu}
 	<ClickOutside bind:shouldShowContainer={shouldShowMenu}>
-		<div
-			class="menu"
-			in:slide={{ duration: 250 }}
-		>
-			{#each options as option}
-				<button
-					type="button"
-					class="option"
-					on:click={() => handleOptionSelection(option)}
-					>{option.body.label}</button
-				>
-			{/each}
+		<div class="wrapper">
+			<div
+				class="menu"
+				in:slide={{ duration: 250 }}
+			>
+				{#each options as option}
+					<button
+						type="button"
+						class="option"
+						on:click={() => handleOptionSelection(option)}
+						>{option.body.label}</button
+					>
+				{/each}
+			</div>
 		</div>
 	</ClickOutside>
 {/if}
@@ -155,9 +157,24 @@
 		background-color: var(--bg-ff);
 	}
 
+	.wrapper {
+		display: flex;
+		justify-content: center;
+		left: 0;
+		margin-left: -2px;
+		margin-right: -2px;
+		position: absolute;
+		right: 0;
+		top: 50px;
+		z-index: 1000;
+	}
+	
+	
 	.menu {
+		width: 100%;
 		margin-top: 8px;
-		border-top: 2px solid var(--accent);
+		border: 2px solid var(--accent);
+		border-radius: var(--brad);
 		background-color: var(--bg-ff);
 		display: flex;
 		flex-direction: column;

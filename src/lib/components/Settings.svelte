@@ -43,8 +43,8 @@
 	>
 </button>
 {#if shouldShowSettings}
-	<ClickOutside bind:shouldShowContainer={shouldShowSettings}>
-		<div class="wrapper">
+	<div class="wrapper">
+		<ClickOutside bind:shouldShowContainer={shouldShowSettings}>
 			<div class="container">
 				<h2 class="title">Settings</h2>
 				<main class="main">
@@ -86,8 +86,8 @@
 					>
 				</main>
 			</div>
-		</div>
-	</ClickOutside>
+		</ClickOutside>
+	</div>
 {/if}
 
 <style>
@@ -107,22 +107,24 @@
 	}
 
 	.wrapper {
-		position: absolute;
-		left: 0;
-		right: 0;
-		top: 135px;
-		z-index: 1000;
 		display: flex;
 		justify-content: center;
+		left: 0;
+		margin-left: -2px;
+		margin-right: -2px;
+		position: absolute;
+		right: 0;
+		top: 58px;
+		z-index: 1000;
 	}
 
 	.container {
 		background-color: var(--bg-ff);
 		border-radius: var(--brad);
+		border: 2px solid var(--primary);
 		color: var(--primary);
 		padding: 18px;
-		margin: 0 auto;
-		width: min(800px, 90%);
+		width: 100%;
 	}
 
 	.main {

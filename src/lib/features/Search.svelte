@@ -96,6 +96,7 @@
 		padding: 10px;
 		transition: border-color 0.25s ease;
 		width: 100%;
+		position: relative;
 	}
 
 	.form:has(.input:focus) {
