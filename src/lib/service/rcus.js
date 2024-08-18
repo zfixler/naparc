@@ -7,7 +7,6 @@ import {
     getContactPhoneNumber,
     getAddressLabel,
 } from '../utils/service.js';
-import { prisma } from '$lib/prisma.js';
 
 /**
  * Represents a location object with details about a place.
@@ -109,6 +108,7 @@ async function buildRcusDenomination() {
 				slug: slugify(presbyteryName),
 			},
 			denominationSlug,
+			distance: null,
 		};
 
 		await upsertCongregation(congregation).catch(err => console.log(err));

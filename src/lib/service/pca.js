@@ -97,6 +97,7 @@ async function buildPcaDenomination() {
 			denominationSlug,
             updatedAt: null,
             createdAt: null,
+			distance: null,
 		};
 	});
 

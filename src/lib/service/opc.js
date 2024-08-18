@@ -10,6 +10,10 @@ import {
 	slugify,
 } from '../utils/service.js';
 
+
+/** @typedef {import("@prisma/client").Presbytery} Presbytery */
+/** @typedef {import("@prisma/client").Congregation & {presbytery: Presbytery}} Congregation */
+
 /**
  * Initiate scrape of OPC directory and upsert congregations inside the database.
  */
@@ -87,7 +91,7 @@ async function buildOpcDenomination() {
 	/**
 	 * Fetch all congregations in a given presbytery
 	 * @param {string} presbyteryId
-	 * @returns {Promise<object[]>}
+	 * @returns {Promise<Array<Congregation>>}
 	 */
 	async function fetchCongregations(presbyteryId) {
 		const html = await makeRequest(presbyteryId);
@@ -111,7 +115,7 @@ async function buildOpcDenomination() {
 			const name = detailsNode('h5').text();
 			const website = getWebsiteUrl(detailsArray[7]);
 			const addressLabel = detailsNode('p:first').html();
-			const address = addressLabel?.split('<br>').join(' ');
+			const address = addressLabel?.split('<br>').join(' ') || null;
 			const key = website ? website : name.toUpperCase();
 			const table = $(`.churchCard:contains(${key})`).html();
 			const pastor = getPastorName(table, 'Pastor:');
@@ -130,6 +134,7 @@ async function buildOpcDenomination() {
 				contact,
 				email,
 				phone,
+				presbyteryId: presbyteryUuid,
 				presbytery: {
 					id: presbyteryUuid,
 					name: presbyteryName,
@@ -137,6 +142,9 @@ async function buildOpcDenomination() {
 					slug: slugify(presbyteryName),
 				},
 				denominationSlug,
+				createdAt: null,
+				updatedAt: null,
+				distance: null,
 			};
 
 			if (congregationIds.includes(congregation.id)) {
@@ -148,12 +156,13 @@ async function buildOpcDenomination() {
 
 			return congregation;
 		});
-		return congregations || [];
+
+		return congregations && congregations.length ? congregations : [];
 	}
 
 	/**
 	 * Variable for all congregations in denomination
-	 * @type {Array<any>}
+	 * @type {Array<Congregation>}
 	 */
 	let denomination = [];
 
@@ -161,7 +170,7 @@ async function buildOpcDenomination() {
 		const presbytery = await fetchCongregations(presbyteryId).catch((err) =>
 			console.log(err)
 		);
-		denomination = denomination.concat(presbytery);
+		if (presbytery && presbytery.length) denomination = denomination.concat(presbytery);
 	}
 
 	for await (const congregation of denomination) {
