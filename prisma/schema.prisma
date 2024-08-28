@@ -48,5 +48,4 @@ model Congregation {
   denomination     Denomination @relation(fields: [denominationSlug], references: [slug])
   createdAt        DateTime?    @default(now())
   updatedAt        DateTime?    @updatedAt
-  distance         Float?       
 }

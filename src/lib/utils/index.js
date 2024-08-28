@@ -11,29 +11,30 @@ export const getUuidChunk = (chunkNum = 5) => {
 
 /**
  * Get all congregations within a given radius of a provided location.
- * @param {string} lat - Latitude
- * @param {string} lon - Longitude
+ * @param {string} inputLat - Latitude
+ * @param {string} inputLon - Longitude
  * @param {string} radius - miles
  * @returns {Promise<Array<import("@prisma/client").Congregation>|undefined>}
  */
-export async function getLocationsWithinRadius(lat, lon, radius) {
+export async function getLocationsWithinRadius(inputLat, inputLon, radius) {
 	try {
 		const meters = parseInt(radius) * 1609.34;
 		/** @type {Array<import("@prisma/client").Congregation>} */
-		const locations =
-			await prisma.$queryRaw`SELECT *, earth_distance(ll_to_earth(lat, lon), ll_to_earth(${parseFloat(
-				lat
-			)}, ${parseFloat(
-				lon
-			)})) AS distance FROM "Congregation" WHERE earth_distance(ll_to_earth(lat, lon), ll_to_earth(${parseFloat(
-				lat
-			)}, ${parseFloat(lon)})) < ${meters};`;
-		return locations.map((location) => {
-			location.distance =
-				location.distance !== null ? location.distance / 1609.34 : null;
-			return location;
-		});
+		const locations = await prisma.$queryRaw`
+            SELECT *, (earth_distance(
+                       ll_to_earth(lat, lon), 
+                       ll_to_earth(${parseFloat(inputLat)}, ${parseFloat(inputLon)})
+                   ) / 1609.34) AS distance_in_miles
+            FROM "Congregation"
+            WHERE earth_distance(
+                      ll_to_earth(lat, lon), 
+                      ll_to_earth(${parseFloat(inputLat)}, ${parseFloat(inputLon)})
+                  ) < ${meters}
+            ORDER BY distance_in_miles ASC;
+        `;
+
+		return locations;
 	} catch (error) {
-		console.log('Error getting locations:', location);
+		console.log('Error getting locations:', error);
 	}
 }
