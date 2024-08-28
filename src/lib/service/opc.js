@@ -1,3 +1,4 @@
+import { setTimeout } from 'node:timers/promises';
 import * as cheerio from 'cheerio';
 import { v5 as uuidv5 } from 'uuid';
 import {
@@ -60,23 +61,24 @@ async function buildOpcDenomination() {
 	 * @param {string} presbyteryId
 	 */
 	async function makeRequest(presbyteryId) {
+		// Delay before executing fetch for a random amount of time between 2 adn 4 seconds
+		await setTimeout(Math.random() * (4000 - 2000 + 1) + 2000);
+
 		try {
 			const url = `https://opc.org/locator.html?search_go=Y&presbytery_id=${presbyteryId}`;
 			const response = await fetch(url, {
 				headers: {
-					accept:
-						'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-					'accept-language': 'en-US,en;q=0.9',
-					'sec-ch-ua':
-						'"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-					'sec-ch-ua-mobile': '?0',
-					'sec-ch-ua-platform': '"Windows"',
-					'sec-fetch-dest': 'document',
-					'sec-fetch-mode': 'navigate',
-					'sec-fetch-site': 'none',
-					'sec-fetch-user': '?1',
-					'upgrade-insecure-requests': '1',
-				},
+					"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+					"accept-language": "en-US,en;q=0.9",
+					"sec-ch-ua": "\"Chromium\";v=\"128\", \"Not;A=Brand\";v=\"24\", \"Google Chrome\";v=\"128\"",
+					"sec-ch-ua-mobile": "?0",
+					"sec-ch-ua-platform": "\"Windows\"",
+					"sec-fetch-dest": "document",
+					"sec-fetch-mode": "navigate",
+					"sec-fetch-site": "none",
+					"sec-fetch-user": "?1",
+					"upgrade-insecure-requests": "1"
+				  },
 				referrerPolicy: 'strict-origin-when-cross-origin',
 				body: null,
 				method: 'GET',
