@@ -1,6 +1,5 @@
 <script>
 	import { Congregation } from '$lib/features';
-	import { getRegionalTitle } from '$lib/utils';
 	export let data;
 	const { presbytery } = data;
 </script>
@@ -10,7 +9,11 @@
 		<h1 class="denomination">{presbytery.denomination.name}</h1>
 		<h2 class="presbytery">
 			{presbytery.name}
-			{getRegionalTitle(presbytery.denomination.slug)}
+			{#if presbytery.denomination.continental}
+			Classis
+			{:else}
+			Presbytery
+			{/if}
 		</h2>
 	</header>
 	<main class="container">

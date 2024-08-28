@@ -13,6 +13,7 @@ model Denomination {
   slug          String         @unique
   name          String
   abbr          String
+  continental   Boolean        @default(false)
   description   String?
   presbyteries  Presbytery[]
   congregations Congregation[]

@@ -150,7 +150,6 @@ async function buildUrcnaDenomination() {
 				},
 				denominationSlug,
 				contact: null,
-				distance: null,
 				updatedAt: null,
 				createdAt: null,
 			};

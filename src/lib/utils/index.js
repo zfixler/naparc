@@ -10,23 +10,6 @@ export const getUuidChunk = (chunkNum = 5) => {
 };
 
 /**
- * Retrieves the regional title associated with the given slug.
- * @param {string} slug - The slug representing the regional affiliation.
- * @returns {string|undefined} The regional title if found, otherwise undefined.
- */
-export function getRegionalTitle(slug) {
-	/** @type {{ [key: string]: string[] }} */
-	const titles = {
-		Presbytery: ['opc', 'pca', 'rpcna'],
-		Classis: ['urcna', 'rcus'],
-	};
-
-	for (const key in titles) {
-		if (titles[key].includes(slug)) return key;
-	}
-}
-
-/**
  * Get all congregations within a given radius of a provided location.
  * @param {string} lat - Latitude
  * @param {string} lon - Longitude

@@ -115,7 +115,6 @@ async function getDenomination(urls) {
 			},
 			denominationSlug,
 			contact: null,
-			distance: null,
             updatedAt: null,
             createdAt: null,
 		});

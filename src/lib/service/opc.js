@@ -144,7 +144,6 @@ async function buildOpcDenomination() {
 				denominationSlug,
 				createdAt: null,
 				updatedAt: null,
-				distance: null,
 			};
 
 			if (congregationIds.includes(congregation.id)) {

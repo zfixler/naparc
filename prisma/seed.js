@@ -13,6 +13,7 @@ async function main() {
                 slug: d.slug,
                 abbr: d.abbr,
                 description: d.description,
+                continental: d.continental,
             }
         });
 

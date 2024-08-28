@@ -108,7 +108,6 @@ async function buildRcusDenomination() {
 				slug: slugify(presbyteryName),
 			},
 			denominationSlug,
-			distance: null,
 		};
 
 		await upsertCongregation(congregation).catch(err => console.log(err));
