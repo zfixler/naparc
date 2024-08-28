@@ -24,13 +24,9 @@
 {/if}
 
 <style>
-	.header,
-	.container {
+	.header {
 		width: var(--container-width);
-		margin: 0 auto;
+		padding-top: 24px;
 	}
 
-	.header {
-		padding: 24px;
-	}
 </style>
