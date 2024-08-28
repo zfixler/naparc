@@ -18,22 +18,18 @@
 		<h3 class="title">{name}</h3>
 	</header>
 	<main class="content">
-		<div class="content-left">
-			<Address
-				{address}
-				{addressLabel}
-				{name}
-			/>
-			<Website {website} />
-		</div>
-		<div class="content-right">
-			<Contact
-				{contact}
-				{pastor}
-			/>
-			<Phone {phone} />
-			<Email {email} />
-		</div>
+		<Address
+			{address}
+			{addressLabel}
+			{name}
+		/>
+		<Contact
+			{contact}
+			{pastor}
+		/>
+		<Email {email} />
+		<Website {website} />
+		<Phone {phone} />
 	</main>
 	<footer class="footer"></footer>
 </article>
@@ -51,30 +47,9 @@
 		padding-bottom: var(--padding);
 	}
 
-	.content {
-		display: flex;
-	}
-
-	.content-left,
-	.content-right {
-		width: 50%;
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
-
-	@media (max-width: 800px) {
-		.content {
-			flex-direction: column;
-		}
-
-		.content-left,
-		.content-right {
-			width: 100%;
-		}
-
-		.content-right {
-			margin-top: var(--margin);
-		}
-	}
+	 .content {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+		grid-row-gap: calc(var(--padding) / 2);
+	 }
 </style>

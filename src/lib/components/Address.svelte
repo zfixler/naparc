@@ -28,6 +28,10 @@
 {/if}
 
 <style>
+	.address {
+		grid-row: 1 / 3;
+	}
+
 	.link {
 		display: flex;
 		align-items: center;
