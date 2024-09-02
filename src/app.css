@@ -9,6 +9,12 @@ body {
 	font-size: 62.5%;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+	html {
+	  scroll-behavior: smooth;
+	}
+}
+
 :root {
 	--ff-body: 'Outfit Variable', sans-serif;
 	--fw-bold: 700;

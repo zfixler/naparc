@@ -11,6 +11,13 @@ const year = new Date().getFullYear();
 
 <main class="app">
     <header class="header">
+        <nav class="nav">
+            <ul>
+                <li>
+                    <a href="/denominations">Denominations</a>
+                </li>
+            </ul>
+        </nav>
         <h1 class="title"><a href="/">NAPARC Search</a></h1>
         <Search denominations={data.denominations} />
     </header>
@@ -26,9 +33,6 @@ const year = new Date().getFullYear();
 
 <style>
     .header {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
         margin: 18px 0;
 	}
 
@@ -44,7 +48,10 @@ const year = new Date().getFullYear();
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        padding-top: 32px;
+    }
+
+    .title {
+        margin-bottom: 16px;
     }
 
     .title a {
@@ -56,5 +63,17 @@ const year = new Date().getFullYear();
         justify-content: space-between;
         align-items: flex-start;
         padding: 16px 32px 8px;
+    }
+
+    .nav {
+        padding-top: 12px;
+    }
+
+    .nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: flex-end;
     }
 </style>

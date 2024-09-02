@@ -21,7 +21,7 @@
         >
             <a
                 class="denomination"
-                href={`/denominations?show=${denominationSlug}`}
+                href={`/denominations#${denominationSlug}`}
                 >{denominationSlug.toUpperCase()}</a
             >
         </span>
