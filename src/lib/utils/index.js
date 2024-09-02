@@ -21,16 +21,24 @@ export async function getLocationsWithinRadius(inputLat, inputLon, radius) {
 		const meters = parseInt(radius) * 1609.34;
 		/** @type {Array<import("@prisma/client").Congregation>} */
 		const locations = await prisma.$queryRaw`
-            SELECT *, (earth_distance(
-                       ll_to_earth(lat, lon), 
-                       ll_to_earth(${parseFloat(inputLat)}, ${parseFloat(inputLon)})
-                   ) / 1609.34) AS distance_in_miles
-            FROM "Congregation"
+            SELECT 
+                c.*,
+                p.name AS "presbyteryName",
+                p.slug AS "presbyterySlug",
+                d.name AS "denominationName",
+                d.continental AS "isContinental",
+                (earth_distance(
+                    ll_to_earth(c.lat, c.lon), 
+                    ll_to_earth(${parseFloat(inputLat)}, ${parseFloat(inputLon)})
+                ) / 1609.34) AS distance
+            FROM "Congregation" AS c
+            LEFT JOIN "Presbytery" AS p ON "presbyteryId" = p.id
+            LEFT JOIN "Denomination" AS d ON c."denominationSlug" = d.slug
             WHERE earth_distance(
-                      ll_to_earth(lat, lon), 
+                      ll_to_earth(c.lat, c.lon), 
                       ll_to_earth(${parseFloat(inputLat)}, ${parseFloat(inputLon)})
                   ) < ${meters}
-            ORDER BY distance_in_miles ASC;
+            ORDER BY distance ASC;
         `;
 
 		return locations;

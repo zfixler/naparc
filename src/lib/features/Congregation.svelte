@@ -1,5 +1,12 @@
 <script>
-	import { Address, Website, Contact, Phone, Email } from '$lib/components';
+	import {
+		Address,
+		Website,
+		Contact,
+		Phone,
+		Email,
+		Header,
+	} from '$lib/components';
 	export let congregation;
 	const {
 		address,
@@ -10,27 +17,51 @@
 		pastor,
 		phone,
 		website,
+		distance,
+		denominationSlug,
+		denominationName,
+		presbyteryName,
+		presbyterySlug,
+		isContinental,
 	} = congregation;
 </script>
 
 <article class="container">
-	<header class="header">
-		<h3 class="title">{name}</h3>
-	</header>
-	<main class="content">
-		<Address
-			{address}
-			{addressLabel}
-			{name}
-		/>
-		<Contact
-			{contact}
-			{pastor}
-		/>
-		<Email {email} />
-		<Website {website} />
-		<Phone {phone} />
-	</main>
+	<Header
+		props={{
+			name,
+			distance,
+			denominationSlug,
+			denominationName,
+			presbyteryName,
+			presbyterySlug,
+			isContinental,
+		}}
+	/>
+	<div class="content">
+		<div class="address">
+			<Address
+				{address}
+				{addressLabel}
+				{name}
+			/>
+		</div>
+		<div class="contact">
+			<Contact
+				{contact}
+				{pastor}
+			/>
+		</div>
+		<div class="email">
+			<Email {email} />
+		</div>
+		<div class="website">
+			<Website {website} />
+		</div>
+		<div class="phone">
+			<Phone {phone} />
+		</div>
+	</div>
 	<footer class="footer"></footer>
 </article>
 
@@ -42,14 +73,15 @@
 		box-shadow: var(--box-shadow);
 		border-radius: var(--brad);
 	}
-
-	.header {
-		padding-bottom: var(--padding);
+	
+	.content {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));
+		grid-row-gap: calc(var(--padding) / 2);
+		column-gap: 36px;
 	}
 
-	 .content {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-		grid-row-gap: calc(var(--padding) / 2);
-	 }
+	.address {
+		grid-row: 1 / 3;
+	}
 </style>
