@@ -17,6 +17,7 @@
 	settings.radius = '25';
 
 	let shouldShowSettings = false;
+	settings.hasSavedSettings = false;
 </script>
 
 <button
@@ -81,8 +82,10 @@
 					<button
 						type="button"
 						class="save"
-						on:click={() => (shouldShowSettings = !shouldShowSettings)}
-						>Save Settings</button
+						on:click={() => {
+							shouldShowSettings = !shouldShowSettings;
+							settings.hasSavedSettings = true;
+						}}>Save Settings</button
 					>
 				</main>
 			</div>

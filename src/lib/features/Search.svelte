@@ -28,15 +28,14 @@
 	 * @typedef {Object} Settings
 	 * @property {SettingItem[]} included - An array of setting items.
 	 * @property {string} radius - Distance to search
+	 * @property {boolean} hasSavedSettings
 	 */
 
 	/** @type {Settings} */
 	let settings;
-
-	$: {
-		if (location?.label && location?.lat && location?.lon && settings?.radius)
-			triggerSubmit();
-	}
+	
+	$: location && location?.label ? triggerSubmit() : null;
+	$: location && settings?.hasSavedSettings ? triggerSubmit() : null;
 
 	/**
 	 *
@@ -45,7 +44,6 @@
 	function handleSubmit(e) {
 		const url = new URL(e.currentTarget.action);
 		const params = new URLSearchParams();
-
 		params.append('label', location.label);
 		params.append('lon', location.lon);
 		params.append('lat', location.lat);
