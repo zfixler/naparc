@@ -45,10 +45,10 @@ body {
 	--blue-2: #707EFF;
 	--blue-3: #5C6CFF;
 
-
 	--primary: var(--black-3);
 	--secondary: var(--gray-1);
 	--accent: var(--blue-3);
+	--success: var(--green-2);
 	--bg-ff: var(--gray-1);
 	--bg-bg: var(--gray-2);
 
@@ -63,6 +63,7 @@ body {
 html[data-scheme='dark'] {
 	--primary: var(--gray-3);
 	--secondary: var(--gray-1);
+	--success: var(--green-1);
 	--bg-ff: var(--black-1);
 	--bg-bg: var(--black-3);
 	--box-shadow: --box-shadow: var(--black-3) 0px 6px 24px 0px, var(--black-3) 0px 0px 0px 1px;

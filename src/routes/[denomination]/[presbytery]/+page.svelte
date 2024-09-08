@@ -16,11 +16,11 @@
 			{/if}
 		</h2>
 	</header>
-	<main class="container">
+	<div class="container">
 		{#each presbytery.congregations as congregation}
 			<Congregation {congregation} />
 		{/each}
-	</main>
+	</div>
 {/if}
 
 <style>

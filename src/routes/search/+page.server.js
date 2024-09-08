@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { getLocationsWithinRadius } from '$lib/utils';
+import { getLocationsWithinRadius, paginateResults } from '$lib/utils';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ url }) {
@@ -7,13 +7,19 @@ export async function load({ url }) {
 	const lat = url.searchParams.get('lat');
 	const lon = url.searchParams.get('lon');
 	const radius = url.searchParams.get('rad');
+	const pg = url.searchParams.get('pg');
 
 	if (lat && lon && radius) {
 		const congregations = await getLocationsWithinRadius(lat, lon, radius);
+		const { page, results, totalPages, totalResults } = paginateResults(pg, congregations);
+
 		return {
 			location,
 			radius,
-			congregations,
+			congregations: results,
+			totalResults,
+			page,
+			totalPages,
 		};
 	}
 	

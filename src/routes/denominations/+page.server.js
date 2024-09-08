@@ -6,6 +6,11 @@ export async function load() {
 		include: {
 			presbyteries: true,
 		},
+		orderBy: {
+			presbyteries: {
+				_count: 'desc',
+			},
+		},
 	});
 	return {
 		denominations,

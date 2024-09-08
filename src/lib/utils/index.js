@@ -19,6 +19,7 @@ export const getUuidChunk = (chunkNum = 5) => {
 export async function getLocationsWithinRadius(inputLat, inputLon, radius) {
 	try {
 		const meters = parseInt(radius) * 1609.34;
+
 		/** @type {Array<import("@prisma/client").Congregation>} */
 		const locations = await prisma.$queryRaw`
             SELECT 
@@ -45,4 +46,25 @@ export async function getLocationsWithinRadius(inputLat, inputLon, radius) {
 	} catch (error) {
 		console.log('Error getting locations:', error);
 	}
+}
+
+/**
+ * Paginates an array of results based on the provided page number.
+ * @param {string | null} pg - The current page number, which will be parsed as an integer. Defaults to 1 if not provided.
+ * @param {Array<any>} [results] - The array of results to paginate. Defaults to an empty array if no results are provided.
+ * @returns {{results: Array<any>;page: number;totalResults: number;totalPages: number}} An object containing the paginated results details.
+ */
+export function paginateResults (pg, results = []) {
+    const page = pg ? parseInt(pg) : 1;
+    const pageSize = 10;
+    const offest = (page - 1) * pageSize;
+    const totalResults = results.length;
+    const totalPages = Math.ceil(totalResults / pageSize);
+
+    return {
+        results: results.slice(offest, offest + pageSize),
+        page,
+        totalResults,
+        totalPages,
+    };
 }

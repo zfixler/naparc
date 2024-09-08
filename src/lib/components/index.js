@@ -8,3 +8,4 @@ export { default as Location } from './Location.svelte';
 export { default as Settings } from './Settings.svelte';
 export { default as SchemeToggle } from './SchemeToggle.svelte';
 export { default as Header } from './Header.svelte';
+export { default as Pagination } from './Pagination.svelte';
