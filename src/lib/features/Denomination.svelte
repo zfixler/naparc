@@ -1,16 +1,15 @@
 <script>
 	import { page } from '$app/stores';
 	export let denomination;
-	const { slug, name, description, presbyteries, continental } =
-		denomination;
+	const { slug, name, description, presbyteries, continental } = denomination;
 	let shouldShowDetails = $page.url.hash === `#${slug}`;
 </script>
 
-<section class="section">
-	<button
-		class="button"
-		on:click={() => (shouldShowDetails = !shouldShowDetails)}
-	>
+<details
+	class="section"
+	open={shouldShowDetails}
+>
+	<summary class="button">
 		<h2
 			class="denomination"
 			id={slug}
@@ -30,7 +29,7 @@
 				>
 			{/if}
 		</h2>
-		<span class={shouldShowDetails ? 'chevron chevron-open' : 'chevron'}>
+		<span class="chevron">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				height="24px"
@@ -40,36 +39,26 @@
 				><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z" /></svg
 			>
 		</span>
-	</button>
-	<div class={shouldShowDetails ? 'show' : 'hide'}>
-		<p class="description">{description}</p>
-		<p class="presbyteries">
-			{#if presbyteries.length}
-				<b>{continental ? 'Classis:' : 'Presbyteries:'}</b>
-				<ul>
-					{#each presbyteries as presbytery}
-						<li>
-							<a href={`/${slug}/${presbytery.slug}`}>{presbytery.name}</a>
-						</li>
-					{/each}
-				</ul>
-			{:else}
-				There are currently no {continental ? 'classis' : 'presbyteries'} supported
-				for this denomination.
-			{/if}
-		</p>
-	</div>
-</section>
+	</summary>
+	<p class="description">{description}</p>
+	<p class="presbyteries">
+		{#if presbyteries.length}
+			<b>{continental ? 'Classis:' : 'Presbyteries:'}</b>
+			<ul>
+				{#each presbyteries as presbytery}
+					<li>
+						<a href={`/${slug}/${presbytery.slug}`}>{presbytery.name}</a>
+					</li>
+				{/each}
+			</ul>
+		{:else}
+			There are currently no {continental ? 'classis' : 'presbyteries'} supported
+			for this denomination.
+		{/if}
+	</p>
+</details>
 
 <style>
-	.hide {
-		display: none;
-	}
-
-	.show {
-		display: block;
-	}
-
 	.section {
 		background: var(--bg-ff);
 		padding: var(--padding);
@@ -104,7 +93,7 @@
 		transition: transform 250ms ease;
 	}
 
-	.chevron-open {
+	details[open] .chevron {
 		transform: rotate(90deg);
 	}
 
