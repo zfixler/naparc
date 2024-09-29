@@ -7,10 +7,7 @@
 	 * @returns {object} An object with a `destroy` method to remove the event listener.
 	 */
 	function handleOutsideClick(node) {
-		window.addEventListener(
-			'click',
-			/** @type {EventListener} */ (handleClick)
-		);
+		window.addEventListener('click', /** @type {EventListener} */ (handleClick));
 
 		/**
 		 * Handles a click event to check if the target is outside a specified DOM node.
@@ -28,27 +25,13 @@
 
 		return {
 			destroy() {
-				window.removeEventListener(
-					'click',
-					/** @type {EventListener} */ (handleClick)
-				);
+				window.removeEventListener('click', /** @type {EventListener} */ (handleClick));
 			},
 		};
 	}
-
-	/**
-	 * Closes menu if click outside container.
-	 * @param {Event & { target: EventTarget & HTMLElement; }} e - Click event.
-	 */
-	function handleContainerClose(e) {
-		shouldShowContainer = false;
-	}
 </script>
 
-<div
-	use:handleOutsideClick
-	on:outside_click={handleContainerClose}
->
+<div use:handleOutsideClick on:outside_click={() => (shouldShowContainer = false)}>
 	<span class="inner-container">
 		<slot />
 	</span>

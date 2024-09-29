@@ -1,12 +1,5 @@
 <script>
-	import {
-		Address,
-		Website,
-		Contact,
-		Phone,
-		Email,
-		Header,
-	} from '$lib/components';
+	import { Address, Website, Contact, Phone, Email, Header } from '$lib/components';
 	export let congregation;
 	const {
 		address,
@@ -36,21 +29,13 @@
 			presbyteryName,
 			presbyterySlug,
 			isContinental,
-		}}
-	/>
+		}} />
 	<div class="content">
 		<div class="address">
-			<Address
-				{address}
-				{addressLabel}
-				{name}
-			/>
+			<Address {address} {addressLabel} {name} />
 		</div>
 		<div class="contact">
-			<Contact
-				{contact}
-				{pastor}
-			/>
+			<Contact {contact} {pastor} />
 		</div>
 		<div class="email">
 			<Email {email} />
@@ -73,7 +58,7 @@
 		box-shadow: var(--box-shadow);
 		border-radius: var(--brad);
 	}
-	
+
 	.content {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));

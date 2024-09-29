@@ -7,7 +7,7 @@ export async function load({ params }) {
 			slugs: {
 				denominationSlug: params.denomination,
 				slug: params.presbytery,
-			}
+			},
 		},
 		include: {
 			congregations: true,

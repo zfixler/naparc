@@ -22,6 +22,6 @@ export async function load({ url }) {
 			totalPages,
 		};
 	}
-	
+
 	return fail(400, { message: 'Missing search parameters.' });
 }

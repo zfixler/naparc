@@ -27,10 +27,10 @@
 
 <section class="result-header">
 	<h2>Search Results:</h2>
-	<p
-		>{data.location}. <br /> Viewing results ({viewingResults.startIndex} to {viewingResults.endIndex}
-		of {data.totalResults}) within {data.radius} miles.</p
-	>
+	<p>
+		{data.location}. <br /> Viewing results ({viewingResults.startIndex} to {viewingResults.endIndex}
+		of {data.totalResults}) within {data.radius} miles.
+	</p>
 </section>
 
 {#if data.congregations}
@@ -41,10 +41,7 @@
 	{/key}
 {/if}
 {#if hasMultiplePages}
-	<Pagination
-		currentPage={data.page}
-		totalPages={data.totalPages}
-	/>
+	<Pagination currentPage={data.page} totalPages={data.totalPages} />
 {/if}
 
 <style>

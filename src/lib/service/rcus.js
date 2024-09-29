@@ -4,8 +4,8 @@ import {
 	slugify,
 	getPastorName,
 	getContactEmailAddress,
-    getContactPhoneNumber,
-    getAddressLabel,
+	getContactPhoneNumber,
+	getAddressLabel,
 } from '../utils/service.js';
 
 /**
@@ -43,23 +43,22 @@ async function buildRcusDenomination() {
 		'https://rcus.org/wp-json/wpgmza/v1/features/base64eJyrVkrLzClJLVKyUqqOUcpNLIjPTIlRsopRMoxR0gEJFGeUFni6FAPFomOBAsmlxSX5uW6ZqTkpELFapVoABU0Wug',
 		{
 			headers: {
-				accept: '*/*',
+				'accept': '*/*',
 				'accept-language': 'en-US,en;q=0.9',
-				priority: 'u=1, i',
-				'sec-ch-ua':
-					'"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+				'priority': 'u=1, i',
+				'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
 				'sec-ch-ua-mobile': '?0',
 				'sec-ch-ua-platform': '"Windows"',
 				'sec-fetch-dest': 'empty',
 				'sec-fetch-mode': 'cors',
 				'sec-fetch-site': 'same-origin',
 				'x-requested-with': 'XMLHttpRequest',
-				Referer: 'https://rcus.org/find-a-church/',
+				'Referer': 'https://rcus.org/find-a-church/',
 				'Referrer-Policy': 'strict-origin-when-cross-origin',
 			},
 			body: null,
 			method: 'GET',
-		}
+		},
 	);
 
 	/**
@@ -69,16 +68,11 @@ async function buildRcusDenomination() {
 
 	/**@type {DataObject} */
 	const data = await response.json();
-	const classis = [
-		'Covenant East',
-		'Northern Plains',
-		'South Central',
-		'Western',
-	];
+	const classis = ['Covenant East', 'Northern Plains', 'South Central', 'Western'];
 
 	const denominationSlug = 'rcus';
 	const denominationNamespace = '3fdcc9c2-7704-456e-a563-7da83d0197bd';
-    let count = 0;
+	let count = 0;
 
 	for await (const details of data.markers) {
 		const presbyteryName = classis[parseInt(details.categories[0]) - 1];
@@ -89,19 +83,19 @@ async function buildRcusDenomination() {
 		const congregation = {
 			id,
 			name,
-			pastor: getPastorName(details.description, 'Rev\.'),
+			pastor: getPastorName(details.description, 'Rev.'),
 			email: getContactEmailAddress(details.description),
-            phone: getContactPhoneNumber(details.description),
+			phone: getContactPhoneNumber(details.description),
 			website: details.link,
 			lat: parseFloat(details.lat),
 			lon: parseFloat(details.lng),
-            address: details.address,
-            addressLabel: getAddressLabel(details.address),
-            contact: null,
-            createdAt: null,
-            updatedAt: null,
-            presbyteryId: presbyteryUuid,
-            presbytery: {
+			address: details.address,
+			addressLabel: getAddressLabel(details.address),
+			contact: null,
+			createdAt: null,
+			updatedAt: null,
+			presbyteryId: presbyteryUuid,
+			presbytery: {
 				denominationSlug,
 				name: presbyteryName,
 				id: presbyteryUuid,
@@ -110,11 +104,11 @@ async function buildRcusDenomination() {
 			denominationSlug,
 		};
 
-		await upsertCongregation(congregation).catch(err => console.log(err));
-        count++;
+		await upsertCongregation(congregation).catch((err) => console.log(err));
+		count++;
 	}
 
-    return count;
+	return count;
 }
 
 export default buildRcusDenomination;

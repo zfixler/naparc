@@ -18,37 +18,35 @@
 </script>
 
 <div class="container">
-    <ul class="pages">
-        {#each Array(totalPages) as _, pg}
-            <li class="page">
-                <a
-                    href={getPageUrl(pg)}
-                    class={currentPage === pg + 1 ? 'current' : ''}
-                    aria-disabled={currentPage === pg + 1}
-                >
-                    {pg + 1}
-                </a>
-            </li>
-        {/each}
-    </ul>
+	<ul class="pages">
+		<!-- eslint-disable-next-line -->
+		{#each Array(totalPages) as _, pg}
+			<li class="page">
+				<a
+					href={getPageUrl(pg)}
+					class={currentPage === pg + 1 ? 'current' : ''}
+					aria-disabled={currentPage === pg + 1}>
+					{pg + 1}
+				</a>
+			</li>
+		{/each}
+	</ul>
 </div>
 
 <style>
-
-    .container {
-        display: grid;
-        place-items: center;
-        padding: var(--padding);
-    }
-    .pages {
-        list-style: none;
-        display: flex;
-        gap: 8px;
-    }
+	.container {
+		display: grid;
+		place-items: center;
+		padding: var(--padding);
+	}
+	.pages {
+		list-style: none;
+		display: flex;
+		gap: 8px;
+	}
 
 	.current {
 		pointer-events: none;
-        text-decoration: underline;
+		text-decoration: underline;
 	}
-    
 </style>

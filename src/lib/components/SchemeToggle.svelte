@@ -17,28 +17,30 @@
 	onMount(() => {
 		const savedScheme = document.documentElement.getAttribute('data-scheme');
 		console.log('documentElement:', document.documentElement);
-		console.log('attribute:', document.documentElement.getAttribute('data-scheme'))
+		console.log('attribute:', document.documentElement.getAttribute('data-scheme'));
 		console.log('savedScheme:', savedScheme);
 		if (savedScheme) {
 			currentScheme = savedScheme;
 			return;
 		}
 
-		const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+		const prefersDark =
+			window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 		const scheme = prefersDark ? 'dark' : 'light';
 		setColorScheme(scheme);
 	});
-
 
 	function handleToggle() {
 		const scheme = currentScheme === 'dark' ? 'light' : 'dark';
 		setColorScheme(scheme);
 	}
-
 </script>
 
-
-<button role="switch" class={currentScheme} aria-checked={currentScheme === 'light'} on:click={handleToggle} />
+<button
+	role="switch"
+	class={currentScheme}
+	aria-checked={currentScheme === 'light'}
+	on:click={handleToggle} />
 
 <style>
 	button {

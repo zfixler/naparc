@@ -10,9 +10,9 @@
 		<h2 class="presbytery">
 			{presbytery.name}
 			{#if presbytery.denomination.continental}
-			Classis
+				Classis
 			{:else}
-			Presbytery
+				Presbytery
 			{/if}
 		</h2>
 	</header>
@@ -28,5 +28,4 @@
 		width: var(--container-width);
 		padding-top: 24px;
 	}
-
 </style>

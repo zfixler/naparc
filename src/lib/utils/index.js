@@ -54,17 +54,17 @@ export async function getLocationsWithinRadius(inputLat, inputLon, radius) {
  * @param {Array<any>} [results] - The array of results to paginate. Defaults to an empty array if no results are provided.
  * @returns {{results: Array<any>;page: number;totalResults: number;totalPages: number}} An object containing the paginated results details.
  */
-export function paginateResults (pg, results = []) {
-    const page = pg ? parseInt(pg) : 1;
-    const pageSize = 10;
-    const offest = (page - 1) * pageSize;
-    const totalResults = results.length;
-    const totalPages = Math.ceil(totalResults / pageSize);
+export function paginateResults(pg, results = []) {
+	const page = pg ? parseInt(pg) : 1;
+	const pageSize = 10;
+	const offest = (page - 1) * pageSize;
+	const totalResults = results.length;
+	const totalPages = Math.ceil(totalResults / pageSize);
 
-    return {
-        results: results.slice(offest, offest + pageSize),
-        page,
-        totalResults,
-        totalPages,
-    };
+	return {
+		results: results.slice(offest, offest + pageSize),
+		page,
+		totalResults,
+		totalPages,
+	};
 }

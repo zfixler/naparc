@@ -55,7 +55,7 @@ function extractDirectoryJson(string) {
 
 async function buildPcaDenomination() {
 	const response = await fetch(
-		'https://static.batchgeo.com/map/json/fed353c376144b1fed2f5e29150c2531/1709202319?_=1709342272827'
+		'https://static.batchgeo.com/map/json/fed353c376144b1fed2f5e29150c2531/1709202319?_=1709342272827',
 	);
 	const data = await response.text();
 	const json = extractDirectoryJson(data);
@@ -95,8 +95,8 @@ async function buildPcaDenomination() {
 				slug: slugify(presbytery),
 			},
 			denominationSlug,
-            updatedAt: null,
-            createdAt: null,
+			updatedAt: null,
+			createdAt: null,
 		};
 	});
 

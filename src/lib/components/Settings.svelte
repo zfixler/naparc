@@ -28,8 +28,7 @@
 			document.activeElement.blur();
 		}
 		shouldShowSettings = !shouldShowSettings;
-	}}
->
+	}}>
 	<svg
 		class="js-click-outside-toggle"
 		fill="currentColor"
@@ -39,9 +38,7 @@
 		xmlns="http://www.w3.org/2000/svg"
 		><path
 			class="js-click-outside-toggle"
-			d="M440-120v-240h80v80h320v80H520v80h-80Zm-320-80v-80h240v80H120Zm160-160v-80H120v-80h160v-80h80v240h-80Zm160-80v-80h400v80H440Zm160-160v-240h80v80h160v80H680v80h-80Zm-480-80v-80h400v80H120Z"
-		/></svg
-	>
+			d="M440-120v-240h80v80h320v80H520v80h-80Zm-320-80v-80h240v80H120Zm160-160v-80H120v-80h160v-80h80v240h-80Zm160-80v-80h400v80H440Zm160-160v-240h80v80h160v80H680v80h-80Zm-480-80v-80h400v80H120Z" /></svg>
 </button>
 {#if shouldShowSettings}
 	<div class="wrapper">
@@ -52,28 +49,20 @@
 					<section class="section">
 						<h3 class="subtitle">Denominations</h3>
 						{#each settings.included as denom}
-							<label
-								class="label"
-								for={denom.slug}
-							>
+							<label class="label" for={denom.slug}>
 								<input
 									class="checkbox"
 									id={denom.slug}
 									type="checkbox"
 									value={denom.slug}
-									bind:checked={denom.checked}
-								/>
+									bind:checked={denom.checked} />
 								{denom.abbr}
 							</label>
 						{/each}
 					</section>
 					<section class="section">
 						<h3 class="subtitle">Radius</h3>
-						<select
-							class="select"
-							name="radius"
-							bind:value={settings.radius}
-						>
+						<select class="select" name="radius" bind:value={settings.radius}>
 							<option value="10">10 Miles</option>
 							<option value="25">25 Miles</option>
 							<option value="50">50 Miles</option>
@@ -85,8 +74,7 @@
 						on:click={() => {
 							shouldShowSettings = !shouldShowSettings;
 							settings.hasSavedSettings = true;
-						}}>Save Settings</button
-					>
+						}}>Save Settings</button>
 				</main>
 			</div>
 		</ClickOutside>

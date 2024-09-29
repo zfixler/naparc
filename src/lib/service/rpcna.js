@@ -89,10 +89,8 @@ async function getDenomination(urls) {
 
 		infoDiv.find('th').each((i, el) => {
 			const element = $(el);
-			if (element.text().includes('Phone'))
-				phone = element.next().text().trim();
-			if (element.text().includes('Website'))
-				website = element.next().find('a').attr('href');
+			if (element.text().includes('Phone')) phone = element.next().text().trim();
+			if (element.text().includes('Website')) website = element.next().find('a').attr('href');
 		});
 
 		denomination.push({
@@ -115,26 +113,24 @@ async function getDenomination(urls) {
 			},
 			denominationSlug,
 			contact: null,
-            updatedAt: null,
-            createdAt: null,
+			updatedAt: null,
+			createdAt: null,
 		});
 	}
 	return denomination;
 }
 
 async function buildRpcnaDenomination() {
-	const response = await fetch(
-		'https://reformedpresbyterian.org/congregations/list/'
-	);
+	const response = await fetch('https://reformedpresbyterian.org/congregations/list/');
 	const data = await response.text();
 	const congregationUrls = getCongregationUrls(data);
 	const denomination = await getDenomination(congregationUrls);
-	
+
 	for await (const congregation of denomination) {
 		if (congregation.id) upsertCongregation(congregation);
 	}
 
 	return denomination.length;
-};
+}
 
 export default buildRpcnaDenomination;

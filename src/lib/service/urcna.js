@@ -109,7 +109,7 @@ async function buildUrcnaDenomination() {
 				lng: '',
 				upd: '',
 			};
-	
+
 			const queryString = match[1];
 
 			// Parse the query string into key-value pairs
@@ -123,10 +123,7 @@ async function buildUrcnaDenomination() {
 				}
 			}
 
-			const presbyteryUuid = uuidv5(
-				congregation.classis,
-				denominationNamespace
-			);
+			const presbyteryUuid = uuidv5(congregation.classis, denominationNamespace);
 			const id = congregation.id ? uuidv5(congregation.id, presbyteryUuid) : '';
 			return {
 				id,
@@ -135,7 +132,7 @@ async function buildUrcnaDenomination() {
 				addressLabel: getAddressString(congregation, true),
 				website: congregation.web.includes('https://')
 					? congregation.web
-					: 'https://' + congregation.web,
+					: `https://${congregation.web}`,
 				phone: congregation.phone,
 				email: congregation.email,
 				pastor: removePhoneNumbers(congregation.min1).replace('Rev. ', ''),

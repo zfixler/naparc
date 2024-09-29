@@ -38,8 +38,7 @@ export function getContactName(text) {
  */
 export function getContactEmailAddress(text) {
 	if (!text) return null;
-	const emailRegex =
-		/(?:mailto:)?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/;
+	const emailRegex = /(?:mailto:)?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/;
 	const matches = text.match(emailRegex);
 	if (matches) {
 		return matches[1];
@@ -100,11 +99,7 @@ export function getAddressLabel(addressString) {
 	if (!addressString) return null;
 	const index = addressString.indexOf(',');
 	if (index !== -1) {
-		return (
-			addressString.slice(0, index + 1) +
-			'<br>' +
-			addressString.slice(index + 1)
-		);
+		return `${addressString.slice(0, index + 1)}<br>${addressString.slice(index + 1)}`;
 	}
 	return addressString;
 }

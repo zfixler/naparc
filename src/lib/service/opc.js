@@ -1,16 +1,15 @@
-import { setTimeout } from 'node:timers/promises';
 import * as cheerio from 'cheerio';
+import { setTimeout } from 'node:timers/promises';
 import { v5 as uuidv5 } from 'uuid';
 import {
-	getPastorName,
 	getContactEmailAddress,
 	getContactName,
 	getContactPhoneNumber,
+	getPastorName,
 	getWebsiteUrl,
-	upsertCongregation,
 	slugify,
+	upsertCongregation,
 } from '../utils/service.js';
-
 
 /** @typedef {import("@prisma/client").Presbytery} Presbytery */
 /** @typedef {import("@prisma/client").Congregation & {presbytery: Presbytery}} Congregation */
@@ -68,17 +67,18 @@ async function buildOpcDenomination() {
 			const url = `https://opc.org/locator.html?search_go=Y&presbytery_id=${presbyteryId}`;
 			const response = await fetch(url, {
 				headers: {
-					"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-					"accept-language": "en-US,en;q=0.9",
-					"sec-ch-ua": "\"Chromium\";v=\"128\", \"Not;A=Brand\";v=\"24\", \"Google Chrome\";v=\"128\"",
-					"sec-ch-ua-mobile": "?0",
-					"sec-ch-ua-platform": "\"Windows\"",
-					"sec-fetch-dest": "document",
-					"sec-fetch-mode": "navigate",
-					"sec-fetch-site": "none",
-					"sec-fetch-user": "?1",
-					"upgrade-insecure-requests": "1"
-				  },
+					'accept':
+						'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+					'accept-language': 'en-US,en;q=0.9',
+					'sec-ch-ua': '"Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
+					'sec-ch-ua-mobile': '?0',
+					'sec-ch-ua-platform': '"Windows"',
+					'sec-fetch-dest': 'document',
+					'sec-fetch-mode': 'navigate',
+					'sec-fetch-site': 'none',
+					'sec-fetch-user': '?1',
+					'upgrade-insecure-requests': '1',
+				},
 				referrerPolicy: 'strict-origin-when-cross-origin',
 				body: null,
 				method: 'GET',
@@ -105,11 +105,12 @@ async function buildOpcDenomination() {
 		const denominationSlug = 'opc';
 		const presbyteryUuid = uuidv5(presbyteryName, denominationNamespace);
 
-		const mapScript = $(`script:contains("AddPointQ")`).text();
+		const mapScript = $('script:contains("AddPointQ")').text();
 		const regexPattern = /AddPointQ\((.*?)\);/g;
 		const captures = mapScript.match(regexPattern);
 
 		const congregations = captures?.map((capture) => {
+			// eslint-disable-next-line quotes
 			const detailsArray = capture.split("'");
 			const lon = parseFloat(detailsArray[3]);
 			const lat = parseFloat(detailsArray[1]);
@@ -149,7 +150,7 @@ async function buildOpcDenomination() {
 			};
 
 			if (congregationIds.includes(congregation.id)) {
-				congregation.id = congregation.id + 'a';
+				congregation.id = `${congregation.id}a`;
 				congregationIds.push(congregation.id);
 			} else {
 				congregationIds.push(congregation.id);
@@ -168,9 +169,7 @@ async function buildOpcDenomination() {
 	let denomination = [];
 
 	for await (const presbyteryId of presbyteryIds) {
-		const presbytery = await fetchCongregations(presbyteryId).catch((err) =>
-			console.log(err)
-		);
+		const presbytery = await fetchCongregations(presbyteryId).catch((err) => console.log(err));
 		if (presbytery && presbytery.length) denomination = denomination.concat(presbytery);
 	}
 

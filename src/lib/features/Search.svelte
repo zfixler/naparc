@@ -33,7 +33,7 @@
 
 	/** @type {Settings} */
 	let settings;
-	
+
 	$: location && location?.label ? triggerSubmit() : null;
 	$: location && settings?.hasSavedSettings ? triggerSubmit() : null;
 
@@ -64,20 +64,12 @@
 	};
 </script>
 
-<form
-	class="form"
-	action="/search"
-	bind:this={form}
-	on:submit|preventDefault={handleSubmit}
->
+<form class="form" action="/search" bind:this={form} on:submit|preventDefault={handleSubmit}>
 	<div class="first">
 		<Location bind:results={location} />
 	</div>
 	<div class="second">
-		<Settings
-			bind:settings
-			{denominations}
-		/>
+		<Settings bind:settings {denominations} />
 	</div>
 </form>
 

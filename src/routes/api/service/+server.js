@@ -3,12 +3,12 @@ import {
 	buildPcaDenomination,
 	buildRpcnaDenomination,
 	buildUrcnaDenomination,
-	buildRcusDenomination
+	buildRcusDenomination,
 } from '$lib/service';
 import { json } from '@sveltejs/kit';
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET(req) {
+export async function GET() {
 	const opc = await buildOpcDenomination().catch((err) => console.log(err));
 	const pca = await buildPcaDenomination().catch((err) => console.log(err));
 	const rpcna = await buildRpcnaDenomination().catch((err) => console.log(err));
@@ -20,7 +20,7 @@ export async function GET(req) {
 		pca,
 		rpcna,
 		urcna,
-		rcus
+		rcus,
 	};
 
 	return json(results);
