@@ -1,5 +1,6 @@
 <script>
-	export let email = '';
+	/** @type {{email?: string}} */
+	let { email = '' } = $props();
 </script>
 
 {#if email}

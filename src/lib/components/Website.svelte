@@ -1,5 +1,6 @@
 <script>
-	export let website = '';
+	/** @type {{website?: string}} */
+	let { website = '' } = $props();
 </script>
 
 {#if website}

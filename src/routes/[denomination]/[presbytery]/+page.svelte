@@ -1,6 +1,7 @@
 <script>
 	import { Congregation } from '$lib/features';
-	export let data;
+	/** @type {{data: any}} */
+	let { data } = $props();
 	const { presbytery } = data;
 </script>
 

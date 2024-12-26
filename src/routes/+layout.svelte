@@ -3,7 +3,8 @@
 	import '../app.css';
 	import { Search } from '$lib/features';
 	import { SchemeToggle } from '$lib/components';
-	export let data;
+	/** @type {{data: any, children?: import('svelte').Snippet}} */
+	let { data, children } = $props();
 
 	const year = new Date().getFullYear();
 </script>
@@ -21,7 +22,7 @@
 		<Search denominations={data.denominations} />
 	</header>
 	<div class="slot">
-		<slot />
+		{@render children?.()}
 	</div>
 	<footer class="footer">
 		<small>&copy; {year}, Zachary Fixler</small>

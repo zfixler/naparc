@@ -1,6 +1,7 @@
 <script>
 	import { Address, Website, Contact, Phone, Email, Header } from '$lib/components';
-	export let congregation;
+	/** @type {{congregation: any}} */
+	let { congregation } = $props();
 	const {
 		address,
 		addressLabel,

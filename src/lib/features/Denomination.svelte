@@ -1,6 +1,7 @@
 <script>
 	import { page } from '$app/stores';
-	export let denomination;
+	/** @type {{denomination: any}} */
+	let { denomination } = $props();
 	const { slug, name, description, presbyteries, continental } = denomination;
 	let shouldShowDetails = $page.url.hash === `#${slug}`;
 </script>
@@ -31,7 +32,7 @@
 		</span>
 	</summary>
 	<p class="description">{description}</p>
-	<p class="presbyteries">
+	<div class="presbyteries">
 		{#if presbyteries.length}
 			<b>{continental ? 'Classis:' : 'Presbyteries:'}</b>
 			<ul>
@@ -44,7 +45,7 @@
 		{:else}
 			There are currently no {continental ? 'classis' : 'presbyteries'} supported for this denomination.
 		{/if}
-	</p>
+	</div>
 </details>
 
 <style>

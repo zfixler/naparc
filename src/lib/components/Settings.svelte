@@ -1,10 +1,8 @@
 <script>
 	import ClickOutside from './ClickOutside.svelte';
 
-	export let settings = {};
-
-	/** @type {Array<import("@prisma/client").Denomination>} */
-	export let denominations;
+	/** @type {{settings?: any, denominations: Array<import("@prisma/client").Denomination>}} */
+	let { settings = $bindable({}), denominations } = $props();
 
 	settings.included = denominations.map(({ slug, name: abbr }) => {
 		return {
@@ -16,14 +14,15 @@
 
 	settings.radius = '25';
 
-	let shouldShowSettings = false;
+	let shouldShowSettings = $state(false);
 	settings.hasSavedSettings = false;
 </script>
 
 <button
 	class="toggle"
 	type="button"
-	on:click={() => {
+	aria-label="Toggle settings"
+	onclick={() => {
 		if (document.activeElement instanceof HTMLElement) {
 			document.activeElement.blur();
 		}
@@ -71,7 +70,7 @@
 					<button
 						type="button"
 						class="save"
-						on:click={() => {
+						onclick={() => {
 							shouldShowSettings = !shouldShowSettings;
 							settings.hasSavedSettings = true;
 						}}>Save Settings</button>

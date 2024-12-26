@@ -1,6 +1,7 @@
 <script>
 	import { Denomination } from '$lib/features';
-	export let data;
+	/** @type {{data: any}} */
+	let { data } = $props();
 	const { denominations } = data;
 </script>
 

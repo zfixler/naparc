@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	let currentScheme = '';
+	let currentScheme = $state('');
 
 	/**
 	 * Set current color scheme and cookie
@@ -40,7 +40,8 @@
 	role="switch"
 	class={currentScheme}
 	aria-checked={currentScheme === 'light'}
-	on:click={handleToggle} />
+	aria-label="Toggle color scheme"
+	onclick={handleToggle}></button>
 
 <style>
 	button {

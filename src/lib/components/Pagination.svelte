@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/stores';
-	export let currentPage = 1;
-	export let totalPages = 1;
+	/** @type {{currentPage?: number, totalPages?: number}} */
+	let { currentPage = 1, totalPages = 1 } = $props();
 
 	/**
 	 * Get the url for each page

@@ -2,7 +2,8 @@
 	import { page } from '$app/stores';
 	import { Congregation } from '$lib/features';
 	import { Pagination } from '$lib/components';
-	export let data;
+	/** @type {{data: any}} */
+	let { data } = $props();
 
 	/**
 	 * Calculates the range of results currently being viewed on the given page.
@@ -21,8 +22,8 @@
 		};
 	}
 
-	$: viewingResults = calculateViewedResults(data.page, data.totalResults);
-	$: hasMultiplePages = data.totalPages ? data.totalPages > 1 : false;
+	let viewingResults = $derived(calculateViewedResults(data.page, data.totalResults));
+	let hasMultiplePages = $derived(data.totalPages ? data.totalPages > 1 : false);
 </script>
 
 <section class="result-header">

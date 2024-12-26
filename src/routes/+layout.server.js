@@ -1,6 +1,6 @@
 import { prisma } from '$lib/prisma';
 
-/** @type {import('./$types').PageServerLoad} */
+/** @type {import('@sveltejs/kit').Load} */
 export async function load() {
 	const denominations = await prisma.denomination.findMany({
 		where: {

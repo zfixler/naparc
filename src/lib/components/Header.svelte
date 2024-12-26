@@ -1,5 +1,6 @@
 <script>
-	export let props;
+	/** @type {{props: any}} */
+	let { props } = $props();
 	const {
 		name,
 		distance,

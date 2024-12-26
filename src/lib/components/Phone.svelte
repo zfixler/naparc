@@ -1,5 +1,6 @@
 <script>
-	export let phone = '';
+	/** @type {{phone?: string}} */
+	let { phone = '' } = $props();
 </script>
 
 {#if phone}

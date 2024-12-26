@@ -1,11 +1,12 @@
 <script>
-	import { Location, Settings } from '$lib/components';
 	import { goto } from '$app/navigation';
+	import { Location, Settings } from '$lib/components';
 
-	export let denominations;
+	/** @type {{denominations: any}} */
+	let { denominations } = $props();
 
-	/** @type {HTMLFormElement}*/
-	let form;
+	/** @type {HTMLFormElement|undefined}*/
+	let form = $state();
 
 	/**
 	 * @typedef {Object} Location
@@ -15,7 +16,11 @@
 	 */
 
 	/** @type {Location}*/
-	let location;
+	let location = $state({
+		label: '',
+		lon: '',
+		lat: '',
+	});
 
 	/**
 	 * @typedef {Object} SettingItem
@@ -32,18 +37,22 @@
 	 */
 
 	/** @type {Settings} */
-	let settings;
-
-	$: location && location?.label ? triggerSubmit() : null;
-	$: location && settings?.hasSavedSettings ? triggerSubmit() : null;
+	let settings = $state({
+		included: [],
+		radius: '',
+		hasSavedSettings: false,
+	});
 
 	/**
 	 *
 	 * @param {Event & { currentTarget: EventTarget & HTMLFormElement;}} e
 	 */
 	function handleSubmit(e) {
+		e.preventDefault();
+
 		const url = new URL(e.currentTarget.action);
 		const params = new URLSearchParams();
+
 		params.append('label', location.label);
 		params.append('lon', location.lon);
 		params.append('lat', location.lat);
@@ -62,9 +71,15 @@
 			form.dispatchEvent(event);
 		}
 	};
+
+	$effect(() => {
+		if (location && (settings?.hasSavedSettings || location?.label)) {
+			triggerSubmit();
+		}
+	});
 </script>
 
-<form class="form" action="/search" bind:this={form} on:submit|preventDefault={handleSubmit}>
+<form class="form" action="/search" bind:this={form} onsubmit={handleSubmit}>
 	<div class="first">
 		<Location bind:results={location} />
 	</div>
@@ -89,7 +104,7 @@
 		position: relative;
 	}
 
-	.form:has(.input:focus) {
+	:global(.form:has(.input:focus)) {
 		border-color: var(--accent);
 		color: var(--accent);
 	}

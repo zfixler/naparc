@@ -1,5 +1,6 @@
 <script>
-	export let shouldShowContainer = false;
+	/** @type {{shouldShowContainer?: boolean, children?: import('svelte').Snippet}} */
+	let { shouldShowContainer = $bindable(false), children } = $props();
 
 	/**
 	 * Attaches an event listener to detect clicks outside a specified DOM node.
@@ -31,8 +32,8 @@
 	}
 </script>
 
-<div use:handleOutsideClick on:outside_click={() => (shouldShowContainer = false)}>
+<div use:handleOutsideClick onoutside_click={() => (shouldShowContainer = false)}>
 	<span class="inner-container">
-		<slot />
+		{@render children?.()}
 	</span>
 </div>

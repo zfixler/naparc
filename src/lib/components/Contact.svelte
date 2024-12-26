@@ -1,6 +1,6 @@
 <script>
-	export let contact = '';
-	export let pastor = '';
+	/** @type {{contact?: string, pastor?: string}} */
+	let { contact = '', pastor = '' } = $props();
 </script>
 
 <p class="contact link">

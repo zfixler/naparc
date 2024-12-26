@@ -2,14 +2,15 @@
 	import { ClickOutside } from '$lib/components';
 	import { slide } from 'svelte/transition';
 
-	export let results;
-	let selectedLabel = '';
-	let shouldShowMenu = false;
+	/** @type {{results: any}} */
+	let { results = $bindable() } = $props();
+	let selectedLabel = $state('');
+	let shouldShowMenu = $state(false);
 
 	/** @type {NodeJS.Timeout|number|undefined} */
 	let debounceTimer;
 	/** @type {Array<OptionObject>}*/
-	let options = [];
+	let options = $state([]);
 
 	/**
 	 * @typedef {Object} ResultObject
@@ -105,7 +106,7 @@
 		type="text"
 		name="loc"
 		placeholder="Start typing a location..."
-		on:input={fetchLocationOptions}
+		oninput={fetchLocationOptions}
 		bind:value={selectedLabel} />
 </div>
 {#if shouldShowMenu}
@@ -113,7 +114,7 @@
 		<div class="wrapper">
 			<div class="menu" in:slide={{ duration: 250 }}>
 				{#each options as option}
-					<button type="button" class="option" on:click={() => handleOptionSelection(option)}
+					<button type="button" class="option" onclick={() => handleOptionSelection(option)}
 						>{option.body.label}</button>
 				{/each}
 			</div>
