@@ -1,4 +1,4 @@
-import { prisma } from '$lib/prisma';
+import { prisma } from '../..src/lib/prisma.js';
 
 /**
  * Extracts the pastor's name from the provided text.
