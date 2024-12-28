@@ -18,6 +18,14 @@ async function main() {
 		});
 
 		console.log(`Created ${denomination.abbr} with id: ${denomination.id}.`);
+
+		const scrapeLog = await prisma.scrapeLog.create({
+			data: {
+				denominationSlug: denomination.slug,
+			},
+		});
+
+		console.log(`Created scrape log for ${denomination.abbr} with id: ${scrapeLog.id}.`);
 	}
 
 	console.log('Seed complete.');

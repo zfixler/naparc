@@ -9,7 +9,7 @@ import {
 	getWebsiteUrl,
 	slugify,
 	upsertCongregation,
-} from '../utils/service.js';
+} from '../utils/index.js';
 
 /** @typedef {import("@prisma/client").Presbytery} Presbytery */
 /** @typedef {import("@prisma/client").Congregation & {presbytery: Presbytery}} Congregation */

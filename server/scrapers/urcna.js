@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { v5 as uuidv5 } from 'uuid';
-import { upsertCongregation, slugify } from '../utils/service.js';
+import { slugify, upsertCongregation } from '../utils/index.js';
 
 /**
  * @typedef {Object} ChurchInfo

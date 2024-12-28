@@ -1,12 +1,12 @@
 import { v5 as uuidv5 } from 'uuid';
 import {
-	upsertCongregation,
-	slugify,
-	getPastorName,
+	getAddressLabel,
 	getContactEmailAddress,
 	getContactPhoneNumber,
-	getAddressLabel,
-} from '../utils/service.js';
+	getPastorName,
+	slugify,
+	upsertCongregation,
+} from '../utils/index.js';
 
 /**
  * Represents a location object with details about a place.
