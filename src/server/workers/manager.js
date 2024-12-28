@@ -54,7 +54,7 @@ export class Manager {
 	 * @param {string} denominationSlug
 	 */
 	startScrape(denominationSlug) {
-		const worker = new Worker('./server/workers/worker.js', {
+		const worker = new Worker('./src/server/workers/worker.js', {
 			workerData: { denominationSlug },
 		});
 

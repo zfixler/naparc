@@ -155,7 +155,7 @@ async function buildUrcnaDenomination() {
 		}
 	});
 
-	await batchUpsertCongregations(denomination.filter(Boolean));
+	await batchUpsertCongregations(denomination.filter((church) => church !== null));
 
 	return denomination.length;
 }

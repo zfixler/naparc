@@ -1,4 +1,4 @@
-import { prisma } from '../../src/lib/prisma.js';
+import { prisma } from '../../lib/prisma.js';
 
 /**
  * Extracts the pastor's name from the provided text.
@@ -104,15 +104,32 @@ export function getAddressLabel(addressString) {
 	return addressString;
 }
 
+/**@typedef {import('@prisma/client').Congregation & { presbytery: import('@prisma/client').Presbytery }} CongregationWithPresbytery */
+
+/**
+ * Batch upserts congregations into the database.
+ *
+ * @param {Array<CongregationWithPresbytery>} congregationsArray - Array of congregation objects to be upserted.
+ * @param {number} [batchSize=100] - The size of each batch for processing.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ *
+ * @typedef {Object} Congregation
+ * @property {string} id - The unique identifier of the congregation.
+ * @property {Object} presbytery - The presbytery object associated with the congregation.
+ * @property {string} presbytery.id - The unique identifier of the presbytery.
+ *
+ * @typedef {Object} Presbytery
+ * @property {string} id - The unique identifier of the presbytery.
+ */
 export async function batchUpsertCongregations(congregationsArray, batchSize = 100) {
 	// Extract presbyteries from congregations
 	const presbyteries = congregationsArray
 		.map((c) => c.presbytery)
-		.filter((p) => p.id && !p.id.includes('undefined'));
+		.filter((p) => p && p.id && !p.id.includes('undefined'));
 
 	// Create missing presbyteries
 
-	if (presbyteries.length) {
+	if (presbyteries && presbyteries.length) {
 		await prisma.presbytery.createMany({
 			data: presbyteries,
 			skipDuplicates: true,
@@ -125,8 +142,14 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 			...rest,
 			presbyteryId: presbytery?.id,
 		}))
-		.filter((c) => c.id && typeof c.id === 'string' && !c.id.includes('undefined'))
-		.filter((c, index, self) => c && self.findIndex((t) => t.id === c.id) === index);
+		.filter(
+			(/** @type {{ id: string | string[]; }} */ c) =>
+				c.id && typeof c.id === 'string' && !c.id.includes('undefined'),
+		)
+		.filter(
+			(/** @type {{ id: any; }} */ c, /** @type {any} */ index, /** @type {any[]} */ self) =>
+				c && self.findIndex((/** @type {{ id: any; }} */ t) => t.id === c.id) === index,
+		);
 
 	const batches = [];
 	for (let i = 0; i < congregations.length; i += batchSize) {
@@ -140,14 +163,18 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 				// Find existing congregations
 				const existingIds = (
 					await tx.congregation.findMany({
-						where: { id: { in: batch.map((c) => c.id) } },
+						where: { id: { in: batch.map((/** @type {{ id: any; }} */ c) => c.id) } },
 						select: { id: true },
 					})
 				).map((c) => c.id);
 
 				// Split into creates and updates
-				const toCreate = batch.filter((c) => !existingIds.includes(c.id));
-				const toUpdate = batch.filter((c) => existingIds.includes(c.id));
+				const toCreate = batch.filter(
+					(/** @type {{ id: string; }} */ c) => !existingIds.includes(c.id),
+				);
+				const toUpdate = batch.filter((/** @type {{ id: string; }} */ c) =>
+					existingIds.includes(c.id),
+				);
 
 				// Perform batch operations
 				if (toCreate.length) {
@@ -165,8 +192,10 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 			successCount += batch.length;
 			console.log(`Processed ${successCount} congregations`);
 		} catch (error) {
-			console.error(`Failed to process batch: ${error.message}`);
-			console.error('Failed batch data:', batch);
+			if (error instanceof Error && error.message) {
+				console.error(`Failed to process batch: ${error.message}`);
+				console.error('Failed batch data:', batch);
+			}
 		}
 	}
 }
