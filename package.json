@@ -34,7 +34,7 @@
 	"dependencies": {
 		"@fontsource-variable/outfit": "^5.1.0",
 		"@prisma/client": "^6.1.0",
-		"@sveltejs/adapter-auto": "^3.3.1",
+		"@sveltejs/adapter-node": "^5.2.11",
 		"cheerio": "^1.0.0",
 		"uuid": "^11.0.3"
 	}
