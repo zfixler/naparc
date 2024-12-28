@@ -78,6 +78,10 @@
 		text-align: start;
 	}
 
+	details summary::-webkit-details-marker {
+		display: none;
+	}
+
 	.chevron {
 		color: var(--primary);
 		transition: transform 250ms ease;
