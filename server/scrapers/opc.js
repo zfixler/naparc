@@ -8,7 +8,7 @@ import {
 	getPastorName,
 	getWebsiteUrl,
 	slugify,
-	upsertCongregation,
+	batchUpsertCongregations,
 } from '../utils/index.js';
 
 /** @typedef {import("@prisma/client").Presbytery} Presbytery */
@@ -173,11 +173,7 @@ async function buildOpcDenomination() {
 		if (presbytery && presbytery.length) denomination = denomination.concat(presbytery);
 	}
 
-	for await (const congregation of denomination) {
-		if (congregation && !congregation.id.includes('undefined')) {
-			await upsertCongregation(congregation).catch((err) => console.error(err));
-		}
-	}
+	await batchUpsertCongregations([...denomination]);
 
 	return denomination.length;
 }

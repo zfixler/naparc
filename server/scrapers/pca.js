@@ -1,5 +1,5 @@
 import { v5 as uuidv5 } from 'uuid';
-import { slugify, upsertCongregation } from '../utils/index.js';
+import { slugify, batchUpsertCongregations } from '../utils/index.js';
 
 /**
  * @typedef {Object} LocationData
@@ -100,11 +100,7 @@ async function buildPcaDenomination() {
 		};
 	});
 
-	for await (const congregation of denomination) {
-		if (congregation.id) {
-			await upsertCongregation(congregation).catch((err) => console.error(err));
-		}
-	}
+	await batchUpsertCongregations([...denomination]);
 
 	return denomination.length;
 }

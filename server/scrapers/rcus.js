@@ -5,7 +5,7 @@ import {
 	getContactPhoneNumber,
 	getPastorName,
 	slugify,
-	upsertCongregation,
+	batchUpsertCongregations,
 } from '../utils/index.js';
 
 /**
@@ -72,6 +72,7 @@ async function buildRcusDenomination() {
 
 	const denominationSlug = 'rcus';
 	const denominationNamespace = '3fdcc9c2-7704-456e-a563-7da83d0197bd';
+	const denomination = [];
 	let count = 0;
 
 	for await (const details of data.markers) {
@@ -104,9 +105,11 @@ async function buildRcusDenomination() {
 			denominationSlug,
 		};
 
-		await upsertCongregation(congregation).catch((err) => console.log(err));
+		denomination.push(congregation);
 		count++;
 	}
+
+	await batchUpsertCongregations([...denomination]);
 
 	return count;
 }

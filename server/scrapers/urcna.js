@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { v5 as uuidv5 } from 'uuid';
-import { slugify, upsertCongregation } from '../utils/index.js';
+import { batchUpsertCongregations, slugify } from '../utils/index.js';
 
 /**
  * @typedef {Object} ChurchInfo
@@ -155,9 +155,7 @@ async function buildUrcnaDenomination() {
 		}
 	});
 
-	for await (const congregation of denomination) {
-		if (congregation && congregation.id) await upsertCongregation(congregation);
-	}
+	await batchUpsertCongregations(denomination.filter(Boolean));
 
 	return denomination.length;
 }

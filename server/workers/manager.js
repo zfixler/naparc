@@ -29,7 +29,22 @@ export class Manager {
 
 		const { completedAt, attemptedAt } = scrapeLog;
 
-		if (!(completedAt && attemptedAt) || completedAt < threeDaysAgo || attemptedAt < oneDayAgo) {
+		/**
+		 * @param {number | Date | null} attemptedAt
+		 * @param {number | Date | null} completedAt
+		 * @param {number | Date} threeDaysAgo
+		 * @param {number | Date} oneDayAgo
+		 */
+		function shouldStartScrape(attemptedAt, completedAt, threeDaysAgo, oneDayAgo) {
+			const isNeverRun = !completedAt && !attemptedAt;
+			const isOldCompletion = completedAt && completedAt < threeDaysAgo;
+			const canRetryAfterFailure =
+				attemptedAt && completedAt && completedAt < threeDaysAgo && attemptedAt < oneDayAgo;
+
+			return isNeverRun || isOldCompletion || canRetryAfterFailure;
+		}
+
+		if (shouldStartScrape(attemptedAt, completedAt, threeDaysAgo, oneDayAgo)) {
 			console.log(`Scraping ${denominationSlug}`);
 			return this.startScrape(denominationSlug);
 		}
@@ -64,6 +79,7 @@ export class Manager {
 							completedAt: new Date(),
 							attemptedAt: new Date(),
 							count: data.count,
+							message: 'success',
 						},
 					});
 				} else {

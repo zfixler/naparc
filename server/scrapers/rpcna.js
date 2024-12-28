@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { v5 as uuidv5 } from 'uuid';
-import { slugify, upsertCongregation } from '../utils/index.js';
+import { slugify, batchUpsertCongregations } from '../utils/index.js';
 
 /**
  * Extracts congregation URLs from HTML content.
@@ -126,9 +126,7 @@ async function buildRpcnaDenomination() {
 	const congregationUrls = getCongregationUrls(data);
 	const denomination = await getDenomination(congregationUrls);
 
-	for await (const congregation of denomination) {
-		if (congregation.id) upsertCongregation(congregation);
-	}
+	await batchUpsertCongregations([...denomination]);
 
 	return denomination.length;
 }

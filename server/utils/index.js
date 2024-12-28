@@ -104,73 +104,69 @@ export function getAddressLabel(addressString) {
 	return addressString;
 }
 
-/** @typedef {import("@prisma/client").Presbytery} Presbytery */
+export async function batchUpsertCongregations(congregationsArray, batchSize = 100) {
+	// Extract presbyteries from congregations
+	const presbyteries = congregationsArray
+		.map((c) => c.presbytery)
+		.filter((p) => p.id && !p.id.includes('undefined'));
 
-/** @typedef {import("@prisma/client").Congregation & {presbytery: Presbytery}} Congregation */
+	// Create missing presbyteries
 
-/**
- * Create or update congregation in the database.
- * @param {Congregation} congregation
- */
-export async function upsertCongregation(congregation) {
-	try {
-		await prisma.congregation.upsert({
-			where: {
-				id: congregation.id,
-			},
-			update: {
-				lon: congregation.lon,
-				lat: congregation.lat,
-				name: congregation.name,
-				website: congregation.website,
-				address: congregation.address,
-				addressLabel: congregation.addressLabel,
-				pastor: congregation.pastor,
-				contact: congregation.contact,
-				email: congregation.email,
-				phone: congregation.phone,
-				presbytery: {
-					update: {
-						slug: congregation.presbytery.slug,
-						id: congregation.presbytery.id,
-						name: congregation.presbytery.name,
-						denominationSlug: congregation.presbytery.denominationSlug,
-					},
-				},
-			},
-			create: {
-				id: congregation.id,
-				lon: congregation.lon,
-				lat: congregation.lat,
-				name: congregation.name,
-				website: congregation.website,
-				address: congregation.address,
-				addressLabel: congregation.addressLabel,
-				pastor: congregation.pastor,
-				contact: congregation.contact,
-				email: congregation.email,
-				phone: congregation.phone,
-				presbytery: {
-					connectOrCreate: {
-						where: {
-							id: congregation.presbytery.id,
-						},
-						create: {
-							id: congregation.presbytery.id,
-							slug: congregation.presbytery.slug,
-							name: congregation.presbytery.name,
-							denominationSlug: congregation.presbytery.denominationSlug,
-						},
-					},
-				},
-				denomination: {
-					connect: {
-						slug: congregation.denominationSlug,
-					},
-				},
-			},
+	if (presbyteries.length) {
+		await prisma.presbytery.createMany({
+			data: presbyteries,
+			skipDuplicates: true,
 		});
-	} catch (error) {
-		console.log('Upsert error:', error);
+	}
+
+	// Transform data to match schema
+	const congregations = congregationsArray
+		.map(({ presbytery, ...rest }) => ({
+			...rest,
+			presbyteryId: presbytery?.id,
+		}))
+		.filter((c) => c.id && typeof c.id === 'string' && !c.id.includes('undefined'))
+		.filter((c, index, self) => c && self.findIndex((t) => t.id === c.id) === index);
+
+	const batches = [];
+	for (let i = 0; i < congregations.length; i += batchSize) {
+		batches.push(congregations.slice(i, i + batchSize));
+	}
+
+	let successCount = 0;
+	for (const batch of batches) {
+		try {
+			await prisma.$transaction(async (tx) => {
+				// Find existing congregations
+				const existingIds = (
+					await tx.congregation.findMany({
+						where: { id: { in: batch.map((c) => c.id) } },
+						select: { id: true },
+					})
+				).map((c) => c.id);
+
+				// Split into creates and updates
+				const toCreate = batch.filter((c) => !existingIds.includes(c.id));
+				const toUpdate = batch.filter((c) => existingIds.includes(c.id));
+
+				// Perform batch operations
+				if (toCreate.length) {
+					await tx.congregation.createMany({ data: toCreate });
+				}
+
+				for (const congregation of toUpdate) {
+					await tx.congregation.update({
+						where: { id: congregation.id },
+						data: congregation,
+					});
+				}
+			});
+
+			successCount += batch.length;
+			console.log(`Processed ${successCount} congregations`);
+		} catch (error) {
+			console.error(`Failed to process batch: ${error.message}`);
+			console.error('Failed batch data:', batch);
+		}
 	}
 }
