@@ -52,14 +52,30 @@
 
 		const url = new URL(e.currentTarget.action);
 		const params = new URLSearchParams();
+		const currentParams = new URLSearchParams(window.location.search);
 
-		params.append('label', location.label);
-		params.append('lon', location.lon);
-		params.append('lat', location.lat);
-		params.append('rad', settings.radius);
+		const label = location.label ? location.label : currentParams.get('label');
+
+		if (!label) return;
+
+		const lon = location.lon || currentParams.get('lon') || '';
+		const lat = location.lat || currentParams.get('lat') || '';
+		const rad = settings.radius || currentParams.get('rad') || '';
+
+		params.append('label', label);
+		params.append('lon', lon);
+		params.append('lat', lat);
+		params.append('rad', rad);
+
+		const excluded = settings.included.filter((item) => !item.checked).map((item) => item.slug);
+
+		if (excluded.length) {
+			params.append('excluded', excluded.join(','));
+		}
 
 		url.search = params.toString();
 		goto(url.href);
+		settings.hasSavedSettings = false;
 	}
 
 	const triggerSubmit = () => {
@@ -73,7 +89,7 @@
 	};
 
 	$effect(() => {
-		if (location && (settings?.hasSavedSettings || location?.label)) {
+		if (location && (settings.hasSavedSettings || location.label)) {
 			triggerSubmit();
 		}
 	});

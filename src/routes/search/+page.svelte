@@ -49,7 +49,10 @@
 	.result-header {
 		display: flex;
 		gap: 16px;
-		align-items: baseline;
 		margin-top: 16px;
+	}
+
+	.result-header p {
+		margin-top: 2px;
 	}
 </style>

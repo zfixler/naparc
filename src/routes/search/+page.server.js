@@ -8,9 +8,10 @@ export async function load({ url }) {
 	const lon = url.searchParams.get('lon');
 	const radius = url.searchParams.get('rad');
 	const pg = url.searchParams.get('pg');
+	const excluded = url.searchParams.get('excluded');
 
 	if (lat && lon && radius) {
-		const congregations = await getLocationsWithinRadius(lat, lon, radius);
+		const congregations = await getLocationsWithinRadius(lat, lon, radius, excluded);
 		const { page, results, totalPages, totalResults } = paginateResults(pg, congregations);
 
 		return {

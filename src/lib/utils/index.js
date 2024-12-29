@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '$lib/prisma';
 
 /**
@@ -14,11 +15,13 @@ export const getUuidChunk = (chunkNum = 5) => {
  * @param {string} inputLat - Latitude
  * @param {string} inputLon - Longitude
  * @param {string} radius - miles
- * @returns {Promise<Array<import("@prisma/client").Congregation>|undefined>}
+ * @param {string|null} excluded
+ * @returns {Promise<Array<import("@prisma/client").Congregation> | undefined>}
  */
-export async function getLocationsWithinRadius(inputLat, inputLon, radius) {
+export async function getLocationsWithinRadius(inputLat, inputLon, radius, excluded) {
 	try {
 		const meters = parseInt(radius) * 1609.34;
+		const exclude = excluded ? excluded.split(',') : null;
 
 		/** @type {Array<import("@prisma/client").Congregation>} */
 		const locations = await prisma.$queryRaw`
@@ -39,6 +42,7 @@ export async function getLocationsWithinRadius(inputLat, inputLon, radius) {
                       ll_to_earth(c.lat, c.lon), 
                       ll_to_earth(${parseFloat(inputLat)}, ${parseFloat(inputLon)})
                   ) < ${meters}
+			${exclude ? Prisma.sql`AND c."denominationSlug" NOT IN (${Prisma.join(exclude)})` : Prisma.empty}
             ORDER BY distance ASC;
         `;
 
