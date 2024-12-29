@@ -23,6 +23,13 @@
 	});
 
 	/**
+	 * @type {any[]}
+	 */
+	let options = $state([]);
+
+	let shouldShowMenu = $state(false);
+
+	/**
 	 * @typedef {Object} SettingItem
 	 * @property {boolean} checked - Indicates whether the item is checked.
 	 * @property {string} slug - The slug identifier for the item.
@@ -54,12 +61,13 @@
 		const params = new URLSearchParams();
 		const currentParams = new URLSearchParams(window.location.search);
 
-		const label = location.label ? location.label : currentParams.get('label');
+		const topOption = options[0]?.body || {};
+		const label = location.label || topOption.label || currentParams.get('label');
 
 		if (!label) return;
 
-		const lon = location.lon || currentParams.get('lon') || '';
-		const lat = location.lat || currentParams.get('lat') || '';
+		const lon = location.lon || topOption.lon || currentParams.get('lon') || '';
+		const lat = location.lat || topOption.lat || currentParams.get('lat') || '';
 		const rad = settings.radius || currentParams.get('rad') || '';
 
 		params.append('label', label);
@@ -73,9 +81,11 @@
 			params.append('excluded', excluded.join(','));
 		}
 
+		settings.hasSavedSettings = false;
+		shouldShowMenu = false;
+
 		url.search = params.toString();
 		goto(url.href);
-		settings.hasSavedSettings = false;
 	}
 
 	const triggerSubmit = () => {
@@ -97,7 +107,7 @@
 
 <form class="form" action="/search" bind:this={form} onsubmit={handleSubmit}>
 	<div class="first">
-		<Location bind:results={location} />
+		<Location bind:results={location} bind:options bind:shouldShowMenu />
 	</div>
 	<div class="second">
 		<Settings bind:settings {denominations} />

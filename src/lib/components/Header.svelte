@@ -50,8 +50,9 @@
 
 	.distance {
 		grid-area: dist;
-		text-align: end;
-		align-self: center;
+		justify-self: end;
+		align-self: start;
+		margin-top: 2px;
 	}
 
 	.denomination,

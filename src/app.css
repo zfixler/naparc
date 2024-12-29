@@ -71,13 +71,18 @@ html[data-scheme='dark'] {
 
 @media (max-width: 800px) {
 	:root {
-		--fs-h1: 2.202rem;
-		--fs-h2: 2.024rem;
-		--fs-h3: 1.866rem;
-		--fs-h4: 1.725rem;
-		--fs-h5: 1.6rem;
-		--fs-regular: 1.2rem;
-		--fs-small: 1rem;
+		/* More readable mobile sizes */
+		--fs-h1: 2rem;
+		--fs-h2: 1.8rem;
+		--fs-h3: 1.6rem;
+		--fs-h4: 1.4rem;
+		--fs-h5: 1.3rem;
+		--fs-regular: 1.4rem;
+		--fs-small: 1.2rem;
+
+		/* Adjusted spacing */
+		--margin: 16px;
+		--padding: 16px;
 	}
 }
 

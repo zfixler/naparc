@@ -2,10 +2,9 @@
 	import { ClickOutside } from '$lib/components';
 	import { slide } from 'svelte/transition';
 
-	/** @type {{results: any}} */
-	let { results = $bindable() } = $props();
+	/** @type {{results: any, options: any, shouldShowMenu: boolean}} */
+	let { results = $bindable(), options = $bindable(), shouldShowMenu = $bindable() } = $props();
 	let selectedLabel = $state('');
-	let shouldShowMenu = $state(false);
 
 	/** @type {NodeJS.Timeout|number|undefined} */
 	let debounceTimer;
@@ -14,7 +13,6 @@
 	 */
 	let currentRequest;
 	/** @type {Array<OptionObject>}*/
-	let options = $state([]);
 
 	/**
 	 * @typedef {Object} ResultObject

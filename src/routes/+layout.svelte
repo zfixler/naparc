@@ -78,4 +78,13 @@
 		display: flex;
 		justify-content: flex-end;
 	}
+
+	@media (max-width: 800px) {
+		.footer {
+			flex-direction: column;
+			align-items: center;
+			gap: 16px;
+			padding: 16px;
+		}
+	}
 </style>

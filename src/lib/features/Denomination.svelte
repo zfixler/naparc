@@ -78,8 +78,23 @@
 		text-align: start;
 	}
 
+	summary {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		cursor: pointer;
+		gap: 16px;
+		min-height: 48px;
+	}
+
 	details summary::-webkit-details-marker {
 		display: none;
+	}
+
+	svg {
+		min-width: 32px;
+		min-height: 32px;
+		transition: transform 0.2s ease;
 	}
 
 	.chevron {
@@ -92,18 +107,59 @@
 	}
 
 	.description {
-		margin: 12px 0 18px;
+		margin: var(--margin) 0;
 	}
 
-	.presbyteries ul {
-		list-style-type: none;
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-		row-gap: 4px;
-		margin-top: 16px;
+	.presbyteries {
+		margin-top: var(--margin);
+	}
+
+	b {
+		margin-bottom: var(--margin);
+	}
+
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: var(--margin-sm) 0 0;
+	}
+
+	li {
+		margin: 8px 0;
 	}
 
 	.check-icon {
 		color: var(--accent);
+	}
+
+	@media (max-width: 800px) {
+		details {
+			padding: calc(var(--padding) * 0.75);
+		}
+
+		summary {
+			gap: 12px;
+			min-height: 44px;
+		}
+
+		svg {
+			width: 28px;
+			height: 28px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		details {
+			padding: calc(var(--padding) * 0.5);
+		}
+
+		summary {
+			gap: 8px;
+		}
+
+		svg {
+			width: 24px;
+			height: 24px;
+		}
 	}
 </style>

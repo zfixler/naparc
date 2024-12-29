@@ -9,16 +9,13 @@
 	function setColorScheme(scheme) {
 		const oneYear = 60 * 60 * 24 * 365;
 		document.cookie = `scheme=${scheme}; max-age=${oneYear}; path=/`;
-		console.log('cookie:', document.cookie);
 		document.documentElement.setAttribute('data-scheme', scheme);
 		currentScheme = scheme;
 	}
 
 	onMount(() => {
 		const savedScheme = document.documentElement.getAttribute('data-scheme');
-		console.log('documentElement:', document.documentElement);
-		console.log('attribute:', document.documentElement.getAttribute('data-scheme'));
-		console.log('savedScheme:', savedScheme);
+
 		if (savedScheme) {
 			currentScheme = savedScheme;
 			return;
