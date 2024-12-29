@@ -77,5 +77,9 @@
 			padding: calc(var(--padding) * 0.75);
 			margin-bottom: calc(var(--margin) * 0.75);
 		}
+
+		.content {
+			margin-top: 4px;
+		}
 	}
 </style>

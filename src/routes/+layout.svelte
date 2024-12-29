@@ -81,7 +81,7 @@
 
 	@media (max-width: 800px) {
 		.footer {
-			flex-direction: column;
+			flex-direction: column-reverse;
 			align-items: center;
 			gap: 16px;
 			padding: 16px;
