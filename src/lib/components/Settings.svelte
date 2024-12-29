@@ -143,6 +143,7 @@
 
 	.label {
 		width: fit-content;
+		margin: 6px 0;
 	}
 
 	.select {
@@ -171,5 +172,11 @@
 	.save:focus,
 	.save:hover {
 		background-color: var(--accent);
+	}
+
+	@media (max-width: 800px) {
+		.label {
+			margin: 3px 0;
+		}
 	}
 </style>
