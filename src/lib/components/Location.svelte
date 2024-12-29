@@ -72,13 +72,8 @@
 				const controller = new AbortController();
 				currentRequest = controller;
 
-				// Check if input matches postal code pattern
-				const isPostalCode = /^\d{5}$|^[A-Za-z]\d[A-Za-z]/.test(input);
-
 				// Fetch locations
-				const url = isPostalCode
-					? `https://api.geoapify.com/v1/geocode/search?postcode=${input}&filter=countrycode:us,ca&format=json&apiKey=${import.meta.env.VITE_GEOAPIFY_KEY}`
-					: `https://api.geoapify.com/v1/geocode/autocomplete?text=${input}&type=city&filter=countrycode:us,ca&format=json&apiKey=${import.meta.env.VITE_GEOAPIFY_KEY}`;
+				const url = `/api/geocode?input=${encodeURIComponent(input)}`;
 
 				const response = await fetch(url);
 				const data = await response.json();
