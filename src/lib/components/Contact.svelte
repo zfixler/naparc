@@ -22,13 +22,15 @@
 </p>
 
 <style>
+	.icon {
+		fill: currentColor;
+		flex-shrink: 0;
+	}
+
 	.link {
 		display: flex;
 		align-items: center;
 		gap: 8px;
-	}
-
-	.icon {
-		fill: currentColor;
+		max-width: 100%;
 	}
 </style>

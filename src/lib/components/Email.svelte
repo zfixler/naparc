@@ -22,8 +22,7 @@
 <style>
 	.icon {
 		fill: currentColor;
-		height: 24px;
-		width: 24px;
+		flex-shrink: 0;
 	}
 
 	.link {
@@ -31,5 +30,6 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
+		max-width: 100%;
 	}
 </style>
