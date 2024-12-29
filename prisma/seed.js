@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { denominations } from './denominations.js';
+import { denominations } from '../config/denominations.js';
 
 const prisma = new PrismaClient();
 
