@@ -9,6 +9,10 @@
 
 	/** @type {NodeJS.Timeout|number|undefined} */
 	let debounceTimer;
+	/**
+	 * @type {AbortController | null}
+	 */
+	let currentRequest;
 	/** @type {Array<OptionObject>}*/
 	let options = $state([]);
 
@@ -51,18 +55,33 @@
 	 */
 	async function fetchLocationOptions(e) {
 		if (debounceTimer) clearTimeout(debounceTimer);
+		if (currentRequest) currentRequest.abort();
 
 		debounceTimer = setTimeout(async () => {
 			try {
 				// Return if e.target is not correct type
 				if (!(e.target instanceof HTMLInputElement)) return;
+
+				const input = e.target.value.trim();
+
 				// Return if less than three characters
-				if (e.target.value.length < 3) return;
+				if (input.length < 3) {
+					options = [];
+					shouldShowMenu = false;
+					return;
+				}
+
+				const controller = new AbortController();
+				currentRequest = controller;
+
+				// Check if input matches postal code pattern
+				const isPostalCode = /^\d{5}$|^[A-Za-z]\d[A-Za-z]/.test(input);
 
 				// Fetch locations
-				const url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${e.target.value}&type=city&filter=countrycode:us,ca&format=json&apiKey=${
-					import.meta.env.VITE_GEOAPIFY_KEY
-				}`;
+				const url = isPostalCode
+					? `https://api.geoapify.com/v1/geocode/search?postcode=${input}&filter=countrycode:us,ca&format=json&apiKey=${import.meta.env.VITE_GEOAPIFY_KEY}`
+					: `https://api.geoapify.com/v1/geocode/autocomplete?text=${input}&type=city&filter=countrycode:us,ca&format=json&apiKey=${import.meta.env.VITE_GEOAPIFY_KEY}`;
+
 				const response = await fetch(url);
 				const data = await response.json();
 
@@ -70,11 +89,13 @@
 				options = formatOptions(data);
 
 				// Show options
-				if (options) shouldShowMenu = true;
+				shouldShowMenu = true;
 			} catch (err) {
 				console.error(err);
+			} finally {
+				currentRequest = null;
 			}
-		}, 150);
+		}, 300);
 	}
 
 	/**
@@ -113,10 +134,14 @@
 	<ClickOutside bind:shouldShowContainer={shouldShowMenu}>
 		<div class="wrapper">
 			<div class="menu" in:slide={{ duration: 250 }}>
-				{#each options as option}
-					<button type="button" class="option" onclick={() => handleOptionSelection(option)}
-						>{option.body.label}</button>
-				{/each}
+				{#if options.length === 0}
+					<div class="option">No locations found..</div>
+				{:else}
+					{#each options as option}
+						<button type="button" class="option" onclick={() => handleOptionSelection(option)}
+							>{option.body.label}</button>
+					{/each}
+				{/if}
 			</div>
 		</div>
 	</ClickOutside>
