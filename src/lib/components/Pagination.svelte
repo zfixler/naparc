@@ -1,5 +1,5 @@
 <script>
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	/** @type {{currentPage?: number, totalPages?: number}} */
 	let { currentPage = 1, totalPages = 1 } = $props();
 
@@ -8,12 +8,12 @@
 	 * @param {number} pg
 	 */
 	function getPageUrl(pg) {
-		if ($page.url.searchParams.has('pg')) {
-			$page.url.searchParams.set('pg', (pg + 1).toString());
+		if (page.url.searchParams.has('pg')) {
+			page.url.searchParams.set('pg', (pg + 1).toString());
 		} else {
-			$page.url.searchParams.append('pg', (pg + 1).toString());
+			page.url.searchParams.append('pg', (pg + 1).toString());
 		}
-		return $page.url.href;
+		return page.url.href;
 	}
 </script>
 
