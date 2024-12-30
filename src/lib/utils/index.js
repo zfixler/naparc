@@ -72,3 +72,20 @@ export function paginateResults(pg, results = []) {
 		totalPages,
 	};
 }
+
+/**
+ * Calculates the range of results currently being viewed on the given page.
+ *
+ * @param {number} currentPage - The current page number.
+ * @param {number} totalResults - The total number of results available.
+ * @returns {{ startIndex: number, endIndex: number }} An object containing the start and end indices of the results being viewed.
+ */
+export function calculateViewedResults(currentPage = 1, totalResults = 1) {
+	const resultsPerPage = 10;
+	const startIndex = (currentPage - 1) * resultsPerPage + 1;
+	const endIndex = Math.min(currentPage * resultsPerPage, totalResults);
+	return {
+		startIndex,
+		endIndex,
+	};
+}

@@ -1,16 +1,17 @@
 <script>
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	/** @type {{denomination: any}} */
 	let { denomination } = $props();
-	const { slug, name, description, presbyteries, continental } = denomination;
-	let shouldShowDetails = $page.url.hash === `#${slug}`;
+	const { slug, name, description, presbyteries, continental, _count } = denomination;
+
+	let shouldShowDetails = page.url.hash === `#${slug}`;
 </script>
 
 <details class="section" open={shouldShowDetails}>
 	<summary class="button">
 		<h2 class="denomination" id={slug}>
 			{name}
-			{#if presbyteries.length}
+			{#if presbyteries.length || _count.congregations > 0}
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					height="24px"
@@ -42,6 +43,8 @@
 					</li>
 				{/each}
 			</ul>
+		{:else if _count.congregations > 0}
+			<a href={`/${slug}/congregations`}>View all congregations.</a>
 		{:else}
 			There are currently no {continental ? 'classis' : 'presbyteries'} supported for this denomination.
 		{/if}
