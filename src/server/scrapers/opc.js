@@ -1,5 +1,4 @@
 import * as cheerio from 'cheerio';
-import { setTimeout } from 'node:timers/promises';
 import { v5 as uuidv5 } from 'uuid';
 import {
 	getContactEmailAddress,
@@ -9,6 +8,7 @@ import {
 	getWebsiteUrl,
 	slugify,
 	batchUpsertCongregations,
+	delayFetch,
 } from '../utils/index.js';
 
 /** @typedef {import("@prisma/client").Presbytery} Presbytery */
@@ -60,8 +60,7 @@ async function buildOpcDenomination() {
 	 * @param {string} presbyteryId
 	 */
 	async function makeRequest(presbyteryId) {
-		// Delay before executing fetch for a random amount of time between 2 adn 4 seconds
-		await setTimeout(Math.random() * (4000 - 2000 + 1) + 2000);
+		await delayFetch();
 
 		try {
 			const url = `https://opc.org/locator.html?search_go=Y&presbytery_id=${presbyteryId}`;

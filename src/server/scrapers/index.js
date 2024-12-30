@@ -1,3 +1,4 @@
+export { default as buildArpDenomination } from './arp.js';
 export { default as buildOpcDenomination } from './opc.js';
 export { default as buildPcaDenomination } from './pca.js';
 export { default as buildRcusDenomination } from './rcus.js';
