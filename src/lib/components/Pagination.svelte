@@ -13,7 +13,7 @@
 		} else {
 			page.url.searchParams.append('pg', (pg + 1).toString());
 		}
-		return page.url.href;
+		return `/${page.url.href}`;
 	}
 </script>
 
