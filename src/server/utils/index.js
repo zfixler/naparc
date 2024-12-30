@@ -1,3 +1,4 @@
+import { setTimeout } from 'node:timers/promises';
 import { prisma } from '../../lib/prisma.js';
 
 /**
@@ -103,8 +104,7 @@ export function getAddressLabel(addressString) {
 	}
 	return addressString;
 }
-
-/**@typedef {import('@prisma/client').Congregation & { presbytery: import('@prisma/client').Presbytery }} CongregationWithPresbytery */
+/**@typedef {import('@prisma/client').Congregation & { presbytery?: import('@prisma/client').Presbytery }} CongregationWithPresbytery */
 
 /**
  * Batch upserts congregations into the database.
@@ -128,10 +128,9 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 		.filter((p) => p && p.id && !p.id.includes('undefined'));
 
 	// Create missing presbyteries
-
 	if (presbyteries && presbyteries.length) {
 		await prisma.presbytery.createMany({
-			data: presbyteries,
+			data: presbyteries.filter((p) => p !== undefined),
 			skipDuplicates: true,
 		});
 	}
@@ -198,4 +197,15 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 			}
 		}
 	}
+}
+
+/**
+ * Delays the execution of a fetch request for a random amount of time between 2 and 4 seconds.
+ *
+ * @returns {Promise<void>} A promise that resolves after the delay.
+ */
+export async function delayFetch() {
+	// Delay before executing fetch for a random amount of time between 2 adn 4 seconds
+	await setTimeout(Math.random() * (4000 - 2000 + 1) + 2000);
+	return;
 }
