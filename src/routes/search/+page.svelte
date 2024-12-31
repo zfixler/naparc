@@ -37,8 +37,4 @@
 		gap: 16px;
 		margin-top: 16px;
 	}
-
-	.result-header p {
-		margin-top: 12px;
-	}
 </style>
