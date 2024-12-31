@@ -1,6 +1,7 @@
 import { parentPort, workerData } from 'worker_threads';
 import {
 	buildArpDenomination,
+	buildHrcDenomination,
 	buildOpcDenomination,
 	buildPcaDenomination,
 	buildRcusDenomination,
@@ -14,19 +15,22 @@ import {
  * that builds the corresponding denomination.
  *
  * @type {Object.<string, function>}
+ * @property {function} arp - Function to build ARPC denomination.
+ * @property {function} hrc - Function to build HRC denomination.
  * @property {function} opc - Function to build OPC denomination.
  * @property {function} pca - Function to build PCA denomination.
+ * @property {function} rcus - Function to build RCUS denomination.
  * @property {function} rpcna - Function to build RPCNA denomination.
  * @property {function} urcna - Function to build URCNA denomination.
- * @property {function} rcus - Function to build RCUS denomination.
  */
 const denominations = {
+	arpc: buildArpDenomination,
+	hrc: buildHrcDenomination,
 	opc: buildOpcDenomination,
 	pca: buildPcaDenomination,
+	rcus: buildRcusDenomination,
 	rpcna: buildRpcnaDenomination,
 	urcna: buildUrcnaDenomination,
-	rcus: buildRcusDenomination,
-	arpc: buildArpDenomination,
 };
 
 /**
