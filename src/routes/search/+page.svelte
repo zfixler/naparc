@@ -1,4 +1,5 @@
 <script>
+	import { page } from '$app/state';
 	import { Congregation } from '$lib/features';
 	import { Pagination } from '$lib/components';
 	import { calculateViewedResults } from '$lib/utils';
@@ -19,12 +20,13 @@
 </section>
 
 {#if data.congregations}
-	{#key data.page}
+	{#key page.url}
 		{#each data.congregations as congregation}
 			<Congregation {congregation} />
 		{/each}
 	{/key}
 {/if}
+
 {#if hasMultiplePages}
 	<Pagination currentPage={data.page} totalPages={data.totalPages} />
 {/if}

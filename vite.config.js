@@ -5,7 +5,8 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	resolve: {
 		alias: {
-			$server: '/server',
+			'$server': '/server',
+			'.prisma/client/index-browser': './node_modules/.prisma/client/index-browser.js',
 		},
 	},
 });
