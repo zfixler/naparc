@@ -16,19 +16,46 @@
 		}
 		return page.url.href;
 	}
+
+	function getPages() {
+		const pages = [];
+		const range = 1; // Number of pages to show around the current page
+
+		for (let i = 0; i < totalPages; i++) {
+			if (
+				i === 0 || // First page
+				i === totalPages - 1 || // Last page
+				(i >= currentPage - range && i <= currentPage + range) // Pages around the current page
+			) {
+				pages.push(i);
+			} else if (
+				(i === currentPage - range - 1 && currentPage - range > 1) || // Ellipsis before the current range
+				(i === currentPage + range + 1 && currentPage + range < totalPages - 2) // Ellipsis after the current range
+			) {
+				pages.push('...');
+			}
+		}
+
+		return pages; // Remove duplicate ellipses
+	}
 </script>
 
 <div class="container">
 	<ul class="pages">
 		<!-- eslint-disable-next-line -->
-		{#each Array(totalPages) as _, pg}
+		{#each getPages() as pg}
 			<li class="page">
-				<a
-					href={getPageUrl(pg)}
-					class={currentPage === pg + 1 ? 'current' : ''}
-					aria-disabled={currentPage === pg + 1}>
-					{pg + 1}
-				</a>
+				{#if pg === '...'}
+					<span class="ellipsis">...</span>
+				{:else}
+					<a
+						href={getPageUrl(Number(pg))}
+						class={currentPage === Number(pg) + 1 ? 'current' : ''}
+						aria-disabled={currentPage === Number(pg) + 1}
+						aria-label={`Page ${Number(pg) + 1}`}>
+						{Number(pg) + 1}
+					</a>
+				{/if}
 			</li>
 		{/each}
 	</ul>
@@ -40,6 +67,7 @@
 		place-items: center;
 		padding: var(--padding);
 	}
+
 	.pages {
 		list-style: none;
 		display: flex;
