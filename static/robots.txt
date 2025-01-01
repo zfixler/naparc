@@ -1,5 +1,10 @@
 User-agent: Googlebot
-Disallow: /
+User-agent: Bingbot
+User-agent: Slurp
+User-agent: DuckDuckBot
+User-agent: Baiduspider
+User-agent: YandexBot
+Allow: /
 
 User-agent: *
-Allow: /
+Disallow: /
