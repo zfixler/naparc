@@ -64,6 +64,7 @@ async function fetchCongregation(url) {
 		.find('p:contains("PASTOR:")')
 		.text()
 		.replace('PASTOR:', '')
+		.replace('Rev.', '')
 		.trim();
 
 	// Extract website (if available)

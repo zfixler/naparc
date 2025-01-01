@@ -59,7 +59,7 @@ async function buildArpDenomination() {
 			const cong = {
 				id: uuidv5(`arpc-${obj.id}`, denominationNamespace),
 				name: obj.store,
-				pastor: obj.fax,
+				pastor: obj.fax.replace('Rev.', '').trim(),
 				address: `${obj.address}, ${obj.city}, ${obj.state} ${obj.zip}`,
 				phone: obj.phone,
 				website: obj.url,
