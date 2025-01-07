@@ -38,7 +38,7 @@ async function fetchArpData() {
 	for await (const coordinate of coordinates) {
 		await delayFetch();
 
-		const url = `http://arpchurch.org/wp-admin/admin-ajax.php?action=store_search&lat=${coordinate.lat}&lng=${coordinate.long}&max_results=100&search_radius=500`;
+		const url = `https://arpchurch.org/wp-admin/admin-ajax.php?action=store_search&lat=${coordinate.lat}&lng=${coordinate.long}&max_results=100&search_radius=500`;
 		const res = await fetch(url);
 		const data = await res.json();
 
@@ -57,24 +57,24 @@ async function buildArpDenomination() {
 	if (data) {
 		data.forEach((obj) => {
 			const cong = {
-				id: uuidv5(`arpc-${obj.id}`, denominationNamespace),
-				name: obj.store,
-				pastor: obj.fax.replace('Rev.', '').trim(),
-				address: `${obj.address}, ${obj.city}, ${obj.state} ${obj.zip}`,
-				phone: obj.phone,
-				website: obj.url,
-				email: obj.email,
-				addressLabel: `${obj.address} <br> ${obj.city}, ${obj.state} ${obj.zip}`,
+				id: uuidv5(`arpc-${obj?.id}`, denominationNamespace),
+				name: obj?.store,
+				pastor: obj?.fax?.replace('Rev.', '').trim(),
+				address: `${obj?.address}, ${obj?.city}, ${obj?.state} ${obj?.zip}`,
+				phone: obj?.phone,
+				website: obj?.url,
+				email: obj?.email,
+				addressLabel: `${obj?.address} <br> ${obj?.city}, ${obj?.state} ${obj?.zip}`,
 				contact: null,
 				presbyteryId: null,
 				denominationSlug: 'arpc',
-				lat: parseFloat(obj.lat),
-				lon: parseFloat(obj.lng),
+				lat: parseFloat(obj?.lat),
+				lon: parseFloat(obj?.lng),
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			};
 
-			if (cong.lat) results.push(cong);
+			if (cong?.lat) results.push(cong);
 		});
 	}
 
@@ -84,7 +84,7 @@ async function buildArpDenomination() {
 
 	await batchUpsertCongregations(depuplicatedResults);
 
-	return results.length;
+	return depuplicatedResults.length;
 }
 
 export default buildArpDenomination;
