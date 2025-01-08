@@ -1,19 +1,67 @@
+<script>
+	import { validateEmail, validateMessage, validateName } from '$lib/utils/validation';
+	/** @type {{ [key: string]: { error: string; isValid: boolean; validator: (value: string | undefined) => [boolean, string]; } }} */
+	const validation = $state({
+		name: {
+			error: '',
+			isValid: false,
+			validator: validateName,
+		},
+		email: {
+			error: '',
+			isValid: false,
+			validator: validateEmail,
+		},
+		message: {
+			error: '',
+			isValid: false,
+			validator: validateMessage,
+		},
+	});
+
+	/**
+	 *
+	 * @param {Event & { currentTarget: EventTarget & HTMLInputElement | HTMLTextAreaElement; }} e
+	 */
+	function validateInput(e) {
+		const name = e.currentTarget.name;
+		if (!name || !validation[name]) return;
+
+		const validator = validation[name].validator;
+		const [isValid, error] = validator(e.currentTarget.value);
+
+		validation[name].error = isValid ? '' : error;
+		validation[name].isValid = isValid;
+	}
+
+	let isValid = $derived(Object.values(validation).every((input) => input.isValid));
+</script>
+
 <div class="container">
 	<h2>Contact Form</h2>
 	<form class="contact" method="post">
-		<label for="name">
+		<label for="name" class={[validation.name.error && 'error']}>
 			Name:
-			<input type="text" name="name" id="name" required />
+			<input type="text" name="name" id="name" oninput={validateInput} />
+			{#if validation.name.error}
+				<p class="error">{validation.name.error}</p>
+			{/if}
 		</label>
-		<label for="email">
+		<label for="email" class={[validation.email.error && 'error']}>
 			Email:
-			<input type="email" name="email" id="email" required />
+			<input type="email" name="email" id="email" oninput={validateInput} />
+			{#if validation.email.error}
+				<p class="error">{validation.email.error}</p>
+			{/if}
 		</label>
-		<label for="message">
+		<label for="message" class={[validation.message.error && 'error']}>
 			Message:
-			<textarea name="message" id="message" required></textarea>
+			<textarea name="message" id="message" oninput={validateInput}></textarea>
+			{#if validation.message.error}
+				<p class="error">{validation.message.error}</p>
+			{/if}
 		</label>
-		<button class="submit">Submit</button>
+		<button class="submit" disabled={!isValid}>Submit</button>
 	</form>
 </div>
 
@@ -76,5 +124,27 @@
 	.submit:focus,
 	.submit:hover {
 		background-color: var(--accent);
+	}
+
+	.submit:disabled {
+		background-color: var(--gray-3);
+	}
+
+	.error {
+		color: var(--red-3);
+	}
+
+	.error p {
+		margin: calc(var(--margin) / 4) 0;
+	}
+
+	.error input,
+	.error textarea {
+		border-color: var(--red-1);
+	}
+
+	.error input:focus,
+	.error textarea:focus {
+		border-color: var(--red-3);
 	}
 </style>

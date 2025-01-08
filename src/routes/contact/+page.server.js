@@ -1,5 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import nodemailer from 'nodemailer';
+import { validateEmail, validateName, validateMessage } from '$lib/utils/validation';
 
 /** @satisfies {import('./$types').Actions} */
 export const actions = {
@@ -9,13 +10,19 @@ export const actions = {
 		const email = formData.get('email')?.toString();
 		const message = formData.get('message')?.toString();
 
-		if (!name || !email || !message) {
-			return fail(400, { name, email, message, missing: true });
+		const [isValidName, nameError] = validateName(name);
+		if (!isValidName) {
+			return fail(400, { name, errorMessage: nameError });
 		}
 
-		const maxLength = 255;
-		if (name.length > maxLength || email.length > maxLength || message.length > maxLength) {
-			return fail(400, { name, email, message, tooLong: true });
+		const [isValidEmail, emailError] = validateEmail(email);
+		if (!isValidEmail) {
+			return fail(400, { email, errorMessage: emailError });
+		}
+
+		const [isValidMessage, messageError] = validateMessage(message);
+		if (!isValidMessage) {
+			return fail(400, { message, errorMessage: messageError });
 		}
 
 		/**
@@ -27,9 +34,9 @@ export const actions = {
 		 */
 		const sanitize = (str) => str.replace(/</g, '&lt;').replace(/>/g, '&gt;').trim();
 
-		const sanitized_name = sanitize(name);
-		const sanitized_email = sanitize(email);
-		const sanitized_message = sanitize(message);
+		const sanitized_name = sanitize(name || '');
+		const sanitized_email = sanitize(email || '');
+		const sanitized_message = sanitize(message || '');
 
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		if (!emailRegex.test(sanitized_email)) {
