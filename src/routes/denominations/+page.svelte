@@ -5,7 +5,7 @@
 	const { denominations } = data;
 </script>
 
-<p class="disclaimer">
+<p>
 	Denominations that are currently supported by this search are indicated with <svg
 		xmlns="http://www.w3.org/2000/svg"
 		height="14px"
@@ -20,9 +20,3 @@
 {#each denominations as denomination}
 	<Denomination {denomination} />
 {/each}
-
-<style>
-	.disclaimer {
-		margin: var(--margin) 0;
-	}
-</style>

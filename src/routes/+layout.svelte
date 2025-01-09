@@ -1,8 +1,8 @@
 <script>
+	import { SchemeToggle } from '$lib/components';
+	import { Search } from '$lib/features';
 	import '@fontsource-variable/outfit';
 	import '../app.css';
-	import { Search } from '$lib/features';
-	import { SchemeToggle } from '$lib/components';
 	/** @type {{data: any, children?: import('svelte').Snippet}} */
 	let { data, children } = $props();
 
@@ -15,6 +15,9 @@
 			<ul>
 				<li>
 					<a href="/denominations">Denominations</a>
+				</li>
+				<li>
+					<a href="/contact">Contact</a>
 				</li>
 			</ul>
 		</nav>
@@ -45,11 +48,10 @@
 	}
 
 	.app {
-		height: 100vh;
+		display: grid;
+		grid-template-rows: auto 1fr auto;
 		height: 100svh;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
+		height: 100vh;
 	}
 
 	.title {
@@ -61,9 +63,10 @@
 	}
 
 	.footer {
+		align-items: flex-start;
+		align-self: end;
 		display: flex;
 		justify-content: space-between;
-		align-items: flex-start;
 		padding: 16px 32px 8px;
 	}
 
@@ -72,17 +75,23 @@
 	}
 
 	.nav ul {
+		display: flex;
+		gap: var(--padding);
+		justify-content: flex-end;
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		display: flex;
-		justify-content: flex-end;
+	}
+
+	.slot {
+		align-self: start;
+		margin: calc(var(--margin) * 2) auto;
 	}
 
 	@media (max-width: 800px) {
 		.footer {
-			flex-direction: column-reverse;
 			align-items: center;
+			flex-direction: column-reverse;
 			gap: 16px;
 			padding: 16px;
 		}
