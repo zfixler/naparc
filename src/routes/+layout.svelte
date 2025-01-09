@@ -1,8 +1,8 @@
 <script>
+	import { SchemeToggle } from '$lib/components';
+	import { Search } from '$lib/features';
 	import '@fontsource-variable/outfit';
 	import '../app.css';
-	import { Search } from '$lib/features';
-	import { SchemeToggle } from '$lib/components';
 	/** @type {{data: any, children?: import('svelte').Snippet}} */
 	let { data, children } = $props();
 
@@ -47,9 +47,8 @@
 	.app {
 		height: 100vh;
 		height: 100svh;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
+		display: grid;
+		grid-template-rows: auto 1fr auto;
 	}
 
 	.title {
@@ -61,6 +60,7 @@
 	}
 
 	.footer {
+		align-self: end;
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
@@ -77,6 +77,11 @@
 		padding: 0;
 		display: flex;
 		justify-content: flex-end;
+	}
+
+	.slot {
+		align-self: start;
+		margin: calc(var(--margin) * 2) auto;
 	}
 
 	@media (max-width: 800px) {

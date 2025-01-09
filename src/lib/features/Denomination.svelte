@@ -125,6 +125,8 @@
 		list-style: none;
 		padding: 0;
 		margin: var(--margin-sm) 0 0;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
 	}
 
 	li {
@@ -163,6 +165,10 @@
 		svg {
 			width: 24px;
 			height: 24px;
+		}
+
+		ul {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>
