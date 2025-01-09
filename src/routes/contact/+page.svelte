@@ -1,5 +1,8 @@
 <script>
 	import { validateEmail, validateMessage, validateName } from '$lib/utils/validation';
+
+	const { form } = $props();
+
 	/** @type {{ [key: string]: { error: string; isValid: boolean; validator: (value: string | undefined) => [boolean, string]; } }} */
 	const validation = $state({
 		name: {
@@ -39,30 +42,34 @@
 
 <div class="container">
 	<h2>Contact Form</h2>
-	<form class="contact" method="post">
-		<label for="name" class={[validation.name.error && 'error']}>
-			Name:
-			<input type="text" name="name" id="name" oninput={validateInput} />
-			{#if validation.name.error}
-				<p class="error">{validation.name.error}</p>
-			{/if}
-		</label>
-		<label for="email" class={[validation.email.error && 'error']}>
-			Email:
-			<input type="email" name="email" id="email" oninput={validateInput} />
-			{#if validation.email.error}
-				<p class="error">{validation.email.error}</p>
-			{/if}
-		</label>
-		<label for="message" class={[validation.message.error && 'error']}>
-			Message:
-			<textarea name="message" id="message" oninput={validateInput}></textarea>
-			{#if validation.message.error}
-				<p class="error">{validation.message.error}</p>
-			{/if}
-		</label>
-		<button class="submit" disabled={!isValid}>Submit</button>
-	</form>
+	{#if form?.success}
+		<p class="thanks">Thank you, your message has been received!</p>
+	{:else}
+		<form class="contact" method="post">
+			<label for="name" class={[validation.name.error && 'error']}>
+				Name:
+				<input type="text" name="name" id="name" oninput={validateInput} />
+				{#if validation.name.error}
+					<p class="error">{validation.name.error}</p>
+				{/if}
+			</label>
+			<label for="email" class={[validation.email.error && 'error']}>
+				Email:
+				<input type="email" name="email" id="email" oninput={validateInput} />
+				{#if validation.email.error}
+					<p class="error">{validation.email.error}</p>
+				{/if}
+			</label>
+			<label for="message" class={[validation.message.error && 'error']}>
+				Message:
+				<textarea name="message" id="message" oninput={validateInput}></textarea>
+				{#if validation.message.error}
+					<p class="error">{validation.message.error}</p>
+				{/if}
+			</label>
+			<button class="submit" disabled={!isValid}>Submit</button>
+		</form>
+	{/if}
 </div>
 
 <style>
