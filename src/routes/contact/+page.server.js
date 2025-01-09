@@ -2,9 +2,32 @@ import { fail } from '@sveltejs/kit';
 import nodemailer from 'nodemailer';
 import { validateEmail, validateName, validateMessage } from '$lib/utils/validation';
 
+const requestCounts = new Map();
+const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 5;
+
 /** @satisfies {import('./$types').Actions} */
 export const actions = {
-	default: async ({ request }) => {
+	default: async ({ request, getClientAddress }) => {
+		const ip = getClientAddress();
+		const now = Date.now();
+
+		if (!requestCounts.has(ip)) {
+			requestCounts.set(ip, []);
+		}
+
+		const timestamps = requestCounts.get(ip);
+		const recentTimestamps = timestamps.filter(
+			(/** @type {number} */ timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS,
+		);
+
+		recentTimestamps.push(now);
+		requestCounts.set(ip, recentTimestamps);
+
+		if (recentTimestamps.length >= MAX_REQUESTS_PER_WINDOW) {
+			return fail(429, { error: 'Too many requests. Please try again later.' });
+		}
+
 		const formData = await request.formData();
 		const name = formData.get('name')?.toString();
 		const email = formData.get('email')?.toString();
