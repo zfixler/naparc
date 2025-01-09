@@ -54,39 +54,39 @@
 <style>
 	.section {
 		background: var(--bg-ff);
-		padding: var(--padding);
-		margin-top: var(--margin);
-		box-shadow: var(--box-shadow);
 		border-radius: var(--brad);
+		box-shadow: var(--box-shadow);
+		margin-top: var(--margin);
+		padding: var(--padding);
 	}
 
 	.denomination {
-		scroll-margin-top: calc(var(--margin) * 2);
+		align-items: center;
 		color: var(--primary);
 		display: flex;
-		align-items: center;
 		gap: 16px;
+		scroll-margin-top: calc(var(--margin) * 2);
 	}
 
 	.button {
-		display: flex;
-		justify-content: space-between;
 		background: none;
-		outline: none;
 		border: none;
+		cursor: pointer;
+		display: flex;
 		font-family: inherit;
 		font-size: var(--fs-h3);
-		cursor: pointer;
-		width: 100%;
+		justify-content: space-between;
+		outline: none;
 		text-align: start;
+		width: 100%;
 	}
 
 	summary {
-		display: flex;
-		justify-content: space-between;
 		align-items: center;
 		cursor: pointer;
+		display: flex;
 		gap: 16px;
+		justify-content: space-between;
 		min-height: 48px;
 	}
 
@@ -95,8 +95,8 @@
 	}
 
 	svg {
-		min-width: 32px;
 		min-height: 32px;
+		min-width: 32px;
 		transition: transform 0.2s ease;
 	}
 
@@ -122,11 +122,11 @@
 	}
 
 	ul {
-		list-style: none;
-		padding: 0;
-		margin: var(--margin-sm) 0 0;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
+		list-style: none;
+		margin: var(--margin-sm) 0 0;
+		padding: 0;
 	}
 
 	li {
@@ -148,8 +148,8 @@
 		}
 
 		svg {
-			width: 28px;
 			height: 28px;
+			width: 28px;
 		}
 	}
 
@@ -163,8 +163,8 @@
 		}
 
 		svg {
-			width: 24px;
 			height: 24px;
+			width: 24px;
 		}
 
 		ul {

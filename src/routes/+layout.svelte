@@ -16,6 +16,9 @@
 				<li>
 					<a href="/denominations">Denominations</a>
 				</li>
+				<li>
+					<a href="/contact">Contact</a>
+				</li>
 			</ul>
 		</nav>
 		<h1 class="title"><a href="/">NAPARC Search</a></h1>
@@ -45,10 +48,10 @@
 	}
 
 	.app {
-		height: 100vh;
-		height: 100svh;
 		display: grid;
 		grid-template-rows: auto 1fr auto;
+		height: 100svh;
+		height: 100vh;
 	}
 
 	.title {
@@ -60,10 +63,10 @@
 	}
 
 	.footer {
+		align-items: flex-start;
 		align-self: end;
 		display: flex;
 		justify-content: space-between;
-		align-items: flex-start;
 		padding: 16px 32px 8px;
 	}
 
@@ -72,11 +75,12 @@
 	}
 
 	.nav ul {
+		display: flex;
+		gap: var(--padding);
+		justify-content: flex-end;
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		display: flex;
-		justify-content: flex-end;
 	}
 
 	.slot {
@@ -86,8 +90,8 @@
 
 	@media (max-width: 800px) {
 		.footer {
-			flex-direction: column-reverse;
 			align-items: center;
+			flex-direction: column-reverse;
 			gap: 16px;
 			padding: 16px;
 		}
