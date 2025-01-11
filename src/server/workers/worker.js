@@ -1,6 +1,7 @@
 import { parentPort, workerData } from 'worker_threads';
 import {
 	buildArpDenomination,
+	buildFrcnaDenomination,
 	buildHrcDenomination,
 	buildOpcDenomination,
 	buildPcaDenomination,
@@ -25,6 +26,7 @@ import {
  */
 const denominations = {
 	arpc: buildArpDenomination,
+	frcna: buildFrcnaDenomination,
 	hrc: buildHrcDenomination,
 	opc: buildOpcDenomination,
 	pca: buildPcaDenomination,
