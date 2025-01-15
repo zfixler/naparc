@@ -9,6 +9,7 @@ export async function load() {
 			name: true,
 			description: true,
 			id: true,
+			continental: true,
 			_count: {
 				select: {
 					congregations: true,

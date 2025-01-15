@@ -79,7 +79,7 @@ async function fetchCongregation(baseUrl, meta) {
 		if (el && $(el).html()?.includes('Classis:')) {
 			const sibling = $(el).next();
 			if (sibling.length) {
-				const name = sibling.find('a').text().trim();
+				const name = sibling.find('a').text().replace('Classis', '').trim();
 				const slug = slugify(name);
 				const id = uuidv5(slug, denominationNamespace);
 				congregation.presbytery = {
