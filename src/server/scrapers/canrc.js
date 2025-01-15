@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { v5 as uuidv5 } from 'uuid';
-import { batchUpsertCongregations, delayFetch, slugify } from '../utils/index.js';
+import { batchUpsertCongregations, slugify } from '../utils/index.js';
 
 const denominationNamespace = '84815bf6-a436-4eda-a5d9-bbef35466cf6';
 const denominationSlug = 'canrc';
@@ -18,7 +18,6 @@ const denominationSlug = 'canrc';
  * @param {Meta} meta - Metadata about each congregation
  */
 async function fetchCongregation(baseUrl, meta) {
-	await delayFetch();
 	const response = await fetch(`${baseUrl}/${meta.slug}`);
 	const html = await response.text();
 	const $ = cheerio.load(html);
@@ -130,7 +129,6 @@ async function buildCanrcDenomionation() {
 
 	for await (const meta of array) {
 		const congregation = await fetchCongregation(baseUrl, meta).catch((err) => console.error(err));
-		console.log(congregation);
 		if (congregation) denomination.push(congregation);
 	}
 
