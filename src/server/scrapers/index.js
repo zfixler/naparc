@@ -1,4 +1,5 @@
 export { default as buildArpDenomination } from './arp.js';
+export { default as buildCanrcDenomionation } from './canrc.js';
 export { default as buildFrcnaDenomination } from './frcna.js';
 export { default as buildHrcDenomination } from './hrc.js';
 export { default as buildOpcDenomination } from './opc.js';

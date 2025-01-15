@@ -47,6 +47,11 @@
 		margin: 0 auto;
 	}
 
+	.slot {
+		align-self: start;
+		margin: var(--margin) auto;
+	}
+
 	.app {
 		display: grid;
 		grid-template-rows: auto 1fr auto;
@@ -81,11 +86,6 @@
 		list-style: none;
 		margin: 0;
 		padding: 0;
-	}
-
-	.slot {
-		align-self: start;
-		margin: calc(var(--margin) * 2) auto;
 	}
 
 	@media (max-width: 800px) {
