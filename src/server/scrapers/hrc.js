@@ -117,6 +117,8 @@ async function buildHrcDenomination() {
 	}
 
 	await batchUpsertCongregations(denomination);
+
+	return denomination.length;
 }
 
 export default buildHrcDenomination;
