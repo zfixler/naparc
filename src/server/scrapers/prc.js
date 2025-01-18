@@ -123,16 +123,18 @@ async function scrapeCongregation(page) {
 
 async function buildPrcDenomination() {
 	const denomination = [];
-	const pages = await fetchPageUrls();
+	const pages = await fetchPageUrls().catch((error) => console.error(error));
 
-	for await (const page of pages) {
-		const congregation = await scrapeCongregation(page);
-		if (congregation) denomination.push(congregation);
-	}
+	if (pages && pages.length) {
+		for await (const page of pages) {
+			const congregation = await scrapeCongregation(page).catch((error) => console.error(error));
+			if (congregation) denomination.push(congregation);
+		}
 
-	if (denomination.length) {
-		await batchUpsertCongregations(denomination);
-		return denomination.length;
+		if (denomination.length) {
+			await batchUpsertCongregations(denomination);
+			return denomination.length;
+		}
 	}
 }
 
