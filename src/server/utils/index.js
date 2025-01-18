@@ -1,4 +1,4 @@
-import { setTimeout } from 'node:timers/promises';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { prisma } from '../../lib/prisma.js';
 
 /**
@@ -205,7 +205,44 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
  * @returns {Promise<void>} A promise that resolves after the delay.
  */
 export async function delayFetch() {
-	// Delay before executing fetch for a random amount of time between 2 adn 4 seconds
-	await setTimeout(Math.random() * (4000 - 2000 + 1) + 2000);
+	// Delay before executing fetch for a random amount of time between 2 and 4 seconds
+	await sleep(Math.random() * (4000 - 2000 + 1) + 2000);
 	return;
+}
+
+/**
+ * Geocodes an address by progressively removing parts of it and querying the Nominatim API.
+ * It tries different variations of the address, starting with the full address and progressively
+ * removing components to improve the chances of finding a valid geocoding result.
+ *
+ * @param {Array<string>} address - An array of address components (e.g., street, city, state, zip code).
+ * @returns {Promise<{latitude: number, longitude: number} | null>} - Returns an object with latitude and longitude if successful, or null if all attempts fail.
+ */
+export async function geocodeAddress(address) {
+	for (let i = 0; i < address.length + 1; i++) {
+		if (i > 0) address.shift();
+		const attempt = address.join(', ');
+		const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(attempt)}&format=json&limit=1`;
+
+		try {
+			const response = await fetch(url, {
+				headers: { 'User-Agent': `NAPARC Search (${process.env.MAIL_TO})` },
+			});
+			const data = await response.json();
+
+			if (data.length > 0) {
+				const { latitude, longitude } = data[0];
+				console.log(`✅ Found: ${attempt}`);
+				return { latitude, longitude };
+			}
+		} catch (error) {
+			console.error(`Error fetching data for ${attempt}:`, error);
+		}
+
+		// Wait between retries
+		await sleep(1000);
+	}
+
+	console.log(`❌ All attempts failed for: ${address}`);
+	return null;
 }
