@@ -1,9 +1,29 @@
 <script>
 	import { Congregation } from '$lib/features';
-	/** @type {{data: any}} */
+	/**
+	 * @typedef {import('@prisma/client').Presbytery} Presbytery
+	 * @typedef {import('@prisma/client').Denomination} Denomination
+	 * @typedef {import('@prisma/client').Congregation} Congregation
+	 */
+
+	/**
+	 * @type {{
+	 *   data: {
+	 *     presbytery: Presbytery & {
+	 *       denomination: Denomination,
+	 *       congregations: Congregation[]
+	 *     }
+	 *   }
+	 * }}
+	 */
 	let { data } = $props();
 	const { presbytery } = data;
 </script>
+
+<svelte:head>
+	<title>NAPARC Search | {presbytery.denomination.abbr} | {presbytery.name}</title>
+	<meta name="description" content={presbytery.denomination.description} />
+</svelte:head>
 
 {#if presbytery}
 	<header class="header">

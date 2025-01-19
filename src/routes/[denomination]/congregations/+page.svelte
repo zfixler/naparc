@@ -11,6 +11,11 @@
 	let hasMultiplePages = $derived(data.totalPages ? data.totalPages > 1 : false);
 </script>
 
+<svelte:head>
+	<title>NAPARC Search | {data.denomination.abbr}</title>
+	<meta name="description" content={data.denomination.description} />
+</svelte:head>
+
 <header class="header">
 	<h1 class="denomination">{data.denomination.name}</h1>
 	<p class="results">

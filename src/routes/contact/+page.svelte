@@ -40,6 +40,11 @@
 	let isValid = $derived(Object.values(validation).every((input) => input.isValid));
 </script>
 
+<svelte:head>
+	<title>NAPARC Search | Contact</title>
+	<meta name="description" content="Search and explore NAPARC churches near you." />
+</svelte:head>
+
 <div class="container">
 	<h2>Contact Form</h2>
 	{#if form?.success}

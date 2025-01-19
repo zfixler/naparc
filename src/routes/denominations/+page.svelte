@@ -5,6 +5,11 @@
 	const { denominations } = data;
 </script>
 
+<svelte:head>
+	<title>NAPARC Search | Denominations</title>
+	<meta name="description" content="Search and explore NAPARC churches near you." />
+</svelte:head>
+
 <p>
 	Denominations that are currently supported by this search are indicated with <svg
 		xmlns="http://www.w3.org/2000/svg"
