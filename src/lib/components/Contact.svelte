@@ -10,7 +10,7 @@
 			: null;
 </script>
 
-<p class="contact link">
+<p class={['contact', 'link', { multiplePastors }]}>
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		class="icon"
@@ -39,8 +39,12 @@
 
 	.link {
 		display: flex;
-		align-items: start;
+		align-items: center;
 		gap: 8px;
 		max-width: 100%;
+	}
+
+	.multiplePastors {
+		align-items: start;
 	}
 </style>
