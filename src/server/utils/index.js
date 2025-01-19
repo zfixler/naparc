@@ -231,9 +231,9 @@ export async function geocodeAddress(address) {
 			const data = await response.json();
 
 			if (data.length > 0) {
-				const { latitude, longitude } = data[0];
+				const { lat, lon } = data[0];
 				console.log(`✅ Found: ${attempt}`);
-				return { latitude, longitude };
+				return { latitude: parseFloat(lat), longitude: parseFloat(lon) };
 			}
 		} catch (error) {
 			console.error(`Error fetching data for ${attempt}:`, error);
