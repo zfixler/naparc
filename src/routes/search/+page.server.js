@@ -17,6 +17,8 @@ export async function load({ url }) {
 		return {
 			location,
 			radius,
+			lat,
+			lon,
 			congregations: results,
 			totalResults,
 			page,
