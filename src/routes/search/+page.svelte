@@ -1,10 +1,22 @@
 <script>
 	import { page } from '$app/state';
+	import { Head, Pagination } from '$lib/components';
 	import { Congregation } from '$lib/features';
-	import { Pagination } from '$lib/components';
 	import { calculateViewedResults } from '$lib/utils';
 
-	/** @type {{data: any}} */
+	/**
+	 * @type {{
+	 *   data: {
+	 *     page: number;
+	 *     totalResults: number;
+	 *     totalPages: number;
+	 *	   location: string,
+	 *	   radius: number,
+	 *     denomination: import('@prisma/client').Denomination;
+	 *     congregations: Array<import('@prisma/client').Congregation>;
+	 *   }
+	 * }}
+	 */
 	let { data } = $props();
 
 	let viewingResults = $derived(calculateViewedResults(data.page, data.totalResults));
@@ -19,10 +31,7 @@
 	</p>
 </section>
 
-<svelte:head>
-	<title>NAPARC Search | Results for {data.location}</title>
-	<meta name="description" content="Search and explore NAPARC churches near you." />
-</svelte:head>
+<Head title="NAPARC Search | Results for {data.location}" />
 
 {#if data.congregations}
 	{#key page.url}

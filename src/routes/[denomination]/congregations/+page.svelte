@@ -1,20 +1,29 @@
 <script>
 	import { page } from '$app/state';
-	import { Pagination } from '$lib/components';
+	import { Head, Pagination } from '$lib/components';
 	import { Congregation } from '$lib/features';
 	import { calculateViewedResults } from '$lib/utils';
 
-	/** @type {{data: any}} */
+	/**
+	 * @type {{
+	 *   data: {
+	 *     page: number;
+	 *     totalResults: number;
+	 *     totalPages: number;
+	 *     denomination: import('@prisma/client').Denomination;
+	 *     congregations: Array<import('@prisma/client').Congregation>;
+	 *   }
+	 * }}
+	 */
 	let { data } = $props();
 
 	let viewingResults = $derived(calculateViewedResults(data.page, data.totalResults));
 	let hasMultiplePages = $derived(data.totalPages ? data.totalPages > 1 : false);
 </script>
 
-<svelte:head>
-	<title>NAPARC Search | {data.denomination.abbr}</title>
-	<meta name="description" content={data.denomination.description} />
-</svelte:head>
+<Head
+	title="NAPARC Search | {data.denomination.abbr}"
+	description={data.denomination.description} />
 
 <header class="header">
 	<h1 class="denomination">{data.denomination.name}</h1>

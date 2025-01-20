@@ -1,14 +1,12 @@
 <script>
+	import { Head } from '$lib/components';
 	import { Denomination } from '$lib/features';
-	/** @type {{data: any}} */
+	/** @type {{data: { denominations: Array<import('@prisma/client').Denomination> }}} */
 	let { data } = $props();
 	const { denominations } = data;
 </script>
 
-<svelte:head>
-	<title>NAPARC Search | Denominations</title>
-	<meta name="description" content="Search and explore NAPARC churches near you." />
-</svelte:head>
+<Head title="NAPARC Search | Denominations" />
 
 <p>
 	Denominations that are currently supported by this search are indicated with <svg

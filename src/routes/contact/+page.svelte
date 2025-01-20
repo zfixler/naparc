@@ -1,4 +1,5 @@
 <script>
+	import { Head } from '$lib/components';
 	import { validateEmail, validateMessage, validateName } from '$lib/utils/validation';
 
 	const { form } = $props();
@@ -40,10 +41,7 @@
 	let isValid = $derived(Object.values(validation).every((input) => input.isValid));
 </script>
 
-<svelte:head>
-	<title>NAPARC Search | Contact</title>
-	<meta name="description" content="Search and explore NAPARC churches near you." />
-</svelte:head>
+<Head title="NAPARC Search | Contact" />
 
 <div class="container">
 	<h2>Contact Form</h2>

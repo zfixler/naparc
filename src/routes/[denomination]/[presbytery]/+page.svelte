@@ -1,4 +1,5 @@
 <script>
+	import { Head } from '$lib/components';
 	import { Congregation } from '$lib/features';
 	/**
 	 * @typedef {import('@prisma/client').Presbytery} Presbytery
@@ -20,10 +21,9 @@
 	const { presbytery } = data;
 </script>
 
-<svelte:head>
-	<title>NAPARC Search | {presbytery.denomination.abbr} | {presbytery.name}</title>
-	<meta name="description" content={presbytery.denomination.description} />
-</svelte:head>
+<Head
+	title="NAPARC Search | {presbytery.denomination.abbr} | {presbytery.name}"
+	description={presbytery.denomination.description} />
 
 {#if presbytery}
 	<header class="header">

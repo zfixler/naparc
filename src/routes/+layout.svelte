@@ -3,7 +3,7 @@
 	import { Search } from '$lib/features';
 	import '@fontsource-variable/outfit';
 	import '../app.css';
-	/** @type {{data: any, children?: import('svelte').Snippet}} */
+	/** @type {{data: { denominations: Array<import('./+layout.server.js').DenominationMeta> }, children?: import('svelte').Snippet}} */
 	let { data, children } = $props();
 
 	const year = new Date().getFullYear();
