@@ -5,6 +5,7 @@ export { default as Email } from './Email.svelte';
 export { default as Head } from './Head.svelte';
 export { default as Header } from './Header.svelte';
 export { default as Location } from './Location.svelte';
+export { default as Map } from './Map.svelte';
 export { default as Pagination } from './Pagination.svelte';
 export { default as Phone } from './Phone.svelte';
 export { default as SchemeToggle } from './SchemeToggle.svelte';
