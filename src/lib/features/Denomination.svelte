@@ -1,10 +1,13 @@
 <script>
 	import { page } from '$app/state';
-	/** @type {{denomination: any}} */
+	/** @type {{denomination: import('../../routes/denominations/+page.server.js').ExtendedDenomination}} */
 	let { denomination } = $props();
-	const { slug, name, description, presbyteries, continental, _count } = denomination;
+	const { slug, name, description, presbyteries, continental, _count, scrapeLogs } = denomination;
 
 	let shouldShowDetails = page.url.hash === `#${slug}`;
+	const completedAt = scrapeLogs[0].completedAt
+		? new Intl.DateTimeFormat('en-US').format(scrapeLogs[0].completedAt)
+		: null;
 </script>
 
 <details class="section" open={shouldShowDetails}>
@@ -49,6 +52,9 @@
 			There are currently no {continental ? 'classis' : 'presbyteries'} supported for this denomination.
 		{/if}
 	</div>
+	{#if completedAt}
+		<small class="updated">Updated on {completedAt}</small>
+	{/if}
 </details>
 
 <style>
@@ -135,6 +141,11 @@
 
 	.check-icon {
 		color: var(--accent);
+	}
+
+	.updated {
+		display: flex;
+		justify-self: end;
 	}
 
 	@media (max-width: 800px) {

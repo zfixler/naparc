@@ -1,7 +1,7 @@
 <script>
 	import { Head } from '$lib/components';
 	import { Denomination } from '$lib/features';
-	/** @type {{data: { denominations: Array<import('@prisma/client').Denomination> }}} */
+	/** @type {{data: { denominations: Array<import('./+page.server').ExtendedDenomination> }}} */
 	let { data } = $props();
 	const { denominations } = data;
 </script>
