@@ -9,11 +9,12 @@
 		presbyteryName,
 		presbyterySlug,
 		isContinental,
+		id,
 	} = props;
 </script>
 
 <header class="header">
-	<h3 class="title">{name}</h3>
+	<h3 class="title" {id}>{name}</h3>
 	{#if distance}
 		<aside class="aside">
 			<span title={denominationName} data-toggle="tooltip">

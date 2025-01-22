@@ -17,6 +17,7 @@
 		presbyteryName,
 		presbyterySlug,
 		isContinental,
+		id,
 	} = congregation;
 </script>
 
@@ -30,6 +31,7 @@
 			presbyteryName,
 			presbyterySlug,
 			isContinental,
+			id,
 		}} />
 	<div class="content">
 		<div class="address">

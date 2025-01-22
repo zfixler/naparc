@@ -28,7 +28,7 @@
 		// Add markers from locations
 		locations.forEach((location) => {
 			const popup = L.popup({
-				content: `<strong>${location.name}</strong><br>${location.address}`,
+				content: `<strong><a href="#${location.id}">${location.name}</a></strong><br>${location.address}`,
 				className: 'popup',
 			});
 			L.marker([location.lat, location.lon], { icon: svgIcon }).addTo(map).bindPopup(popup);

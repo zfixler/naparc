@@ -28,20 +28,21 @@
 <Head title="NAPARC Search | Results for {data.location}" />
 
 {#key page.url}
-	<section class="result-header">
-		<h2>Search Results:</h2>
-		<p>
-			{data.location}. Viewing results ({viewingResults.startIndex} to {viewingResults.endIndex}
-			of {data.totalResults}) within {data.radius} miles.
-		</p>
-	</section>
+	{#if data.congregations.length}
+		<section class="result-header">
+			<h2>Search Results:</h2>
+			<p>
+				{data.location}. Viewing results ({viewingResults.startIndex} to {viewingResults.endIndex}
+				of {data.totalResults}) within {data.radius} miles.
+			</p>
+		</section>
 
-	<Map lat={parseFloat(data.lat)} lon={parseFloat(data.lon)} locations={data.congregations} />
-
-	{#if data.congregations}
+		<Map lat={parseFloat(data.lat)} lon={parseFloat(data.lon)} locations={data.congregations} />
 		{#each data.congregations as congregation}
 			<Congregation {congregation} />
 		{/each}
+	{:else}
+		<p>Your search did not return any results.</p>
 	{/if}
 
 	{#if hasMultiplePages}
