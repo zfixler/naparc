@@ -27,7 +27,7 @@
 
 <Head title="NAPARC Search | Results for {data.location}" />
 
-{#key page.url}
+{#key page.url.search}
 	{#if data.congregations.length}
 		<section class="result-header">
 			<h2>Search Results:</h2>
