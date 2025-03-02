@@ -67,22 +67,20 @@ export const actions = {
 		}
 
 		const transporter = nodemailer.createTransport({
-			// @ts-ignore
-			host: process.env.MAILTRAP_HOST,
-			port: process.env.MAILTRAP_PORT,
+			service: process.env.MAIL_SERVICE,
 			secure: false,
 			auth: {
-				user: process.env.MAILTRAP_USER,
-				pass: process.env.MAILTRAP_PASS,
+				user: process.env.MAIL_USER,
+				pass: process.env.MAIL_PASS,
 			},
 		});
 
 		const mailOptions = {
 			from: {
 				name: 'NAPARC Search',
-				address: process.env.EMAIL_FROM || '',
+				address: process.env.MAIL_ADDRESS || '',
 			},
-			to: process.env.EMAIL_TO,
+			to: process.env.MAIL_ADDRESS,
 			subject: 'New Contact Form Submission',
 			html: `<h1>New Contact Form Submission</h1>
                    <p><strong>Name:</strong> ${sanitized_name}</p>
