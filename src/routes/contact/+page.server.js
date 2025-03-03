@@ -1,6 +1,6 @@
+import { validateEmail, validateMessage, validateName } from '$lib/utils/validation';
 import { fail } from '@sveltejs/kit';
 import nodemailer from 'nodemailer';
-import { validateEmail, validateName, validateMessage } from '$lib/utils/validation';
 
 const requestCounts = new Map();
 const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
@@ -12,6 +12,7 @@ export const actions = {
 		const ip = getClientAddress();
 		const now = Date.now();
 
+		// Rate limit requests
 		if (!requestCounts.has(ip)) {
 			requestCounts.set(ip, []);
 		}
@@ -29,10 +30,29 @@ export const actions = {
 		}
 
 		const formData = await request.formData();
+		const token = formData.get('cf-turnstile-response') || '';
 		const name = formData.get('name')?.toString();
 		const email = formData.get('email')?.toString();
 		const message = formData.get('message')?.toString();
 
+		// Validate Cloudflare turnstile token
+		const turnstileData = new FormData();
+		turnstileData.append('secret', process.env.TURNSTILE_KEY || '');
+		turnstileData.append('response', token);
+		turnstileData.append('remoteip', ip);
+
+		const turnstileResponse = await fetch(
+			'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+			{ body: turnstileData, method: 'POST' },
+		);
+
+		const turnstileOutcome = await turnstileResponse.json();
+
+		if (!turnstileOutcome.success) {
+			return fail(400, { message: 'The provided Turnstile token was not valid!', turnstile: true });
+		}
+
+		// Validate form data
 		const [isValidName, nameError] = validateName(name);
 		if (!isValidName) {
 			return fail(400, { name, errorMessage: nameError });
@@ -69,17 +89,11 @@ export const actions = {
 		const transporter = nodemailer.createTransport({
 			service: process.env.MAIL_SERVICE,
 			secure: false,
-			auth: {
-				user: process.env.MAIL_USER,
-				pass: process.env.MAIL_PASS,
-			},
+			auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
 		});
 
 		const mailOptions = {
-			from: {
-				name: 'NAPARC Search',
-				address: process.env.MAIL_ADDRESS || '',
-			},
+			from: { name: 'NAPARC Search', address: process.env.MAIL_ADDRESS || '' },
 			to: process.env.MAIL_ADDRESS,
 			subject: 'New Contact Form Submission',
 			html: `<h1>New Contact Form Submission</h1>
@@ -100,9 +114,6 @@ export const actions = {
 			}
 		});
 
-		return {
-			success: true,
-			message: 'Form submitted successfully!',
-		};
+		return { success: true, message: 'Form submitted successfully!' };
 	},
 };

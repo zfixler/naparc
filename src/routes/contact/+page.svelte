@@ -43,6 +43,10 @@
 
 <Head title="NAPARC Search | Contact" />
 
+<svelte:head>
+	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
+</svelte:head>
+
 <div class="container">
 	<h2>Contact Form</h2>
 	{#if form?.success}
@@ -70,7 +74,12 @@
 					<p class="error">{validation.message.error}</p>
 				{/if}
 			</label>
-			<button class="submit" disabled={!isValid}>Submit</button>
+			<div class="submit-section">
+				<!-- The following line controls and configures the Turnstile widget. -->
+				<div class="cf-turnstile" data-sitekey="0x4AAAAAAA48WcuzD5GrJzTm" data-theme="light"></div>
+				<!-- end. -->
+				<button class="submit" disabled={!isValid}>Submit</button>
+			</div>
 		</form>
 	{/if}
 </div>
@@ -138,6 +147,12 @@
 
 	.submit:disabled {
 		background-color: var(--gray-3);
+	}
+
+	.submit-section {
+		display: flex;
+		justify-content: space-between;
+		align-items: end;
 	}
 
 	.error {
