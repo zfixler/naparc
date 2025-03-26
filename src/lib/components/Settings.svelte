@@ -105,7 +105,7 @@
 		position: absolute;
 		right: 0;
 		top: 58px;
-		z-index: 1000;
+		z-index: 1500;
 	}
 
 	.container {

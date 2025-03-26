@@ -162,6 +162,11 @@
 			height: 28px;
 			width: 28px;
 		}
+
+		.updated {
+			justify-self: start;
+			margin-top: 8px;
+		}
 	}
 
 	@media (max-width: 480px) {
