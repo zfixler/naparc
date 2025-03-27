@@ -33,7 +33,7 @@
 </header>
 <div class="container">
 	{#key page.url}
-		{#each data.congregations as congregation}
+		{#each data.congregations as congregation (congregation.id)}
 			<Congregation {congregation} />
 		{/each}
 	{/key}

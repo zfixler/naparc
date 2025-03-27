@@ -40,7 +40,7 @@
 		{#if presbyteries.length}
 			<b>{continental ? 'Classis:' : 'Presbyteries:'}</b>
 			<ul>
-				{#each presbyteries as presbytery}
+				{#each presbyteries as presbytery (presbytery.slug)}
 					<li>
 						<a href={`/${slug}/${presbytery.slug}`}>{presbytery.name}</a>
 					</li>

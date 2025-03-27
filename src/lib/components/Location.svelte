@@ -130,7 +130,7 @@
 				{#if options.length === 0}
 					<div class="option">No locations found..</div>
 				{:else}
-					{#each options as option}
+					{#each options as option (option.id)}
 						<button type="button" class="option" onclick={() => handleOptionSelection(option)}
 							>{option.body.label}</button>
 					{/each}

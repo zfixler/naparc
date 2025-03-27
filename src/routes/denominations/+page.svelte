@@ -20,6 +20,6 @@
 	>.
 </p>
 
-{#each denominations as denomination}
+{#each denominations as denomination (denomination.id)}
 	<Denomination {denomination} />
 {/each}

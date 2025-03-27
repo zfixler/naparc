@@ -47,7 +47,7 @@
 				<main class="main">
 					<section class="section">
 						<h3 class="subtitle">Denominations</h3>
-						{#each settings.included as denom}
+						{#each settings.included as denom (denom.slug)}
 							<label class="label" for={denom.slug}>
 								<input
 									class="checkbox"

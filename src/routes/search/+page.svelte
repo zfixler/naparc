@@ -38,7 +38,7 @@
 		</section>
 
 		<Map lat={parseFloat(data.lat)} lon={parseFloat(data.lon)} locations={data.congregations} />
-		{#each data.congregations as congregation}
+		{#each data.congregations as congregation (congregation.id)}
 			<Congregation {congregation} />
 		{/each}
 	{:else}

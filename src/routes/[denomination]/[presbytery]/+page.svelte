@@ -38,7 +38,7 @@
 		</h2>
 	</header>
 	<div class="container">
-		{#each presbytery.congregations as congregation}
+		{#each presbytery.congregations as congregation (congregation.id)}
 			<Congregation {congregation} />
 		{/each}
 	</div>
