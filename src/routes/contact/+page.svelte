@@ -137,7 +137,10 @@
 	}
 
 	.submit:disabled {
-		background-color: var(--gray-3);
+		background-color: var(--bg-ff);
+		color: var(--primary);
+		cursor: not-allowed;
+		opacity: 0.5;
 	}
 
 	.error {
