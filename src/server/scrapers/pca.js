@@ -1,5 +1,5 @@
 import { v5 as uuidv5 } from 'uuid';
-import { slugify, batchUpsertCongregations } from '../utils/index.js';
+import { batchUpsertCongregations, slugify } from '../utils/index.js';
 
 /**
  * @typedef {Object} LocationData
@@ -45,7 +45,7 @@ import { slugify, batchUpsertCongregations } from '../utils/index.js';
  * @param {string} string - The input string containing the JSON data.
  * @returns {SourceJSON|undefined} The parsed JSON object, or undefined if extraction fails.
  */
-function extractDirectoryJson(string) {
+export function extractDirectoryJson(string) {
 	const startIndex = string.indexOf('per = ') + 6;
 	const endIndex = string.indexOf('};', startIndex) + 1;
 	if (startIndex !== -1 && endIndex !== -1) {
@@ -53,27 +53,21 @@ function extractDirectoryJson(string) {
 	}
 }
 
-async function buildPcaDenomination() {
-	const response = await fetch(
-		'https://static.batchgeo.com/map/json/fed353c376144b1fed2f5e29150c2531/1709202319?_=1709342272827',
-	);
-	const data = await response.text();
-	const json = extractDirectoryJson(data);
-
-	if (!json) {
-		console.log('JSON Extraction failed.');
-		return;
-	}
-
+/**
+ * Extracts church data from the provided JSON object.
+ * @param {SourceJSON} json
+ */
+export function extractChurchData(json) {
 	const denominationNamespace = 'cc90b134-4d0d-4769-95f2-cd63a821baf7';
 	const denominationSlug = 'pca';
 
-	const denomination = json.mapRS.map((value, index) => {
+	return json.mapRS.map((value, index) => {
 		const phone = json.dataRS[index][7];
 		const pastor = json.dataRS[index][10];
 		const presbytery = json.dataRS[index][11];
 		const presbyteryUuid = uuidv5(presbytery, denominationNamespace);
-		const id = uuidv5(value.t, presbyteryUuid);
+		const idSeed = `${value.ln}_${value.lt}_${value.t}`;
+		const id = uuidv5(idSeed, presbyteryUuid);
 
 		return {
 			id,
@@ -99,6 +93,21 @@ async function buildPcaDenomination() {
 			createdAt: null,
 		};
 	});
+}
+
+async function buildPcaDenomination() {
+	const response = await fetch(
+		'https://static.batchgeo.com/map/json/fed353c376144b1fed2f5e29150c2531/1709202319?_=1709342272827',
+	);
+	const data = await response.text();
+	const json = extractDirectoryJson(data);
+
+	if (!json) {
+		console.log('JSON Extraction failed.');
+		return;
+	}
+
+	const denomination = extractChurchData(json);
 
 	await batchUpsertCongregations([...denomination]);
 
