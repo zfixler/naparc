@@ -181,9 +181,10 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 				}
 
 				for (const congregation of toUpdate) {
+					const { id, ...updateData } = congregation;
 					await tx.congregation.update({
-						where: { id: congregation.id },
-						data: congregation,
+						where: { id },
+						data: updateData,
 					});
 				}
 			});
