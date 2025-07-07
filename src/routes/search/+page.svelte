@@ -21,13 +21,15 @@
 	 */
 	let { data } = $props();
 
+	let search = $derived(page.url.search);
+
 	let viewingResults = $derived(calculateViewedResults(data.page, data.totalResults));
 	let hasMultiplePages = $derived(data.totalPages ? data.totalPages > 1 : false);
 </script>
 
 <Head title="NAPARC Search | Results for {data.location}" />
 
-{#key page.url.search}
+{#key search}
 	{#if data.congregations.length}
 		<section class="result-header">
 			<h2>Search Results:</h2>
