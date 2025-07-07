@@ -81,6 +81,8 @@
 			params.append('excluded', excluded.join(','));
 		}
 
+		params.append('pg', '1');
+
 		settings.hasSavedSettings = false;
 		shouldShowMenu = false;
 
