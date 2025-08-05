@@ -122,6 +122,7 @@ export function getAddressLabel(addressString) {
  * @property {string} id - The unique identifier of the presbytery.
  */
 export async function batchUpsertCongregations(congregationsArray, batchSize = 100) {
+	console.log(congregationsArray.length, 'congregations to process');
 	// Extract presbyteries from congregations
 	const presbyteries = congregationsArray
 		.map((c) => c.presbytery)
@@ -151,9 +152,12 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 		);
 
 	const batches = [];
+
 	for (let i = 0; i < congregations.length; i += batchSize) {
 		batches.push(congregations.slice(i, i + batchSize));
 	}
+
+	console.log('batches:', batches.length);
 
 	let successCount = 0;
 	for (const batch of batches) {
@@ -197,6 +201,40 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 				console.error('Failed batch data:', batch);
 			}
 		}
+	}
+
+	// --- Scoped deletion of congregations no longer present ---
+	const scrapedIds = congregations.map((c) => c.id);
+	const denominationSlug = congregations[0]?.denominationSlug;
+
+	if (!denominationSlug) {
+		console.warn('No denominationSlug found, skipping deletion of missing congregations.');
+	}
+
+	if (scrapedIds.length > 0 && denominationSlug) {
+		try {
+			const existingIds = (
+				await prisma.congregation.findMany({
+					where: { denominationSlug },
+					select: { id: true },
+				})
+			).map((c) => c.id);
+
+			const toDelete = existingIds.filter((id) => !scrapedIds.includes(id));
+
+			if (toDelete.length > 0) {
+				await prisma.congregation.deleteMany({
+					where: { id: { in: toDelete } },
+				});
+				console.log(`Deleted ${toDelete.length} congregations for ${denominationSlug}`);
+			}
+		} catch (error) {
+			console.error('Failed to remove missing congregations:', error);
+		}
+	} else {
+		console.warn(
+			`Skipping deletion: scrapedIds.length=${scrapedIds.length}, denominationSlug=${denominationSlug}`,
+		);
 	}
 }
 
