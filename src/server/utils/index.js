@@ -157,8 +157,6 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 		batches.push(congregations.slice(i, i + batchSize));
 	}
 
-	console.log('batches:', batches.length);
-
 	let successCount = 0;
 	for (const batch of batches) {
 		try {
@@ -181,14 +179,14 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 
 				// Perform batch operations
 				if (toCreate.length) {
-					await tx.congregation.createMany({ data: toCreate });
+					await tx.congregation.createMany({ data: { ...toCreate, createdAt: new Date() } });
 				}
 
 				for (const congregation of toUpdate) {
 					const { id, ...updateData } = congregation;
 					await tx.congregation.update({
 						where: { id },
-						data: updateData,
+						data: { ...updateData, updatedAt: new Date() },
 					});
 				}
 			});
