@@ -1,4 +1,5 @@
 import { prisma } from '$lib/prisma';
+import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ params }) {
@@ -14,5 +15,10 @@ export async function load({ params }) {
 			denomination: true,
 		},
 	});
+
+	if (!presbytery) {
+		error(404, 'Not found');
+	}
+
 	return { presbytery };
 }

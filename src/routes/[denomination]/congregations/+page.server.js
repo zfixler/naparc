@@ -1,5 +1,6 @@
 import { prisma } from '$lib/prisma';
 import { paginateResults } from '$lib/utils';
+import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ params, url }) {
@@ -15,6 +16,10 @@ export async function load({ params, url }) {
 			slug: params.denomination,
 		},
 	});
+
+	if (!denomination) {
+		error(404, 'Not found');
+	}
 
 	const { page, results, totalPages, totalResults } = paginateResults(pg, congregations);
 

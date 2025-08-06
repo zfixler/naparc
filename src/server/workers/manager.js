@@ -30,18 +30,29 @@ export class Manager {
 		const { completedAt, attemptedAt } = scrapeLog;
 
 		/**
-		 * @param {number | Date | null} attemptedAt
-		 * @param {number | Date | null} completedAt
-		 * @param {number | Date} threeDaysAgo
-		 * @param {number | Date} oneDayAgo
+		 * @param {Date | null} attemptedAt
+		 * @param {Date | null} completedAt
+		 * @param {Date} threeDaysAgo
+		 * @param {Date} oneDayAgo
+		 * @returns {boolean}
 		 */
 		function shouldStartScrape(attemptedAt, completedAt, threeDaysAgo, oneDayAgo) {
-			const isNeverRun = !completedAt && !attemptedAt;
-			const isOldCompletion = completedAt && completedAt < threeDaysAgo;
-			const canRetryAfterFailure =
-				attemptedAt && completedAt && completedAt < threeDaysAgo && attemptedAt < oneDayAgo;
+			const hasNeverBeenAttempted = !attemptedAt;
+			if (hasNeverBeenAttempted) return true;
 
-			return isNeverRun || isOldCompletion || canRetryAfterFailure;
+			const wasSuccessful = completedAt && completedAt >= attemptedAt;
+			if (wasSuccessful) {
+				const isOld = completedAt < threeDaysAgo;
+				return isOld;
+			}
+
+			const hasFailed = !completedAt || completedAt < attemptedAt;
+			if (hasFailed) {
+				const isReadyForRetry = attemptedAt < oneDayAgo;
+				return isReadyForRetry;
+			}
+
+			return false;
 		}
 
 		if (shouldStartScrape(attemptedAt, completedAt, threeDaysAgo, oneDayAgo)) {
