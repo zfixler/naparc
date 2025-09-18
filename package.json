@@ -40,6 +40,7 @@
 		"@fontsource-variable/outfit": "^5.2.8",
 		"@prisma/client": "^6.16.2",
 		"@sveltejs/adapter-node": "^5.3.2",
+		"@sveltejs/adapter-vercel": "^5.10.2",
 		"cheerio": "^1.1.2",
 		"leaflet": "^1.9.4",
 		"nodemailer": "^7.0.6",
