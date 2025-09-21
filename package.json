@@ -6,7 +6,7 @@
 		"dev": "vite dev",
 		"studio": "npx prisma studio",
 		"build": "vite build",
-		"preview": "vite preview",
+		"preview": "vite preview --port $PORT --host",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
 		"seed": "node prisma/seed.js",
