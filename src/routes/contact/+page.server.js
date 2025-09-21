@@ -1,6 +1,6 @@
+import { validateEmail, validateMessage, validateName } from '$lib/utils/validation';
 import { fail } from '@sveltejs/kit';
 import nodemailer from 'nodemailer';
-import { validateEmail, validateName, validateMessage } from '$lib/utils/validation';
 
 const requestCounts = new Map();
 const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
@@ -68,41 +68,37 @@ export const actions = {
 
 		const transporter = nodemailer.createTransport({
 			service: process.env.MAIL_SERVICE,
-			secure: false,
 			auth: {
-				user: process.env.MAIL_USER,
-				pass: process.env.MAIL_PASS,
+				user: process.env.MAIL_USER || '',
+				pass: process.env.MAIL_PASS || '',
 			},
 		});
 
 		const mailOptions = {
 			from: {
 				name: 'NAPARC Search',
-				address: process.env.MAIL_ADDRESS || '',
+				address: process.env.MAIL_USER || '',
 			},
-			to: process.env.MAIL_ADDRESS,
+			to: process.env.MAIL_USER,
 			subject: 'New Contact Form Submission',
 			html: `<h1>New Contact Form Submission</h1>
-                   <p><strong>Name:</strong> ${sanitized_name}</p>
-                   <p><strong>Email:</strong> ${sanitized_email}</p>
-                   <p><strong>Message:</strong></p>
-                   <p>${sanitized_message}</p>`,
+         <p><strong>Name:</strong> ${sanitized_name}</p>
+         <p><strong>Email:</strong> ${sanitized_email}</p>
+         <p><strong>Message:</strong></p>
+         <p>${sanitized_message}</p>`,
 		};
 
-		// Send the email
-		transporter.sendMail(mailOptions, (error, info) => {
-			if (error) {
-				console.error('Error sending email:', error);
-				return fail(500, { error: 'Failed to send email' });
-			} else {
-				console.log('Email sent:', info.response);
-				return { success: true };
-			}
-		});
+		try {
+			const info = await transporter.sendMail(mailOptions);
+			console.log('Email sent:', info.response);
 
-		return {
-			success: true,
-			message: 'Form submitted successfully!',
-		};
+			return {
+				success: true,
+				message: 'Form submitted successfully!',
+			};
+		} catch (err) {
+			console.error('Error sending email:', err);
+			return fail(500, { error: 'Failed to send email' });
+		}
 	},
 };
