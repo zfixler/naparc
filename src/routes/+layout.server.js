@@ -28,9 +28,22 @@ export async function load() {
 		},
 	});
 
-	denominations.forEach(({ slug }) =>
-		scrapeManager.checkAndScrape(slug).catch((error) => console.error(error)),
-	);
+	// Trigger scraping for one denomination at a time to prevent overwhelming the connection pool
+	// Process them sequentially with a small delay to avoid concurrent database operations
+	setTimeout(async () => {
+		for (const { slug } of denominations) {
+			try {
+				await scrapeManager.checkAndScrape(slug);
+				// Small delay between denominations to prevent connection pool exhaustion
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+			} catch (error) {
+				console.error(
+					`Failed to scrape ${slug}:`,
+					error instanceof Error ? error.message : 'Unknown error',
+				);
+			}
+		}
+	}, 100); // Small initial delay to ensure response is sent first
 
 	return {
 		denominations,

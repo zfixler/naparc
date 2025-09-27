@@ -1,9 +1,32 @@
 import { prisma } from '$lib/prisma';
-import { Worker } from 'worker_threads';
+import {
+	buildArpDenomination,
+	buildCanrcDenomionation,
+	buildFrcnaDenomination,
+	buildHrcDenomination,
+	buildOpcDenomination,
+	buildPcaDenomination,
+	buildPrcDenomination,
+	buildRcusDenomination,
+	buildRpcnaDenomination,
+	buildUrcnaDenomination,
+} from '../scrapers/index.js';
+
+const denominations = {
+	arpc: buildArpDenomination,
+	canrc: buildCanrcDenomionation,
+	frcna: buildFrcnaDenomination,
+	hrc: buildHrcDenomination,
+	opc: buildOpcDenomination,
+	pca: buildPcaDenomination,
+	prc: buildPrcDenomination,
+	rcus: buildRcusDenomination,
+	rpcna: buildRpcnaDenomination,
+	urcna: buildUrcnaDenomination,
+};
 
 export class Manager {
 	constructor() {
-		this.activeWorkers = new Set();
 		this.activeScrapes = new Map();
 	}
 
@@ -20,122 +43,108 @@ export class Manager {
 			return;
 		}
 
-		const scrapeLog = await prisma.scrapeLog.findUnique({
-			where: { denominationSlug },
-			select: { completedAt: true, attemptedAt: true },
-		});
+		// Add this denomination to active scrapes to prevent concurrent runs
+		this.activeScrapes.set(denominationSlug, true);
 
-		if (!scrapeLog) return;
+		try {
+			const scrapeLog = await prisma.scrapeLog.findUnique({
+				where: { denominationSlug },
+				select: { completedAt: true, attemptedAt: true },
+			});
 
-		const { completedAt, attemptedAt } = scrapeLog;
-
-		/**
-		 * @param {Date | null} attemptedAt
-		 * @param {Date | null} completedAt
-		 * @param {Date} threeDaysAgo
-		 * @param {Date} oneDayAgo
-		 * @returns {boolean}
-		 */
-		function shouldStartScrape(attemptedAt, completedAt, threeDaysAgo, oneDayAgo) {
-			const hasNeverBeenAttempted = !attemptedAt;
-			if (hasNeverBeenAttempted) return true;
-
-			const wasSuccessful = completedAt && completedAt >= attemptedAt;
-			if (wasSuccessful) {
-				const isOld = completedAt < threeDaysAgo;
-				return isOld;
+			if (!scrapeLog) {
+				this.activeScrapes.delete(denominationSlug);
+				return;
 			}
 
-			const hasFailed = !completedAt || completedAt < attemptedAt;
-			if (hasFailed) {
-				const isReadyForRetry = attemptedAt < oneDayAgo;
-				return isReadyForRetry;
+			const { completedAt, attemptedAt } = scrapeLog;
+
+			/**
+			 * @param {Date | null} attemptedAt
+			 * @param {Date | null} completedAt
+			 * @param {Date} threeDaysAgo
+			 * @param {Date} oneDayAgo
+			 * @returns {boolean}
+			 */
+			function shouldStartScrape(attemptedAt, completedAt, threeDaysAgo, oneDayAgo) {
+				const hasNeverBeenAttempted = !attemptedAt;
+				if (hasNeverBeenAttempted) return true;
+
+				const wasSuccessful = completedAt && completedAt >= attemptedAt;
+				if (wasSuccessful) {
+					const isOld = completedAt < threeDaysAgo;
+					return isOld;
+				}
+
+				const hasFailed = !completedAt || completedAt < attemptedAt;
+				if (hasFailed) {
+					const isReadyForRetry = attemptedAt < oneDayAgo;
+					return isReadyForRetry;
+				}
+
+				return false;
 			}
 
-			return false;
-		}
-
-		if (shouldStartScrape(attemptedAt, completedAt, threeDaysAgo, oneDayAgo)) {
-			console.log(`Scraping ${denominationSlug}`);
-			return this.startScrape(denominationSlug);
+			if (shouldStartScrape(attemptedAt, completedAt, threeDaysAgo, oneDayAgo)) {
+				console.log(`Starting scrape for ${denominationSlug}`);
+				return await this.startScrape(denominationSlug);
+			} else {
+				// Remove from active scrapes since we're not actually scraping
+				this.activeScrapes.delete(denominationSlug);
+			}
+		} catch (error) {
+			// Make sure to remove from active scrapes on error
+			this.activeScrapes.delete(denominationSlug);
+			throw error;
 		}
 	}
 
 	/**
 	 * @param {string} denominationSlug
 	 */
-	startScrape(denominationSlug) {
-		const worker = new Worker('./src/server/workers/worker.js', {
-			workerData: { denominationSlug },
-		});
-
-		this.activeWorkers.add(worker);
-		this.activeScrapes.set(denominationSlug, worker);
-
-		// Add timeout to prevent hanging workers
-		const timeout = setTimeout(
-			() => {
-				this.cleanup(worker, denominationSlug);
-			},
-			5 * 60 * 1000 * 2,
-		); // 10 minutes
-
-		return new Promise((resolve, reject) => {
-			worker.on('message', async (data) => {
-				clearTimeout(timeout);
-				if (data.success) {
-					await prisma.scrapeLog.update({
-						where: { denominationSlug },
-						data: {
-							completedAt: new Date(),
-							attemptedAt: new Date(),
-							count: data.count,
-							message: 'success',
-						},
-					});
-				} else {
-					await prisma.scrapeLog.update({
-						where: { denominationSlug },
-						data: {
-							message: data.error,
-							attemptedAt: new Date(),
-						},
-					});
-				}
-				this.cleanup(worker, denominationSlug);
-				resolve(data);
-			});
-
-			worker.on('error', async (error) => {
-				clearTimeout(timeout);
-				await prisma.scrapeLog.update({
-					where: { denominationSlug },
-					data: {
-						message: error.message,
-						attemptedAt: new Date(),
-					},
-				});
-				this.cleanup(worker, denominationSlug);
-				reject(error);
-			});
-		});
-	}
-
-	/**
-	 * @param {Worker} worker
-	 * @param {string} denominationId
-	 */
-	cleanup(worker, denominationId) {
-		worker.terminate();
-		this.activeWorkers.delete(worker);
-		this.activeScrapes.delete(denominationId);
-	}
-
-	cleanupAll() {
-		for (const worker of this.activeWorkers) {
-			worker.terminate();
+	async startScrape(denominationSlug) {
+		// Check if denomination scraper exists
+		// @ts-ignore
+		const scraper = denominations[denominationSlug];
+		if (!scraper) {
+			throw new Error('Invalid denomination slug');
 		}
-		this.activeWorkers.clear();
-		this.activeScrapes.clear();
+
+		// Mark as attempted immediately
+		await prisma.scrapeLog.update({
+			where: { denominationSlug },
+			data: {
+				attemptedAt: new Date(),
+			},
+		});
+
+		try {
+			// Run the scraper directly instead of using worker threads
+			const count = await scraper();
+
+			// Update with success
+			await prisma.scrapeLog.update({
+				where: { denominationSlug },
+				data: {
+					completedAt: new Date(),
+					count: count,
+					message: 'success',
+				},
+			});
+
+			this.activeScrapes.delete(denominationSlug);
+			return { success: true, count };
+		} catch (error) {
+			// Update with error
+			await prisma.scrapeLog.update({
+				where: { denominationSlug },
+				data: {
+					message: error instanceof Error ? error.message : 'Unknown error',
+				},
+			});
+
+			this.activeScrapes.delete(denominationSlug);
+			throw error;
+		}
 	}
 }
