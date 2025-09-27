@@ -6,6 +6,16 @@ import { PrismaClient } from '@prisma/client';
  */
 const globalForPrismaTyped = globalThis;
 
-export const prisma = globalForPrismaTyped.prisma ?? new PrismaClient();
+export const prisma =
+	globalForPrismaTyped.prisma ??
+	new PrismaClient({
+		log: ['error'],
+		// Configure connection pooling for serverless environments
+		datasources: {
+			db: {
+				url: process.env.DATABASE_URL,
+			},
+		},
+	});
 
 globalForPrismaTyped.prisma = prisma;
