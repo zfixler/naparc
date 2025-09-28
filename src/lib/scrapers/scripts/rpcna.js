@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { v5 as uuidv5 } from 'uuid';
-import { slugify, batchUpsertCongregations } from '../utils/index.js';
+import { batchUpsertCongregations, slugify } from '../utils/index.js';
 
 /**
  * Extracts congregation URLs from HTML content.

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { describe, expect, it } from 'vitest';
-import { extractChurchData, extractDirectoryJson } from '../src/server/scrapers/pca.js';
+import { extractChurchData, extractDirectoryJson } from '../src/lib/scrapers/scripts/pca.js';
 
 const response = fs.readFileSync(path.resolve(__dirname, '../tests/fixtures/pca.txt'), 'utf-8');
 

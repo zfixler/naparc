@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { describe, expect, it } from 'vitest';
-import { getDenomination } from '../src/server/scrapers/urcna';
+import { getDenomination } from '../src/lib/scrapers/scripts/urcna';
 
 const html = fs.readFileSync(path.resolve(__dirname, '../tests/fixtures/urcna.html'), 'utf-8');
 

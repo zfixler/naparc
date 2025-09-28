@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { scrapeOpcPresbytery } from '../src/server/scrapers/opc.js';
+import { scrapeOpcPresbytery } from '../src/lib/scrapers/scripts/opc.js';
 import output from './fixtures/opc.json';
 
 // use fs to read the html file in the fixtures folder

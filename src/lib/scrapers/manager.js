@@ -10,7 +10,7 @@ import {
 	buildRcusDenomination,
 	buildRpcnaDenomination,
 	buildUrcnaDenomination,
-} from '../scrapers/index.js';
+} from './scripts/index.js';
 
 const denominations = {
 	arpc: buildArpDenomination,

@@ -1,5 +1,5 @@
 import { setTimeout as sleep } from 'node:timers/promises';
-import { prisma } from '../../lib/prisma.js';
+import { prisma } from '../../prisma.js';
 
 /**
  * Extracts the pastor's name from the provided text.

@@ -1,11 +1,11 @@
 import { v5 as uuidv5 } from 'uuid';
 import {
+	batchUpsertCongregations,
 	getAddressLabel,
 	getContactEmailAddress,
 	getContactPhoneNumber,
 	getPastorName,
 	slugify,
-	batchUpsertCongregations,
 } from '../utils/index.js';
 
 /**
