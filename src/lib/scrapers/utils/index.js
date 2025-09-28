@@ -179,7 +179,12 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 
 				// Perform batch operations
 				if (toCreate.length) {
-					await tx.congregation.createMany({ data: { ...toCreate, createdAt: new Date() } });
+					await tx.congregation.createMany({
+						data: toCreate.map((congregation) => ({
+							...congregation,
+							createdAt: new Date(),
+						})),
+					});
 				}
 
 				for (const congregation of toUpdate) {
