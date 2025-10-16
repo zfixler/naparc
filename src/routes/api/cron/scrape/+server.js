@@ -1,6 +1,31 @@
-import { scrapeManager } from '$lib/manager';
 import { prisma } from '$lib/prisma';
+import {
+	buildArpDenomination,
+	buildCanrcDenomionation,
+	buildFrcnaDenomination,
+	buildHrcDenomination,
+	buildOpcDenomination,
+	buildPcaDenomination,
+	buildPrcDenomination,
+	buildRcusDenomination,
+	buildRpcnaDenomination,
+	buildUrcnaDenomination,
+} from '$lib/scrapers/scripts/index.js';
 import { json } from '@sveltejs/kit';
+
+/** @type {Record<string, () => Promise<number|undefined>>} */
+const supportedDenominations = {
+	arpc: buildArpDenomination,
+	canrc: buildCanrcDenomionation,
+	frcna: buildFrcnaDenomination,
+	hrc: buildHrcDenomination,
+	opc: buildOpcDenomination,
+	pca: buildPcaDenomination,
+	prc: buildPrcDenomination,
+	rcus: buildRcusDenomination,
+	rpcna: buildRpcnaDenomination,
+	urcna: buildUrcnaDenomination,
+};
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET() {
@@ -8,40 +33,47 @@ export async function GET() {
 		console.log('Starting daily scraping job...');
 
 		// Get all denominations
-		const denominations = await prisma.denomination.findMany({
-			select: { slug: true, name: true },
+		const allDenominations = await prisma.scrapeLog.findMany({
+			orderBy: {
+				completedAt: 'asc',
+			},
+			select: {
+				denominationSlug: true,
+				attemptedAt: true,
+			},
 		});
 
-		const results = [];
+		const denominationToScrapeObj = allDenominations.filter(
+			({ denominationSlug, attemptedAt }) =>
+				denominationSlug in supportedDenominations &&
+				attemptedAt &&
+				Date.now() - new Date(attemptedAt).getTime() > 48 * 60 * 60 * 1000,
+		)[0];
+		const denominationToScrape = denominationToScrapeObj?.denominationSlug;
 
-		// Process each denomination sequentially to avoid overwhelming the database
-		for (const { slug, name } of denominations) {
-			try {
-				console.log(`Checking scrape status for ${name} (${slug})...`);
-				const result = await scrapeManager.checkAndScrape(slug);
-
-				if (result) {
-					results.push({ slug, name, status: 'scraped', count: result.count });
-					console.log(`Successfully scraped ${name}: ${result.count} items`);
-				} else {
-					results.push({ slug, name, status: 'skipped', reason: 'not needed' });
-					console.log(`Skipped ${name}: scraping not needed`);
-				}
-
-				// Small delay between denominations to be gentle on the database
-				await new Promise((resolve) => setTimeout(resolve, 2000));
-			} catch (error) {
-				const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-				results.push({ slug, name, status: 'error', error: errorMessage });
-				console.error(`Failed to scrape ${name}:`, errorMessage);
-			}
+		try {
+			const count = await supportedDenominations[denominationToScrape]();
+			await prisma.scrapeLog.update({
+				where: { denominationSlug: denominationToScrape },
+				data: {
+					completedAt: new Date(),
+					attemptedAt: new Date(),
+					count: count,
+					message: 'success',
+				},
+			});
+		} catch (error) {
+			await prisma.scrapeLog.update({
+				where: { denominationSlug: denominationToScrape },
+				data: {
+					attemptedAt: new Date(),
+					message: String(error),
+				},
+			});
 		}
 
-		console.log('Daily scraping job completed');
 		return json({
-			success: true,
 			message: 'Daily scraping completed',
-			results,
 			timestamp: new Date().toISOString(),
 		});
 	} catch (error) {

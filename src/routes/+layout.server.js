@@ -27,10 +27,6 @@ export async function load() {
 		},
 	});
 
-	// Note: Scraping is now handled by a daily cron job at /api/cron/scrape
-	// This eliminates connection pool issues and ensures scraping completes
-	// even if users close their browsers
-
 	return {
 		denominations,
 	};
