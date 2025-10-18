@@ -1,5 +1,5 @@
 import { v5 as uuidv5 } from 'uuid';
-import { batchUpsertCongregations, slugify } from '../utils/index.js';
+import { batchUpsertCongregations, slugify, fetchWithHeaders } from '../utils/index.js';
 
 /**
  * @typedef {Object} LocationData
@@ -96,9 +96,10 @@ export function extractChurchData(json) {
 }
 
 async function buildPcaDenomination() {
-	const response = await fetch(
+	const response = await fetchWithHeaders(
 		'https://static.batchgeo.com/map/json/fed353c376144b1fed2f5e29150c2531/1709202319?_=1709342272827',
 	);
+
 	const data = await response.text();
 	const json = extractDirectoryJson(data);
 
