@@ -2,9 +2,13 @@
 	import { ClickOutside } from '$lib/components';
 	import { slide } from 'svelte/transition';
 
-	/** @type {{results: any, options: any, shouldShowMenu: boolean}} */
-	let { results = $bindable(), options = $bindable(), shouldShowMenu = $bindable() } = $props();
-	let selectedLabel = $state('');
+	/** @type {{results: any, options: any, shouldShowMenu: boolean, selectedLabel: string}} */
+	let {
+		results = $bindable(),
+		options = $bindable(),
+		shouldShowMenu = $bindable(),
+		selectedLabel = $bindable(''),
+	} = $props();
 
 	/** @type {NodeJS.Timeout|number|undefined} */
 	let debounceTimer;
@@ -13,6 +17,10 @@
 	 */
 	let currentRequest;
 	/** @type {Array<OptionObject>}*/
+
+	$effect(() => {
+		selectedLabel = results.label || '';
+	});
 
 	/**
 	 * @typedef {Object} ResultObject
@@ -96,8 +104,6 @@
 	 * @param {OptionObject} option
 	 */
 	function handleOptionSelection(option) {
-		// Set selected label
-		selectedLabel = `${option.body.label}`;
 		// Close menu
 		shouldShowMenu = false;
 		// Attach results

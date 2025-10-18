@@ -22,6 +22,8 @@
 		lat: '',
 	});
 
+	let selectedLabel = $state('');
+
 	/**
 	 * @type {any[]}
 	 */
@@ -88,6 +90,10 @@
 
 		url.search = params.toString();
 		goto(url.href);
+
+		// Clear the search input after navigation
+		location = { label: '', lon: '', lat: '' };
+		selectedLabel = '';
 	}
 
 	const triggerSubmit = () => {
@@ -109,7 +115,7 @@
 
 <form class="form" action="/search" bind:this={form} onsubmit={handleSubmit}>
 	<div class="first">
-		<Location bind:results={location} bind:options bind:shouldShowMenu />
+		<Location bind:results={location} bind:selectedLabel bind:options bind:shouldShowMenu />
 	</div>
 	<div class="second">
 		<Settings bind:settings {denominations} />
