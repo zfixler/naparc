@@ -1,5 +1,6 @@
+import { paginateResults } from '$lib/utils';
+import { getLocationsWithinRadius } from '$lib/utils/server';
 import { fail } from '@sveltejs/kit';
-import { getLocationsWithinRadius, paginateResults } from '$lib/utils';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ url }) {
