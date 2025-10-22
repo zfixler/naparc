@@ -167,10 +167,9 @@ async function buildOpcDenomination() {
 	 */
 	let denomination = [];
 
-	for await (const presbyteryId of presbyteryIds) {
-		const presbytery = await fetchCongregations(presbyteryId).catch((err) => console.log(err));
-		if (presbytery && presbytery.length) denomination = denomination.concat(presbytery);
-	}
+	const presbyteryPromises = presbyteryIds.map(fetchCongregations);
+	const presbyteries = await Promise.all(presbyteryPromises);
+	denomination = presbyteries.flat().filter(Boolean);
 
 	await batchUpsertCongregations([...denomination]);
 

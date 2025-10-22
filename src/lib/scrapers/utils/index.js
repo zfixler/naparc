@@ -159,49 +159,63 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 
 	let successCount = 0;
 	for (const batch of batches) {
-		try {
-			await prisma.$transaction(async (tx) => {
-				// Find existing congregations
-				const existingIds = (
-					await tx.congregation.findMany({
-						where: { id: { in: batch.map((/** @type {{ id: any; }} */ c) => c.id) } },
-						select: { id: true },
-					})
-				).map((c) => c.id);
+		let retries = 3;
+		while (retries > 0) {
+			try {
+				await prisma.$transaction(async (tx) => {
+					// Find existing congregations
+					const existingIds = (
+						await tx.congregation.findMany({
+							where: { id: { in: batch.map((/** @type {{ id: any; }} */ c) => c.id) } },
+							select: { id: true },
+						})
+					).map((c) => c.id);
 
-				// Split into creates and updates
-				const toCreate = batch.filter(
-					(/** @type {{ id: string; }} */ c) => !existingIds.includes(c.id),
-				);
-				const toUpdate = batch.filter((/** @type {{ id: string; }} */ c) =>
-					existingIds.includes(c.id),
-				);
+					// Split into creates and updates
+					const toCreate = batch.filter(
+						(/** @type {{ id: string; }} */ c) => !existingIds.includes(c.id),
+					);
+					const toUpdate = batch.filter((/** @type {{ id: string; }} */ c) =>
+						existingIds.includes(c.id),
+					);
 
-				// Perform batch operations
-				if (toCreate.length) {
-					await tx.congregation.createMany({
-						data: toCreate.map((congregation) => ({
-							...congregation,
-							createdAt: new Date(),
-						})),
+					// Perform batch operations
+					if (toCreate.length) {
+						await tx.congregation.createMany({
+							data: toCreate.map((congregation) => ({
+								...congregation,
+								createdAt: new Date(),
+							})),
+						});
+					}
+
+					// Parallelize updates
+					const updatePromises = toUpdate.map((congregation) => {
+						const { id, ...updateData } = congregation;
+						return tx.congregation.update({
+							where: { id },
+							data: { ...updateData, updatedAt: new Date() },
+						});
 					});
-				}
+					await Promise.all(updatePromises);
+				});
 
-				for (const congregation of toUpdate) {
-					const { id, ...updateData } = congregation;
-					await tx.congregation.update({
-						where: { id },
-						data: { ...updateData, updatedAt: new Date() },
-					});
+				successCount += batch.length;
+				console.log(`Processed ${successCount} congregations`);
+				break; // Success, exit retry loop
+			} catch (error) {
+				retries--;
+				if (retries === 0) {
+					if (error instanceof Error && error.message) {
+						console.error(`Failed to process batch after retries: ${error.message}`);
+						console.error('Failed batch data:', batch);
+					}
+				} else {
+					console.warn(
+						`Retrying batch (${retries} attempts left): ${error instanceof Error ? error.message : String(error)}`,
+					);
+					await sleep(1000); // Wait before retry
 				}
-			});
-
-			successCount += batch.length;
-			console.log(`Processed ${successCount} congregations`);
-		} catch (error) {
-			if (error instanceof Error && error.message) {
-				console.error(`Failed to process batch: ${error.message}`);
-				console.error('Failed batch data:', batch);
 			}
 		}
 	}
@@ -247,8 +261,8 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
  * @returns {Promise<void>} A promise that resolves after the delay.
  */
 export async function delayFetch() {
-	// Delay before executing fetch for a random amount of time between 2 and 4 seconds
-	await sleep(Math.random() * (4000 - 2000 + 1) + 2000);
+	// Delay before executing fetch for a random amount of time between 1 and 2 seconds
+	await sleep(Math.random() * (2000 - 1000 + 1) + 1000);
 	return;
 }
 

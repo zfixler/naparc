@@ -109,12 +109,11 @@ async function buildHrcDenomination() {
 
 	const locations = await fetchLocationUrls();
 
-	for await (const location of locations) {
-		if (location) {
-			const congregation = await fetchCongregation(location);
-			denomination.push(congregation);
-		}
-	}
+	const congregationPromises = locations
+		.filter((location) => location !== undefined)
+		.map((location) => fetchCongregation(location));
+	const congregations = await Promise.all(congregationPromises);
+	denomination.push(...congregations);
 
 	await batchUpsertCongregations(denomination);
 

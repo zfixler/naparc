@@ -1,11 +1,9 @@
 import { v5 as uuidv5 } from 'uuid';
-import { batchUpsertCongregations, delayFetch } from '../utils/index.js';
+import { batchUpsertCongregations } from '../utils/index.js';
 
 const denominationNamespace = 'e2b89f6e-17c4-40c5-8d97-381723ab732a';
 
 async function fetchArpData() {
-	const arpData = [];
-
 	const coordinates = [
 		{ lat: 49.2827, long: -123.1207 }, // Vancouver, Canada
 		{ lat: 51.0447, long: -114.0719 }, // Calgary, Canada
@@ -35,17 +33,14 @@ async function fetchArpData() {
 		{ lat: 21.3069, long: -157.8583 }, // Honolulu, USA
 	];
 
-	for await (const coordinate of coordinates) {
-		await delayFetch();
-
+	const dataPromises = coordinates.map(async (coordinate) => {
 		const url = `https://arpchurch.org/wp-admin/admin-ajax.php?action=store_search&lat=${coordinate.lat}&lng=${coordinate.long}&max_results=100&search_radius=500`;
 		const res = await fetch(url);
-		const data = await res.json();
+		return await res.json();
+	});
+	const arpData = (await Promise.all(dataPromises)).flat();
 
-		arpData.push(data);
-	}
-
-	return arpData.flat();
+	return arpData;
 }
 
 async function buildArpDenomination() {

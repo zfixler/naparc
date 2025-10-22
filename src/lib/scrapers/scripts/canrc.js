@@ -127,10 +127,14 @@ async function buildCanrcDenomionation() {
 	const array = script && JSON.parse(script[1]);
 	const denomination = [];
 
-	for await (const meta of array) {
-		const congregation = await fetchCongregation(baseUrl, meta).catch((err) => console.error(err));
-		if (congregation) denomination.push(congregation);
-	}
+	const congregationPromises = array.map((/** @type {Meta} */ meta) =>
+		fetchCongregation(baseUrl, meta).catch((err) => {
+			console.error(err);
+			return null;
+		}),
+	);
+	const congregations = await Promise.all(congregationPromises);
+	denomination.push(...congregations.filter((congregation) => congregation !== null));
 
 	await batchUpsertCongregations(denomination);
 	return denomination.length;

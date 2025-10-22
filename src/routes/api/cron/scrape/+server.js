@@ -52,6 +52,7 @@ export async function GET() {
 		const denominationToScrape = denominationToScrapeObj?.denominationSlug;
 
 		try {
+			console.log(`Scraping denomination: ${denominationToScrape}`);
 			const count = await supportedDenominations[denominationToScrape]();
 			await prisma.scrapeLog.update({
 				where: { denominationSlug: denominationToScrape },
