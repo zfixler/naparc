@@ -51,6 +51,14 @@ export async function GET() {
 		)[0];
 		const denominationToScrape = denominationToScrapeObj?.denominationSlug;
 
+		if (!denominationToScrape) {
+			console.log('No denominations need scraping at this time.');
+			return json({
+				message: 'No denominations need scraping at this time',
+				timestamp: new Date().toISOString(),
+			});
+		}
+
 		try {
 			console.log(`Scraping denomination: ${denominationToScrape}`);
 			const count = await supportedDenominations[denominationToScrape]();
