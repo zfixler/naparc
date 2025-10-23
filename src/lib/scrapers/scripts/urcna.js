@@ -172,7 +172,9 @@ export function getDenomination(html) {
 			addressLabel: getAddressString(congregation, true),
 			website: congregation.web.includes('https://')
 				? congregation.web
-				: `https://${congregation.web}`,
+				: congregation.web
+					? `https://${congregation.web}`
+					: '',
 			phone: congregation.phone,
 			email: congregation.email,
 			pastor: removePhoneNumbers(congregation.min1).replace('Rev. ', ''),
