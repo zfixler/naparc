@@ -123,6 +123,42 @@ export function getAddressLabel(addressString) {
  */
 export async function batchUpsertCongregations(congregationsArray, batchSize = 100) {
 	console.log(congregationsArray.length, 'congregations to process');
+
+	// For large datasets, use bulk replace for speed
+	if (congregationsArray.length > 500) {
+		const denominationSlug = congregationsArray[0]?.denominationSlug;
+		if (denominationSlug) {
+			console.log('Using bulk replace for large dataset');
+			// Extract and create presbyteries
+			const presbyteries = congregationsArray
+				.map((c) => c.presbytery)
+				.filter((p) => p && p.id && !p.id.includes('undefined'));
+			if (presbyteries && presbyteries.length) {
+				await prisma.presbytery.createMany({
+					data: presbyteries.filter((p) => p !== undefined),
+					skipDuplicates: true,
+				});
+			}
+			// Bulk replace in a transaction for safety
+			await prisma.$transaction(async (tx) => {
+				// Delete all existing congregations for this denomination
+				await tx.congregation.deleteMany({ where: { denominationSlug } });
+				// Insert all new ones
+				const congregations = congregationsArray.map(({ presbytery, ...rest }) => ({
+					...rest,
+					presbyteryId: presbytery?.id,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				}));
+				await tx.congregation.createMany({ data: congregations });
+			});
+			console.log(
+				`Bulk replaced ${congregationsArray.length} congregations for ${denominationSlug}`,
+			);
+			return;
+		}
+	}
+
 	// Extract presbyteries from congregations
 	const presbyteries = congregationsArray
 		.map((c) => c.presbytery)
