@@ -3,13 +3,13 @@ import { v5 as uuidv5 } from 'uuid';
 import {
 	batchUpsertCongregations,
 	delayFetch,
+	fetchWithHeaders,
 	getContactEmailAddress,
 	getContactName,
 	getContactPhoneNumber,
 	getPastorName,
 	getWebsiteUrl,
 	slugify,
-	fetchWithHeaders,
 } from '../utils/index.js';
 
 /** @typedef {import("@prisma/client").Presbytery} Presbytery */

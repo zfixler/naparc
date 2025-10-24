@@ -43,15 +43,14 @@ export async function GET() {
 			},
 		});
 
-		const denominationToScrapeObj = allDenominations.filter(
+		const denominationsToScrape = allDenominations.filter(
 			({ denominationSlug, attemptedAt }) =>
 				denominationSlug in supportedDenominations &&
 				attemptedAt &&
 				Date.now() - new Date(attemptedAt).getTime() > 48 * 60 * 60 * 1000,
-		)[0];
-		const denominationToScrape = denominationToScrapeObj?.denominationSlug;
+		);
 
-		if (!denominationToScrape) {
+		if (denominationsToScrape.length === 0) {
 			console.log('No denominations need scraping at this time.');
 			return json({
 				message: 'No denominations need scraping at this time',
@@ -59,27 +58,42 @@ export async function GET() {
 			});
 		}
 
-		try {
-			console.log(`Scraping denomination: ${denominationToScrape}`);
-			const count = await supportedDenominations[denominationToScrape]();
-			await prisma.scrapeLog.update({
-				where: { denominationSlug: denominationToScrape },
-				data: {
-					completedAt: new Date(),
-					attemptedAt: new Date(),
-					count: count,
-					message: 'success',
-				},
-			});
-		} catch (error) {
-			await prisma.scrapeLog.update({
-				where: { denominationSlug: denominationToScrape },
-				data: {
-					attemptedAt: new Date(),
-					message: String(error),
-				},
-			});
-		}
+		// Process only half the denominations to avoid timeouts
+		const halfLength = Math.ceil(denominationsToScrape.length / 2);
+		const denominationsToProcess = denominationsToScrape.slice(0, halfLength);
+
+		console.log(
+			`Scraping ${denominationsToProcess.length} of ${denominationsToScrape.length} denominations: ${denominationsToProcess.map((d) => d.denominationSlug).join(', ')}`,
+		);
+
+		// Run all scrapers in parallel
+		const scrapePromises = denominationsToProcess.map(async ({ denominationSlug }) => {
+			try {
+				console.log(`Starting scrape for ${denominationSlug}`);
+				const count = await supportedDenominations[denominationSlug]();
+				await prisma.scrapeLog.update({
+					where: { denominationSlug },
+					data: {
+						completedAt: new Date(),
+						attemptedAt: new Date(),
+						count: count,
+						message: 'success',
+					},
+				});
+				console.log(`Completed scrape for ${denominationSlug}: ${count} congregations`);
+			} catch (error) {
+				console.error(`Failed scrape for ${denominationSlug}:`, error);
+				await prisma.scrapeLog.update({
+					where: { denominationSlug },
+					data: {
+						attemptedAt: new Date(),
+						message: String(error),
+					},
+				});
+			}
+		});
+
+		await Promise.all(scrapePromises);
 
 		return json({
 			message: 'Daily scraping completed',

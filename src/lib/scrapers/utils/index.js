@@ -124,9 +124,13 @@ export function getAddressLabel(addressString) {
 export async function batchUpsertCongregations(congregationsArray, batchSize = 100) {
 	console.log(congregationsArray.length, 'congregations to process');
 
+	const denominationSlug = congregationsArray[0]?.denominationSlug;
+	if (denominationSlug) {
+		console.log(`Processing ${congregationsArray.length} congregations for ${denominationSlug}`);
+	}
+
 	// For large datasets, use bulk replace for speed
 	if (congregationsArray.length > 500) {
-		const denominationSlug = congregationsArray[0]?.denominationSlug;
 		if (denominationSlug) {
 			console.log('Using bulk replace for large dataset');
 			// Extract and create presbyteries
@@ -237,7 +241,7 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 				});
 
 				successCount += batch.length;
-				console.log(`Processed ${successCount} congregations`);
+				console.log(`Processed ${successCount} congregations for ${denominationSlug}`);
 				break; // Success, exit retry loop
 			} catch (error) {
 				retries--;
@@ -258,7 +262,6 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 
 	// --- Scoped deletion of congregations no longer present ---
 	const scrapedIds = congregations.map((c) => c.id);
-	const denominationSlug = congregations[0]?.denominationSlug;
 
 	if (!denominationSlug) {
 		console.warn('No denominationSlug found, skipping deletion of missing congregations.');
@@ -289,9 +292,11 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 			`Skipping deletion: scrapedIds.length=${scrapedIds.length}, denominationSlug=${denominationSlug}`,
 		);
 	}
-}
 
-/**
+	console.log(
+		`Completed processing for ${denominationSlug}: ${congregations.length} total congregations`,
+	);
+} /**
  * Delays the execution of a fetch request for a random amount of time between 2 and 4 seconds.
  *
  * @returns {Promise<void>} A promise that resolves after the delay.
@@ -324,7 +329,6 @@ export async function geocodeAddress(address) {
 
 			if (data.length > 0) {
 				const { lat, lon } = data[0];
-				console.log(`✅ Found: ${attempt}`);
 				return { latitude: parseFloat(lat), longitude: parseFloat(lon) };
 			}
 		} catch (error) {

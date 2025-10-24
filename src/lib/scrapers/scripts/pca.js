@@ -1,5 +1,5 @@
 import { v5 as uuidv5 } from 'uuid';
-import { batchUpsertCongregations, slugify, fetchWithHeaders } from '../utils/index.js';
+import { batchUpsertCongregations, fetchWithHeaders, slugify } from '../utils/index.js';
 
 /**
  * @typedef {Object} LocationData
