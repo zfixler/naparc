@@ -28,6 +28,6 @@ export async function load() {
 	});
 
 	return {
-		denominations,
+		denominations: denominations.filter(({ _count }) => _count.congregations > 0),
 	};
 }
