@@ -1,5 +1,6 @@
-import { prisma } from '$lib/prisma';
+import { getPrisma } from '$lib/prisma';
 import { Prisma } from '@prisma/client';
+const prisma = getPrisma();
 
 /**
  * Get all congregations within a given radius of a provided location.

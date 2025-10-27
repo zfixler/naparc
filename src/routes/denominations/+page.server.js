@@ -1,4 +1,5 @@
-import { prisma } from '$lib/prisma';
+import { getPrisma } from '$lib/prisma';
+const prisma = getPrisma();
 
 /**
  * @typedef {import('@prisma/client').Denomination} BaseDenomination

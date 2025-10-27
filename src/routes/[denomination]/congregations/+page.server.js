@@ -1,6 +1,7 @@
-import { prisma } from '$lib/prisma';
+import { getPrisma } from '$lib/prisma';
 import { paginateResults } from '$lib/utils';
 import { error } from '@sveltejs/kit';
+const prisma = getPrisma();
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ params, url }) {

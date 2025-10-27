@@ -1,4 +1,4 @@
-import { prisma } from '$lib/prisma';
+import { getPrisma } from '$lib/prisma';
 import {
 	buildArpDenomination,
 	buildCanrcDenomionation,
@@ -12,6 +12,7 @@ import {
 	buildUrcnaDenomination,
 } from '$lib/scrapers/scripts/index.js';
 import { json } from '@sveltejs/kit';
+const prisma = getPrisma();
 
 /** @type {Record<string, () => Promise<number|undefined>>} */
 const supportedDenominations = {
