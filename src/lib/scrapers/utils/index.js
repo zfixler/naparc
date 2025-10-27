@@ -5,14 +5,22 @@ import { prisma } from '../../prisma.js';
  * Extracts the pastor's name from the provided text.
  * @param {string|null} text - The input text to extract the pastor's name from.
  * @param {string} title - Rev. or Pastor: or other leading title
- * @returns {string|null} The pastor's name or undefined if not found.
+ * @returns {string|null} The pastor's name or null if not found.
  */
 export function getPastorName(text, title) {
 	if (!text) return null;
-	const regex = new RegExp(`${title}\\s*([A-Z][a-zA-Z. ]+)`, 'g');
+	const regex = new RegExp(`${title}\\s*([A-Z][a-zA-Z.'’\\s]+)`, 'i');
 	const match = text.match(regex);
-	if (match) {
-		return match[0].replace(title, '').trim();
+	if (match && match[1]) {
+		const afterTitle =
+			typeof match.index === 'number'
+				? text.slice(match.index + match[0].length - match[1].length)
+				: match[1];
+		const nameMatch = afterTitle.match(/^([A-Z][a-zA-Z.'’\s-]*[a-zA-Z.'’])\b/);
+		if (nameMatch && nameMatch[1]) {
+			return nameMatch[1].trim();
+		}
+		return match[1].trim();
 	}
 	return null;
 }

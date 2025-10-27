@@ -22,6 +22,7 @@ describe('scrapeOpcPresbytery', () => {
 
 	it('should scrape Hatboro correctly', () => {
 		const result = scrapeOpcPresbytery(hatboro);
+
 		expect(result).to.deep.include({
 			id: 'opc_213',
 			lon: -75.109706,
@@ -58,6 +59,34 @@ describe('scrapeOpcPresbytery', () => {
 			contact: 'Lane G. Tipton',
 			email: 'tipton.1@opc.org',
 			phone: '610-253-2272',
+			presbyteryId: 'bcfab39c-1fc8-5439-9f2f-b1342ecba81e',
+			presbytery: {
+				id: 'bcfab39c-1fc8-5439-9f2f-b1342ecba81e',
+				name: 'Philadelphia',
+				denominationSlug: 'opc',
+				slug: 'philadelphia',
+			},
+			denominationSlug: 'opc',
+			createdAt: null,
+			updatedAt: null,
+		});
+	});
+
+	it('should handle last names with apostrophes correctly', () => {
+		const result = scrapeOpcPresbytery(hatboro);
+
+		expect(result).to.deep.include({
+			id: 'opc_448',
+			lon: -75.70639259507179,
+			lat: 40.00529945468473,
+			name: 'Christ',
+			website: null,
+			address: '37 West Lancaster Avenue Downingtown PA',
+			addressLabel: '37 West Lancaster Avenue<br>Downingtown PA',
+			pastor: 'Greg O’Brien',
+			contact: 'Greg O’Brien',
+			email: 'greg.obrien@christdowningtown.org',
+			phone: '737-703-8319',
 			presbyteryId: 'bcfab39c-1fc8-5439-9f2f-b1342ecba81e',
 			presbytery: {
 				id: 'bcfab39c-1fc8-5439-9f2f-b1342ecba81e',

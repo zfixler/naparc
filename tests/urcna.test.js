@@ -7,10 +7,7 @@ const html = fs.readFileSync(path.resolve(__dirname, '../tests/fixtures/urcna.ht
 
 describe('extractChurchData', () => {
 	const churchData = getDenomination(html);
-	fs.writeFileSync(
-		path.resolve(__dirname, '../tests/urcna.json'),
-		JSON.stringify(churchData, null, 4),
-	);
+
 	it('should extract church data from the HTML', () => {
 		expect(churchData).toBeDefined();
 		expect(churchData.length).toBeGreaterThan(0);
