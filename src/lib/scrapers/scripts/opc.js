@@ -81,12 +81,12 @@ export function scrapeOpcPresbytery(html) {
 		const website = getWebsiteUrl(detailsArray[7]);
 		const addressLabel = detailsNode('p:first').html();
 		const address = addressLabel?.split('<br>').join(' ') || null;
-		const key = website ? website : name.toUpperCase();
+		const phone = getContactPhoneNumber(detailsArray.join(''));
+		const key = website ? website : phone ? phone : name.toUpperCase();
 		const table = $(`.churchCard:contains(${key})`).html();
 		const pastor = getPastorName(table, 'Pastor:');
 		const contact = pastor ? pastor : getContactName(table);
 		const email = getContactEmailAddress(table);
-		const phone = getContactPhoneNumber(table);
 
 		const congregation = {
 			id: `opc_${getChurchId(table)}`,
@@ -175,5 +175,6 @@ async function buildOpcDenomination() {
 
 	return denomination.length;
 }
+buildOpcDenomination();
 
 export default buildOpcDenomination;
