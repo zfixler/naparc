@@ -175,6 +175,5 @@ async function buildOpcDenomination() {
 
 	return denomination.length;
 }
-buildOpcDenomination();
 
 export default buildOpcDenomination;
