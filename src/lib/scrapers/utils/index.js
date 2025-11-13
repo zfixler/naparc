@@ -78,8 +78,9 @@ export function getContactPhoneNumber(text) {
  */
 export function getWebsiteUrl(text) {
 	if (!text) return null;
-	const websiteRegex = /Website:\s*<a\s.*?href="([^"]+)"/;
-	const matches = text.match(websiteRegex);
+	const normalized = text.replace(/\\"/g, '"');
+	const websiteRegex = /Website:\s*(?:<br\s*\/?\s*>\s*)*<a[^>]*href="([^"]+)"/i;
+	const matches = normalized.match(websiteRegex);
 	if (matches) {
 		return matches[1];
 	}
@@ -305,7 +306,9 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 	console.log(
 		`Completed processing for ${denominationSlug}: ${congregations.length} total congregations`,
 	);
-} /**
+}
+
+/**
  * Delays the execution of a fetch request for a random amount of time between 2 and 4 seconds.
  *
  * @returns {Promise<void>} A promise that resolves after the delay.
