@@ -17,21 +17,21 @@
 		"test": "vitest"
 	},
 	"devDependencies": {
-		"@commitlint/cli": "^20.3.1",
-		"@commitlint/config-conventional": "^20.3.1",
-		"@sveltejs/kit": "^2.50.1",
+		"@commitlint/cli": "^20.4.1",
+		"@commitlint/config-conventional": "^20.4.1",
+		"@sveltejs/kit": "^2.50.2",
 		"@types/leaflet": "^1.9.21",
-		"@types/node": "^25.0.10",
+		"@types/node": "^25.2.1",
 		"eslint": "^9.39.2",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.14.0",
-		"globals": "^17.1.0",
+		"globals": "^17.3.0",
 		"husky": "^9.1.7",
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.4.1",
 		"prisma": "^7.3.0",
-		"svelte": "^5.48.2",
-		"svelte-check": "^4.3.5",
+		"svelte": "^5.49.2",
+		"svelte-check": "^4.3.6",
 		"typescript": "^5.9.3",
 		"vite": "^7.3.1",
 		"vitest": "^4.0.18"
@@ -45,7 +45,7 @@
 		"@sveltejs/adapter-vercel": "^6.3.1",
 		"cheerio": "^1.2.0",
 		"leaflet": "^1.9.4",
-		"nodemailer": "^7.0.12",
+		"nodemailer": "^8.0.0",
 		"pg": "^8.18.0",
 		"uuid": "^13.0.0"
 	}
