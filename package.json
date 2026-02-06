@@ -38,12 +38,14 @@
 	"type": "module",
 	"dependencies": {
 		"@fontsource-variable/outfit": "^5.2.8",
+		"@prisma/adapter-pg": "^7.3.0",
 		"@prisma/client": "^7.3.0",
 		"@sveltejs/adapter-node": "^5.5.2",
 		"@sveltejs/adapter-vercel": "^6.3.1",
 		"cheerio": "^1.2.0",
 		"leaflet": "^1.9.4",
 		"nodemailer": "^7.0.12",
+		"pg": "^8.18.0",
 		"uuid": "^13.0.0"
 	}
 }
