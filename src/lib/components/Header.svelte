@@ -1,16 +1,14 @@
 <script>
 	/** @type {{props: any}} */
 	let { props } = $props();
-	const {
-		name,
-		distance,
-		denominationSlug,
-		denominationName,
-		presbyteryName,
-		presbyterySlug,
-		isContinental,
-		id,
-	} = props;
+	const name = $derived(props.name);
+	const distance = $derived(props.distance);
+	const denominationSlug = $derived(props.denominationSlug);
+	const denominationName = $derived(props.denominationName);
+	const presbyteryName = $derived(props.presbyteryName);
+	const presbyterySlug = $derived(props.presbyterySlug);
+	const isContinental = $derived(props.isContinental);
+	const id = $derived(props.id);
 </script>
 
 <header class="header">

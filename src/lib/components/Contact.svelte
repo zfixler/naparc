@@ -1,13 +1,14 @@
 <script>
 	/** @type {{contact?: string, pastor?: string}} */
 	let { contact = '', pastor = '' } = $props();
-	const multiplePastors =
+	const multiplePastors = $derived(
 		typeof pastor === 'string' && pastor.includes('<br>')
 			? pastor
 					.split('<br>')
 					.map((str) => `Pastor ${str}`)
 					.join('<br>')
-			: null;
+			: null,
+	);
 </script>
 
 <p class={['contact', 'link', { multiplePastors }]}>

@@ -1,7 +1,9 @@
 <script>
 	/** @type {{address?: string, addressLabel?: string, name?: string}} */
 	let { address = '', addressLabel = '', name = '' } = $props();
-	const url = `https://www.google.com/maps/search/?api=1&query=${encodeURI(`${name} ${address}`)}`;
+	const url = $derived(
+		`https://www.google.com/maps/search/?api=1&query=${encodeURI(`${name} ${address}`)}`,
+	);
 </script>
 
 {#if address}

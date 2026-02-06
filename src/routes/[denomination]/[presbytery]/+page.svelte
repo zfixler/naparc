@@ -18,7 +18,7 @@
 	 * }}
 	 */
 	let { data } = $props();
-	const { presbytery } = data;
+	const presbytery = $derived(data.presbytery);
 </script>
 
 <Head

@@ -3,7 +3,9 @@
 	let { email = '' } = $props();
 
 	// Split the email into parts
-	const [user, domain] = email?.split('@') || [];
+	const emailParts = $derived(email?.split('@') || []);
+	const user = $derived(emailParts[0]);
+	const domain = $derived(emailParts[1]);
 
 	/**
 	 * Get the email address
