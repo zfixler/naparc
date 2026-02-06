@@ -3,7 +3,7 @@
 	import { Denomination } from '$lib/features';
 	/** @type {{data: { denominations: Array<import('./+page.server').ExtendedDenomination> }}} */
 	let { data } = $props();
-	const { denominations } = data;
+	const denominations = $derived(data.denominations);
 </script>
 
 <Head title="NAPARC Search | Denominations" />

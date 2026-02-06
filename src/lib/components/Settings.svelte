@@ -4,18 +4,20 @@
 	/** @type {{settings?: any, denominations: Array<import("@prisma/client").Denomination>}} */
 	let { settings = $bindable({}), denominations } = $props();
 
-	settings.included = denominations.map(({ slug, name: abbr }) => {
-		return {
-			abbr,
-			slug,
-			checked: true,
-		};
+	$effect(() => {
+		settings.included = denominations.map(({ slug, name: abbr }) => {
+			return {
+				abbr,
+				slug,
+				checked: true,
+			};
+		});
+
+		settings.radius = '25';
+		settings.hasSavedSettings = false;
 	});
 
-	settings.radius = '25';
-
 	let shouldShowSettings = $state(false);
-	settings.hasSavedSettings = false;
 </script>
 
 <button

@@ -2,12 +2,20 @@
 	import { page } from '$app/state';
 	/** @type {{denomination: import('../../routes/denominations/+page.server.js').ExtendedDenomination}} */
 	let { denomination } = $props();
-	const { slug, name, description, presbyteries, continental, _count, scrapeLogs } = denomination;
+	const slug = $derived(denomination.slug);
+	const name = $derived(denomination.name);
+	const description = $derived(denomination.description);
+	const presbyteries = $derived(denomination.presbyteries);
+	const continental = $derived(denomination.continental);
+	const _count = $derived(denomination._count);
+	const scrapeLogs = $derived(denomination.scrapeLogs);
 
-	let shouldShowDetails = page.url.hash === `#${slug}`;
-	const completedAt = scrapeLogs[0].completedAt
-		? new Intl.DateTimeFormat('en-US').format(scrapeLogs[0].completedAt)
-		: null;
+	let shouldShowDetails = $derived(page.url.hash === `#${slug}`);
+	const completedAt = $derived(
+		scrapeLogs[0].completedAt
+			? new Intl.DateTimeFormat('en-US').format(scrapeLogs[0].completedAt)
+			: null,
+	);
 </script>
 
 <details class="section" open={shouldShowDetails}>

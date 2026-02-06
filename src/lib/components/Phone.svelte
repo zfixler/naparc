@@ -1,7 +1,7 @@
 <script>
 	/** @type {{phone?: string}} */
 	let { phone = '' } = $props();
-	const number = phone?.split('') || []; // Split the phone number into parts
+	const number = $derived(phone?.split('') || []); // Split the phone number into parts
 
 	/**
 	 * Get the phone number
