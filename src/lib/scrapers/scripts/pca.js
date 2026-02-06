@@ -1,5 +1,6 @@
+import puppeteer from 'puppeteer';
 import { v5 as uuidv5 } from 'uuid';
-import { batchUpsertCongregations, fetchWithHeaders, slugify } from '../utils/index.js';
+import { batchUpsertCongregations, slugify } from '../utils/index.js';
 
 /**
  * @typedef {Object} LocationData
@@ -96,23 +97,64 @@ export function extractChurchData(json) {
 }
 
 async function buildPcaDenomination() {
-	const response = await fetchWithHeaders(
-		'https://static.batchgeo.com/map/json/fed353c376144b1fed2f5e29150c2531/1709202319?_=1709342272827',
-	);
+	console.log('Launching headless browser for PCA scraper...');
+	const browser = await puppeteer.launch({
+		headless: true,
+		args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
+	});
 
-	const data = await response.text();
-	const json = extractDirectoryJson(data);
+	try {
+		const page = await browser.newPage();
 
-	if (!json) {
-		console.log('JSON Extraction failed.');
-		return;
+		// Set a realistic viewport and user agent
+		await page.setViewport({ width: 1920, height: 1080 });
+		await page.setUserAgent(
+			'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+		);
+
+		console.log('Navigating to BatchGeo map...');
+		await page.goto(
+			'https://static.batchgeo.com/map/json/fed353c376144b1fed2f5e29150c2531/1709202319?_=1709342272827',
+			{ waitUntil: 'networkidle0', timeout: 60000 },
+		);
+
+		console.log('Extracting church data from page...');
+		// Extract the data from the page by evaluating JavaScript in the browser context
+		const json = await page.evaluate(() => {
+			// The BatchGeo data is typically stored in a variable like 'per' or similar
+			// We need to find and return this data
+			const scriptText = document.body.innerText || document.body.textContent || '';
+
+			// Try to extract the JSON data using the same pattern as extractDirectoryJson
+			const startIndex = scriptText.indexOf('per = ') + 6;
+			const endIndex = scriptText.indexOf('};', startIndex) + 1;
+
+			if (startIndex !== -1 && endIndex !== -1) {
+				const jsonString = scriptText.substring(startIndex, endIndex);
+				return JSON.parse(jsonString);
+			}
+
+			return null;
+		});
+
+		await browser.close();
+
+		if (!json) {
+			console.log('JSON Extraction failed.');
+			return;
+		}
+
+		console.log(`Extracted data for ${json.mapRS?.length || 0} churches`);
+		const denomination = extractChurchData(json);
+
+		await batchUpsertCongregations([...denomination]);
+
+		return denomination.length;
+	} catch (error) {
+		await browser.close();
+		console.error('Error scraping PCA data:', error);
+		throw error;
 	}
-
-	const denomination = extractChurchData(json);
-
-	await batchUpsertCongregations([...denomination]);
-
-	return denomination.length;
 }
 
 export default buildPcaDenomination;
