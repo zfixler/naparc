@@ -154,18 +154,23 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 				});
 			}
 			// Bulk replace in a transaction for safety
-			await prisma.$transaction(async (tx) => {
-				// Delete all existing congregations for this denomination
-				await tx.congregation.deleteMany({ where: { denominationSlug } });
-				// Insert all new ones
-				const congregations = congregationsArray.map(({ presbytery, ...rest }) => ({
-					...rest,
-					presbyteryId: presbytery?.id,
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				}));
-				await tx.congregation.createMany({ data: congregations });
-			});
+			await prisma.$transaction(
+				async (tx) => {
+					// Delete all existing congregations for this denomination
+					await tx.congregation.deleteMany({ where: { denominationSlug } });
+					// Insert all new ones
+					const congregations = congregationsArray.map(({ presbytery, ...rest }) => ({
+						...rest,
+						presbyteryId: presbytery?.id,
+						createdAt: new Date(),
+						updatedAt: new Date(),
+					}));
+					await tx.congregation.createMany({ data: congregations });
+				},
+				{
+					timeout: 30000, // 30 seconds
+				},
+			);
 			console.log(
 				`Bulk replaced ${congregationsArray.length} congregations for ${denominationSlug}`,
 			);
@@ -212,43 +217,48 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 		let retries = 3;
 		while (retries > 0) {
 			try {
-				await prisma.$transaction(async (tx) => {
-					// Find existing congregations
-					const existingIds = (
-						await tx.congregation.findMany({
-							where: { id: { in: batch.map((/** @type {{ id: any; }} */ c) => c.id) } },
-							select: { id: true },
-						})
-					).map((c) => c.id);
+				await prisma.$transaction(
+					async (tx) => {
+						// Find existing congregations
+						const existingIds = (
+							await tx.congregation.findMany({
+								where: { id: { in: batch.map((/** @type {{ id: any; }} */ c) => c.id) } },
+								select: { id: true },
+							})
+						).map((c) => c.id);
 
-					// Split into creates and updates
-					const toCreate = batch.filter(
-						(/** @type {{ id: string; }} */ c) => !existingIds.includes(c.id),
-					);
-					const toUpdate = batch.filter((/** @type {{ id: string; }} */ c) =>
-						existingIds.includes(c.id),
-					);
+						// Split into creates and updates
+						const toCreate = batch.filter(
+							(/** @type {{ id: string; }} */ c) => !existingIds.includes(c.id),
+						);
+						const toUpdate = batch.filter((/** @type {{ id: string; }} */ c) =>
+							existingIds.includes(c.id),
+						);
 
-					// Perform batch operations
-					if (toCreate.length) {
-						await tx.congregation.createMany({
-							data: toCreate.map((congregation) => ({
-								...congregation,
-								createdAt: new Date(),
-							})),
+						// Perform batch operations
+						if (toCreate.length) {
+							await tx.congregation.createMany({
+								data: toCreate.map((congregation) => ({
+									...congregation,
+									createdAt: new Date(),
+								})),
+							});
+						}
+
+						// Parallelize updates
+						const updatePromises = toUpdate.map((congregation) => {
+							const { id, ...updateData } = congregation;
+							return tx.congregation.update({
+								where: { id },
+								data: { ...updateData, updatedAt: new Date() },
+							});
 						});
-					}
-
-					// Parallelize updates
-					const updatePromises = toUpdate.map((congregation) => {
-						const { id, ...updateData } = congregation;
-						return tx.congregation.update({
-							where: { id },
-							data: { ...updateData, updatedAt: new Date() },
-						});
-					});
-					await Promise.all(updatePromises);
-				});
+						await Promise.all(updatePromises);
+					},
+					{
+						timeout: 30000, // 30 seconds
+					},
+				);
 
 				successCount += batch.length;
 				console.log(`Processed ${successCount} congregations for ${denominationSlug}`);
