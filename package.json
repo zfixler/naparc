@@ -13,6 +13,7 @@
 		"lint": "prettier --check .",
 		"format": "prettier --write .",
 		"prepare": "husky",
+		"postinstall": "prisma generate",
 		"test": "vitest"
 	},
 	"devDependencies": {
