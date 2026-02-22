@@ -118,6 +118,20 @@ async function buildPcaDenomination() {
 			{ waitUntil: 'networkidle0', timeout: 60000 },
 		);
 
+		// Wait for Cloudflare challenge to complete
+		console.log('Waiting for page content to load...');
+		await page.waitForFunction(
+			() => {
+				const text = document.body.innerText || document.body.textContent || '';
+				// Check if we're past the Cloudflare challenge by looking for expected content
+				return text.includes('per = ') || text.includes('mapRS');
+			},
+			{ timeout: 30000 },
+		);
+
+		// Add a small delay to ensure content is fully rendered
+		await new Promise((resolve) => setTimeout(resolve, 2000));
+
 		console.log('Extracting church data from page...');
 		// Extract the data from the page by evaluating JavaScript in the browser context
 		const json = await page.evaluate(() => {
@@ -134,14 +148,20 @@ async function buildPcaDenomination() {
 				return JSON.parse(jsonString);
 			}
 
+			// If extraction fails, log what we found for debugging
+			console.log(
+				'Failed to find "per = " pattern. Page content preview:',
+				scriptText.substring(0, 200),
+			);
 			return null;
 		});
 
 		await browser.close();
 
 		if (!json) {
-			console.log('JSON Extraction failed.');
-			return;
+			const errorMsg = 'JSON Extraction failed. Page may still be showing Cloudflare challenge.';
+			console.log(errorMsg);
+			throw new Error(errorMsg);
 		}
 
 		console.log(`Extracted data for ${json.mapRS?.length || 0} churches`);
