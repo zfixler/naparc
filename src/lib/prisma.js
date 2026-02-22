@@ -13,8 +13,17 @@ export function getPrisma() {
 
 	// Create a connection pool only once
 	if (!poolInstance) {
+		const connectionString = process.env.DATABASE_URL;
+
+		if (!connectionString) {
+			throw new Error('DATABASE_URL environment variable is not set');
+		}
+
 		poolInstance = new pg.Pool({
-			connectionString: process.env.DATABASE_URL,
+			connectionString,
+			ssl: {
+				rejectUnauthorized: false,
+			},
 		});
 	}
 
