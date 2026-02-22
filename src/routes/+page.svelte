@@ -40,33 +40,64 @@
 </div>
 
 <style>
+	.stats-container {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 16px;
+		margin-top: 32px;
+	}
+
+	.stat-card {
+		background: var(--bg-ff);
+		border-radius: var(--brad);
+		padding: 24px 16px;
+		text-align: center;
+	}
+
+	.stat-number {
+		font-size: var(--fs-h1);
+		font-weight: 700;
+		color: var(--accent);
+		line-height: 1;
+		margin-bottom: 6px;
+	}
+
+	.stat-label {
+		font-size: var(--fs-small);
+		color: var(--primary);
+		opacity: 0.75;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		font-weight: 500;
+	}
+
 	.verse-container {
-		margin-top: 48px;
+		margin-top: 40px;
 		text-align: center;
 	}
 
 	.verse {
 		font-style: italic;
-		color: var(--color-text);
+		color: var(--primary);
 		opacity: 0.9;
-		max-width: 600px;
+		max-width: 560px;
 		margin: 0 auto;
 	}
 
 	.verse p {
-		font-size: 1.375rem;
+		font-size: var(--fs-h5);
 		line-height: 1.6;
-		margin-bottom: 16px;
+		margin-bottom: 12px;
 	}
 
 	.verse footer {
 		font-style: normal;
-		font-size: 1rem;
-		opacity: 0.8;
+		font-size: var(--fs-regular);
+		opacity: 0.75;
 	}
 
 	.verse a {
-		color: var(--color-theme-1);
+		color: var(--accent);
 		text-decoration: none;
 	}
 
@@ -74,58 +105,28 @@
 		text-decoration: underline;
 	}
 
-	.stats-container {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-		gap: 24px;
-		margin-top: 48px;
-	}
-
-	.stat-card {
-		background: var(--color-bg-1);
-		border: 1px solid var(--color-theme-1);
-		border-radius: 8px;
-		padding: 32px 24px;
-		text-align: center;
-		transition: transform 0.2s ease;
-	}
-
-	.stat-card:hover {
-		transform: translateY(-4px);
-	}
-
-	.stat-number {
-		font-size: 3rem;
-		font-weight: 700;
-		color: var(--color-theme-1);
-		line-height: 1;
-		margin-bottom: 8px;
-	}
-
-	.stat-label {
-		font-size: 1rem;
-		color: var(--color-text);
-		opacity: 0.8;
-		text-transform: uppercase;
-		letter-spacing: 1px;
-		font-weight: 500;
-	}
-
 	@media (max-width: 600px) {
 		.stats-container {
-			gap: 16px;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 12px;
+			margin-top: 24px;
 		}
 
 		.stat-card {
-			padding: 24px 16px;
+			padding: 16px 12px;
 		}
 
 		.stat-number {
-			font-size: 2.5rem;
+			font-size: var(--fs-h2);
+			margin-bottom: 4px;
 		}
 
-		.stat-label {
-			font-size: 0.875rem;
+		.verse-container {
+			margin-top: 28px;
+		}
+
+		.verse p {
+			font-size: var(--fs-h4);
 		}
 	}
 </style>
