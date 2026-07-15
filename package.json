@@ -17,25 +17,25 @@
 		"test": "vitest"
 	},
 	"devDependencies": {
-		"@commitlint/cli": "^21.2.0",
+		"@commitlint/cli": "^21.2.1",
 		"@commitlint/config-conventional": "^21.2.0",
-		"@sveltejs/kit": "^2.68.0",
-		"@sveltejs/vite-plugin-svelte": "^7.1.2",
+		"@sveltejs/kit": "^2.69.3",
+		"@sveltejs/vite-plugin-svelte": "^7.2.0",
 		"@types/leaflet": "^1.9.21",
-		"@types/node": "^26.1.0",
-		"eslint": "^10.6.0",
+		"@types/node": "^26.1.1",
+		"eslint": "^10.7.0",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.20.0",
 		"globals": "^17.7.0",
 		"husky": "^9.1.7",
-		"prettier": "^3.9.4",
+		"prettier": "^3.9.5",
 		"prettier-plugin-svelte": "^4.1.1",
 		"prisma": "^7.8.0",
-		"svelte": "^5.56.4",
-		"svelte-check": "^4.7.1",
-		"typescript": "^6.0.3",
-		"vite": "^8.1.2",
-		"vitest": "^4.1.9"
+		"svelte": "^5.56.5",
+		"svelte-check": "^4.7.2",
+		"typescript": "^7.0.2",
+		"vite": "^8.1.4",
+		"vitest": "^4.1.10"
 	},
 	"type": "module",
 	"dependencies": {
@@ -48,7 +48,7 @@
 		"leaflet": "^1.9.4",
 		"nodemailer": "^9.0.3",
 		"pg": "^8.22.0",
-		"puppeteer": "^25.2.1",
+		"puppeteer": "^25.3.0",
 		"uuid": "^14.0.1"
 	}
 }
