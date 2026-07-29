@@ -2,8 +2,30 @@
 	import { onMount } from 'svelte';
 	export const ssr = false;
 
-	/** @type {{lat: number,  lon: number, locations: Array<import('@prisma/client').Congregation>}}*/
+	/** @type {{lat: number,  lon: number, locations: Array<import('../../routes/search/+page.server.js').MapPin>}}*/
 	const { lat = 41, lon = -80, locations = [] } = $props();
+
+	/**
+	 * Scraped congregation names and addresses go into popup markup, so escape them.
+	 * Both are nullable in the schema, hence the coalesce.
+	 * @param {string|null|undefined} value
+	 */
+	const escapeHtml = (value) =>
+		String(value ?? '').replace(
+			/[&<>"]/g,
+			(char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[char] ?? char,
+		);
+
+	/**
+	 * A pin's card may live on any results page, so link to the page that renders it and
+	 * let the hash scroll to the card. Every other search param is preserved.
+	 * @param {import('../../routes/search/+page.server.js').MapPin} pin
+	 */
+	const hrefForPin = (pin) => {
+		const params = new URLSearchParams(window.location.search);
+		params.set('pg', String(pin.page));
+		return `?${params.toString()}#${pin.id}`;
+	};
 
 	/**
 	 * A mapping of color class names to their hexadecimal color values
@@ -41,28 +63,26 @@
 			attribution: '© OpenStreetMap contributors',
 		}).addTo(map);
 
-		// Add markers from locations
+		// Add a marker for every congregation in the search, not just the current page
 		locations.forEach((location) => {
 			const popup = L.popup({
-				content: `<strong><a href="#${location.id}">${location.name} | ${location.denominationSlug.toUpperCase()}</a></strong><br>${location.address}`,
+				content: `<strong><a href="${hrefForPin(location)}">${escapeHtml(location.name)} | ${location.denominationSlug.toUpperCase()}</a></strong><br>${escapeHtml(location.address)}`,
 				className: 'popup',
 			});
 
 			const svgIcon = L.divIcon({
-				html: getSvg(colors[location.denominationSlug]),
+				html: getSvg(colors[location.denominationSlug] ?? '#555'),
 				iconSize: [28, 46],
 				className: '',
 				iconAnchor: [14, 5],
 			});
 
-			if (location.lat && location.lon) {
-				L.marker([location.lat, location.lon], { icon: svgIcon }).addTo(map).bindPopup(popup);
-			}
+			L.marker([location.lat, location.lon], { icon: svgIcon }).addTo(map).bindPopup(popup);
 		});
 
 		// Adjust map to fit all markers
 		if (locations.length) {
-			const bounds = L.latLngBounds(locations.map((loc) => [loc.lat || 0, loc.lon || 0]));
+			const bounds = L.latLngBounds(locations.map((loc) => [loc.lat, loc.lon]));
 			map.fitBounds(bounds, { padding: [50, 50] });
 		}
 
@@ -72,14 +92,17 @@
 		legend.onAdd = function () {
 			const div = L.DomUtil.create('div', 'legend');
 
-			[...new Set(locations.map(({ denominationSlug }) => denominationSlug))].forEach((slug) => {
-				div.innerHTML += `
-			<div class="legend-item">
-				<span class="legend-dot" style="background-color: ${colors[slug]};"></span>
-				<span>${slug.toUpperCase()}</span>
-			</div>
-		`;
-			});
+			// Sorted so the legend order does not depend on which congregation happens to be nearest
+			[...new Set(locations.map(({ denominationSlug }) => denominationSlug))]
+				.sort()
+				.forEach((slug) => {
+					div.innerHTML += `
+				<div class="legend-item">
+					<span class="legend-dot" style="background-color: ${colors[slug] ?? '#555'};"></span>
+					<span>${slug.toUpperCase()}</span>
+				</div>
+			`;
+				});
 
 			return div;
 		};

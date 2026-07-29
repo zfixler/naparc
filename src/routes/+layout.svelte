@@ -1,4 +1,5 @@
 <script>
+	import { navigating } from '$app/state';
 	import { SchemeToggle } from '$lib/components';
 	import { Search } from '$lib/features';
 	import '@fontsource-variable/outfit';
@@ -7,9 +8,17 @@
 	let { data, children } = $props();
 
 	const year = new Date().getFullYear();
+
+	const isNavigating = $derived(Boolean(navigating.to));
 </script>
 
 <main class="app">
+	{#if isNavigating}
+		<div class="progress" aria-hidden="true"></div>
+	{/if}
+	<div class="visually-hidden" role="status" aria-live="polite">
+		{isNavigating ? 'Loading results…' : ''}
+	</div>
 	<header class="header">
 		<nav class="nav">
 			<ul>
@@ -24,7 +33,7 @@
 		<h1 class="title"><a href="/">NAPARC Search</a></h1>
 		<Search denominations={data.denominations} />
 	</header>
-	<div class="slot">
+	<div class="slot" class:is-loading={isNavigating} aria-busy={isNavigating}>
 		{@render children?.()}
 	</div>
 	<footer class="footer">
@@ -51,6 +60,58 @@
 	.slot {
 		align-self: start;
 		margin: var(--margin) auto;
+		transition: opacity 0.15s ease;
+	}
+
+	/* Stale results stay readable but are clearly not the answer to the pending query */
+	.slot.is-loading {
+		opacity: 0.45;
+		pointer-events: none;
+	}
+
+	.progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		z-index: 2000;
+		background-color: var(--bg-bg);
+		overflow: hidden;
+	}
+
+	.progress::after {
+		content: '';
+		display: block;
+		width: 40%;
+		height: 100%;
+		background-color: var(--accent);
+		animation: indeterminate 1.1s ease-in-out infinite;
+	}
+
+	@keyframes indeterminate {
+		0% {
+			transform: translateX(-100%);
+		}
+		100% {
+			transform: translateX(350%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.progress::after {
+			width: 100%;
+			animation: none;
+		}
+	}
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 
 	.app {

@@ -7,6 +7,14 @@
 
 <Head />
 
+<section class="intro">
+	<h2 class="intro-title">Find a confessional church near you</h2>
+	<p class="intro-copy">
+		Search congregations across the denominations of the North American Presbyterian and Reformed
+		Council by city, address, or postal code.
+	</p>
+</section>
+
 <div class="stats-container">
 	<div class="stat-card">
 		<div class="stat-number">{data.stats.totalCongregations.toLocaleString()}</div>
@@ -40,6 +48,21 @@
 </div>
 
 <style>
+	.intro {
+		text-align: center;
+	}
+
+	.intro-title {
+		margin: 0 auto 12px;
+	}
+
+	.intro-copy {
+		margin: 0 auto;
+		max-width: 60ch;
+		line-height: 1.6;
+		opacity: 0.85;
+	}
+
 	.stats-container {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);

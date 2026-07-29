@@ -45,10 +45,13 @@ body {
 	--blue-1: #8591ff;
 	--blue-2: #707eff;
 	--blue-3: #5c6cff;
+	--blue-4: #3b47c9;
 
 	--primary: var(--black-3);
 	--secondary: var(--gray-1);
 	--accent: var(--blue-3);
+	/* --blue-1 measured ~2.9:1 on the light background; --blue-4 clears 4.5:1 */
+	--visited: var(--blue-4);
 	--success: var(--green-2);
 	--bg-ff: var(--gray-1);
 	--bg-bg: var(--gray-2);
@@ -64,6 +67,8 @@ body {
 html[data-scheme='dark'] {
 	--primary: var(--gray-3);
 	--secondary: var(--gray-1);
+	/* On the dark background the light blue is the readable one (~6.5:1) */
+	--visited: var(--blue-1);
 	--success: var(--green-1);
 	--bg-ff: var(--black-1);
 	--bg-bg: var(--black-3);
@@ -152,5 +157,17 @@ a:hover {
 }
 
 a:visited {
-	color: var(--blue-1);
+	color: var(--visited);
+}
+
+/* Every interactive control needs a visible keyboard focus indicator */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[role='option']:focus-visible,
+[tabindex]:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+	border-radius: var(--brad);
 }

@@ -1,21 +1,8 @@
 <script>
 	import ClickOutside from './ClickOutside.svelte';
 
-	/** @type {{settings?: any, denominations: Array<import("@prisma/client").Denomination>}} */
-	let { settings = $bindable({}), denominations } = $props();
-
-	$effect(() => {
-		settings.included = denominations.map(({ slug, name: abbr }) => {
-			return {
-				abbr,
-				slug,
-				checked: true,
-			};
-		});
-
-		settings.radius = '25';
-		settings.hasSavedSettings = false;
-	});
+	/** @type {{settings?: any}} */
+	let { settings = $bindable({}) } = $props();
 
 	let shouldShowSettings = $state(false);
 </script>
@@ -88,7 +75,6 @@
 		border: none;
 		color: var(--gray-3);
 		cursor: pointer;
-		outline: none;
 		transition: color 0.25s ease;
 	}
 

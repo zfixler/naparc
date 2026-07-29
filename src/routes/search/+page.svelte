@@ -16,12 +16,22 @@
 	 *	   radius: number,
 	 *     denomination: import('@prisma/client').Denomination;
 	 *     congregations: Array<import('@prisma/client').Congregation>;
+	 *     pins: Array<import('./+page.server.js').MapPin>;
 	 *   }
 	 * }}
 	 */
 	let { data } = $props();
 
-	let search = $derived(page.url.search);
+	/*
+	 * The map's contents depend on the search itself, not on which page of the list is
+	 * showing. Keying it separately from `search` means paging through results no longer
+	 * tears the map down and discards the reader's pan and zoom.
+	 */
+	let mapKey = $derived.by(() => {
+		const params = new URLSearchParams(page.url.search);
+		params.delete('pg');
+		return params.toString();
+	});
 
 	let viewingResults = $derived(calculateViewedResults(data.page, data.totalResults));
 	let hasMultiplePages = $derived(data.totalPages ? data.totalPages > 1 : false);
@@ -29,34 +39,90 @@
 
 <Head title="NAPARC Search | Results for {data.location}" />
 
-{#key search}
-	{#if data.congregations.length}
-		<section class="result-header">
-			<h2>Search Results:</h2>
-			<p>
-				{data.location}. Viewing results ({viewingResults.startIndex} to {viewingResults.endIndex}
-				of {data.totalResults}) within {data.radius} miles.
-			</p>
-		</section>
+{#if data.congregations.length}
+	<!--
+		This caption sits above the map, which plots the entire result set, so it states the
+		total. The "showing x–y" range describes only the list slice and lives with the
+		paginator that controls it.
+	-->
+	<section class="result-header">
+		<h2 class="result-title">Search Results</h2>
+		<p class="result-summary">
+			{data.totalResults}
+			{data.totalResults === 1 ? 'congregation' : 'congregations'} within {data.radius} miles of
+			<strong>{data.location}</strong>.
+		</p>
+	</section>
 
-		<Map lat={parseFloat(data.lat)} lon={parseFloat(data.lon)} locations={data.congregations} />
+	{#key mapKey}
+		<Map lat={parseFloat(data.lat)} lon={parseFloat(data.lon)} locations={data.pins} />
+	{/key}
+	<!-- Scroll/focus target for the paginator, so paging lands on the list, not the map -->
+	<div id="results" class="results" tabindex="-1">
 		{#each data.congregations as congregation (congregation.id)}
 			<Congregation {congregation} />
 		{/each}
-	{:else}
-		<p>Your search did not return any results.</p>
-	{/if}
+	</div>
+{:else}
+	<section class="empty">
+		<h2 class="result-title">No results</h2>
+		<p class="result-summary">
+			We did not find any congregations within {data.radius} miles of
+			<strong>{data.location}</strong>.
+		</p>
+		<ul class="suggestions">
+			<li>Widen the search radius in the settings menu above.</li>
+			<li>Re-enable any denominations you filtered out.</li>
+			<li>Try a nearby city or a larger metropolitan area.</li>
+		</ul>
+	</section>
+{/if}
 
-	{#if hasMultiplePages}
-		<Pagination currentPage={data.page} totalPages={data.totalPages} />
-	{/if}
-{/key}
+{#if hasMultiplePages}
+	<Pagination
+		currentPage={data.page}
+		totalPages={data.totalPages}
+		startIndex={viewingResults.startIndex}
+		endIndex={viewingResults.endIndex}
+		totalResults={data.totalResults} />
+{/if}
 
 <style>
+	/*
+	 * Previously a 25%/auto grid, which squeezed the heading into a narrow column and
+	 * cramped the summary beside it at small widths. Stacking reads cleanly at every size.
+	 */
 	.result-header {
-		display: grid;
-		gap: 16px;
 		margin-bottom: var(--margin);
-		grid-template-columns: 25% auto;
+	}
+
+	.result-title {
+		margin-bottom: 4px;
+	}
+
+	.result-summary {
+		opacity: 0.85;
+	}
+
+	/*
+	 * The list container only receives focus programmatically, as a scroll target for the
+	 * paginator. It is not an interactive control, so a ring around the whole list would be
+	 * noise — screen readers still announce it on focus.
+	 */
+	.results:focus,
+	.results:focus-visible {
+		outline: none;
+	}
+
+	.empty {
+		background-color: var(--bg-ff);
+		border-radius: var(--brad);
+		box-shadow: var(--box-shadow);
+		padding: var(--padding);
+	}
+
+	.suggestions {
+		margin: 12px 0 0 20px;
+		line-height: 1.7;
 	}
 </style>

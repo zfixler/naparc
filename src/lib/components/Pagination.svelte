@@ -1,19 +1,41 @@
 <script>
-	import { page } from '$app/state';
+	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 
-	/** @type {{currentPage?: number, totalPages?: number}} */
-	let { currentPage = 1, totalPages = 1 } = $props();
+	/** @type {{currentPage?: number, totalPages?: number, startIndex?: number, endIndex?: number, totalResults?: number}} */
+	let {
+		currentPage = 1,
+		totalPages = 1,
+		startIndex = 0,
+		endIndex = 0,
+		totalResults = 0,
+	} = $props();
+
+	const isNavigating = $derived(Boolean(navigating.to));
 
 	/**
 	 * Navigate to a specific page
 	 * @param {number} pg
 	 */
-	function navigateToPage(pg) {
+	async function navigateToPage(pg) {
 		// Create a new URL instance to avoid mutating the original
 		const url = new URL(page.url);
 		url.searchParams.set('pg', (pg + 1).toString());
-		goto(url.href);
+
+		/*
+		 * SvelteKit's default is to jump to the top of the document, which now lands the
+		 * reader back on the map — the one thing paging does not change. Suppress it and
+		 * go to the top of the list instead, moving focus there so the new page is
+		 * announced rather than silently swapped underneath a screen reader.
+		 */
+		await goto(url.href, { noScroll: true });
+
+		const results = document.getElementById('results');
+		if (!results) return;
+
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		results.focus({ preventScroll: true });
+		results.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
 	}
 
 	// Memoize the pages calculation to avoid unnecessary recalculations
@@ -40,25 +62,46 @@
 	});
 </script>
 
-<div class="container">
+<nav class="container" aria-label="Search results pages">
 	<ul class="pages">
+		<li class="page">
+			<button
+				class="step"
+				onclick={() => navigateToPage(currentPage - 2)}
+				disabled={currentPage <= 1 || isNavigating}
+				aria-label="Previous page">
+				‹ Prev
+			</button>
+		</li>
 		{#each pages as pg (pg)}
 			<li class="page">
 				{#if pg === '...'}
-					<span class="ellipsis">...</span>
+					<span class="ellipsis">…</span>
 				{:else}
 					<button
 						onclick={() => navigateToPage(Number(pg))}
 						class={currentPage === Number(pg) + 1 ? 'current' : ''}
-						disabled={currentPage === Number(pg) + 1}
+						disabled={currentPage === Number(pg) + 1 || isNavigating}
+						aria-current={currentPage === Number(pg) + 1 ? 'page' : undefined}
 						aria-label={`Page ${Number(pg) + 1}`}>
 						{Number(pg) + 1}
 					</button>
 				{/if}
 			</li>
 		{/each}
+		<li class="page">
+			<button
+				class="step"
+				onclick={() => navigateToPage(currentPage)}
+				disabled={currentPage >= totalPages || isNavigating}
+				aria-label="Next page">
+				Next ›
+			</button>
+		</li>
 	</ul>
-</div>
+	<!-- Scoped to the list, not the map: the map plots all {totalResults} results. -->
+	<p class="context">Showing {startIndex}–{endIndex} of {totalResults}</p>
+</nav>
 
 <style>
 	.container {
@@ -70,20 +113,55 @@
 	.pages {
 		list-style: none;
 		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
 		gap: 8px;
 	}
 
 	.current {
 		pointer-events: none;
 		background-color: var(--bg-bg);
+		color: var(--accent);
+	}
+
+	.context {
+		font-size: var(--fs-small);
+		margin-top: 8px;
+		opacity: 0.75;
 	}
 
 	button {
 		background-color: var(--bg-ff);
 		border: none;
+		border-radius: var(--brad);
+		/* 44px keeps the tap target usable on touch devices */
+		min-width: 44px;
+		min-height: 44px;
 		padding: 0.5rem;
 		color: var(--primary);
 		cursor: pointer;
+		font-family: inherit;
+		font-size: inherit;
 		font-weight: bold;
+		transition: color 0.25s ease;
+	}
+
+	button:hover:not(:disabled) {
+		color: var(--accent);
+	}
+
+	button:disabled {
+		cursor: default;
+	}
+
+	.step:disabled {
+		opacity: 0.4;
+	}
+
+	.ellipsis {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		padding: 0 4px;
 	}
 </style>

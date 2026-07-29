@@ -47,7 +47,6 @@
 		height: 24px;
 		gap: 4px;
 		background-color: var(--accent);
-		outline: none;
 		border: none;
 		border-radius: 20px;
 		padding: 0;

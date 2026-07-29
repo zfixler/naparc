@@ -48,7 +48,6 @@
 			<Phone {phone} />
 		</div>
 	</div>
-	<footer class="footer"></footer>
 </article>
 
 <style>
