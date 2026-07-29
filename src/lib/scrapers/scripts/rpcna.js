@@ -45,25 +45,16 @@ function parseLatLong(string) {
 
 /**
  * Parse congregations individually and return an array of all
- * @param {Array<{url: string, slug: string}>} urls
- * @param {Record<string, string>} headers - Session headers carrying the Cloudflare clearance cookie.
+ * @param {Array<{url: string, slug: string, html: string}>} pages - Congregation pages already fetched through the browser session.
  */
-async function getDenomination(urls, headers) {
+async function getDenomination(pages) {
 	const denomination = [];
 	const denominationNamespace = 'c35c0255-08b6-4e51-b4ee-ca473f2ad981';
 	const denominationSlug = 'rpcna';
 
-	// Parallelize fetches
-	const congregationPromises = urls.map(async (congregation) => {
+	const congregationPromises = pages.map(async (congregation) => {
 		try {
-			const response = await fetch(congregation.url, { headers });
-
-			if (!response.ok) {
-				throw new Error(`HTTP ${response.status}`);
-			}
-
-			const data = await response.text();
-			const $ = cheerio.load(data);
+			const $ = cheerio.load(congregation.html);
 			const mapScript = $('.map_search_container').find('script').text();
 			const infoDiv = $('.church_info');
 			const pastorDiv = $('.cong_pastor');
@@ -143,11 +134,12 @@ async function getDenomination(urls, headers) {
 
 /**
  * The RPCNA site sits behind a Cloudflare challenge that a plain fetch cannot
- * pass. Clear it once in a real browser, then hand the resulting clearance
- * cookie to the per-congregation fetches so they do not each need a browser.
- * @returns {Promise<{html: string, headers: Record<string, string>}>}
+ * pass. The clearance is bound to the browser session rather than just the
+ * cookie, so the congregation pages are fetched from inside the cleared page
+ * instead of being handed off to Node.
+ * @returns {Promise<Array<{url: string, slug: string, html: string}>>}
  */
-async function fetchListPageWithClearance() {
+async function fetchCongregationPages() {
 	console.log('Launching browser for RPCNA scraper...');
 	const browser = await launchChallengeBrowser();
 
@@ -168,30 +160,42 @@ async function fetchListPageWithClearance() {
 			timeout: 45000,
 		});
 
-		const html = await page.content();
-		const userAgent = await browser.userAgent();
-		const cookies = await browser.cookies();
-		const cookieHeader = cookies.map(({ name, value }) => `${name}=${value}`).join('; ');
+		const congregationUrls = getCongregationUrls(await page.content());
 
-		return {
-			html,
-			headers: { 'cookie': cookieHeader, 'user-agent': userAgent },
-		};
+		if (congregationUrls.length === 0) {
+			throw new Error('Found no congregation links on the RPCNA list page.');
+		}
+
+		console.log(`Found ${congregationUrls.length} congregation urls`);
+
+		const pages = await page.evaluate(async (targets) => {
+			const collected = [];
+			const concurrency = 5;
+
+			for (let i = 0; i < targets.length; i += concurrency) {
+				const batch = await Promise.all(
+					targets.slice(i, i + concurrency).map(async (target) => {
+						const res = await fetch(target.url);
+						return res.ok ? { ...target, html: await res.text() } : null;
+					}),
+				);
+				collected.push(...batch.filter(Boolean));
+			}
+
+			return collected;
+		}, congregationUrls);
+
+		console.log(`Fetched ${pages.length} of ${congregationUrls.length} congregation pages`);
+
+		return pages;
 	} finally {
 		await browser.close();
 	}
 }
 
 async function buildRpcnaDenomination() {
-	const { html, headers } = await fetchListPageWithClearance();
-	const congregationUrls = getCongregationUrls(html);
-
-	if (congregationUrls.length === 0) {
-		throw new Error('Found no congregation links on the RPCNA list page.');
-	}
-
-	console.log(`Found ${congregationUrls.length} congregation urls`);
-	const denomination = await getDenomination(congregationUrls, headers);
+	const pages = await fetchCongregationPages();
+	const denomination = await getDenomination(pages);
 
 	await batchUpsertCongregations(denomination.filter((church) => church != null));
 
