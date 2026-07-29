@@ -1,4 +1,10 @@
 /**
+ * Congregations listed per page of search results. Shared by the paginator, the
+ * "showing x–y of z" summary, and the map's pin-to-page links so they cannot drift.
+ */
+export const PAGE_SIZE = 20;
+
+/**
  * Returns a randomly generated UUID in a specified number of chunks.
  * @param {(1|2|3|4|5)} chunkNum - The number of 8 character UUID chunks to return.
  * @returns {string} UUID
@@ -14,7 +20,7 @@ export const getUuidChunk = (chunkNum = 5) => {
  * @returns {{results: Array<any>;page: number;totalResults: number;totalPages: number}} An object containing the paginated results details.
  */
 export function paginateResults(pg, results = []) {
-	const pageSize = 10;
+	const pageSize = PAGE_SIZE;
 	const totalResults = results.length;
 	const totalPages = Math.ceil(totalResults / pageSize);
 
@@ -40,7 +46,7 @@ export function paginateResults(pg, results = []) {
  * @returns {{ startIndex: number, endIndex: number }} An object containing the start and end indices of the results being viewed.
  */
 export function calculateViewedResults(currentPage = 1, totalResults = 1) {
-	const resultsPerPage = 10;
+	const resultsPerPage = PAGE_SIZE;
 	const startIndex = (currentPage - 1) * resultsPerPage + 1;
 	const endIndex = Math.min(currentPage * resultsPerPage, totalResults);
 	return {

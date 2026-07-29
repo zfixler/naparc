@@ -16,12 +16,22 @@
 	 *	   radius: number,
 	 *     denomination: import('@prisma/client').Denomination;
 	 *     congregations: Array<import('@prisma/client').Congregation>;
+	 *     pins: Array<import('./+page.server.js').MapPin>;
 	 *   }
 	 * }}
 	 */
 	let { data } = $props();
 
-	let search = $derived(page.url.search);
+	/*
+	 * The map's contents depend on the search itself, not on which page of the list is
+	 * showing. Keying it separately from `search` means paging through results no longer
+	 * tears the map down and discards the reader's pan and zoom.
+	 */
+	let mapKey = $derived.by(() => {
+		const params = new URLSearchParams(page.url.search);
+		params.delete('pg');
+		return params.toString();
+	});
 
 	let viewingResults = $derived(calculateViewedResults(data.page, data.totalResults));
 	let hasMultiplePages = $derived(data.totalPages ? data.totalPages > 1 : false);
@@ -29,39 +39,39 @@
 
 <Head title="NAPARC Search | Results for {data.location}" />
 
-{#key search}
-	{#if data.congregations.length}
-		<section class="result-header">
-			<h2 class="result-title">Search Results</h2>
-			<p class="result-summary">
-				Showing {viewingResults.startIndex}–{viewingResults.endIndex} of {data.totalResults}
-				congregations within {data.radius} miles of <strong>{data.location}</strong>.
-			</p>
-		</section>
+{#if data.congregations.length}
+	<section class="result-header">
+		<h2 class="result-title">Search Results</h2>
+		<p class="result-summary">
+			Showing {viewingResults.startIndex}–{viewingResults.endIndex} of {data.totalResults}
+			congregations within {data.radius} miles of <strong>{data.location}</strong>.
+		</p>
+	</section>
 
-		<Map lat={parseFloat(data.lat)} lon={parseFloat(data.lon)} locations={data.congregations} />
-		{#each data.congregations as congregation (congregation.id)}
-			<Congregation {congregation} />
-		{/each}
-	{:else}
-		<section class="empty">
-			<h2 class="result-title">No results</h2>
-			<p class="result-summary">
-				We did not find any congregations within {data.radius} miles of
-				<strong>{data.location}</strong>.
-			</p>
-			<ul class="suggestions">
-				<li>Widen the search radius in the settings menu above.</li>
-				<li>Re-enable any denominations you filtered out.</li>
-				<li>Try a nearby city or a larger metropolitan area.</li>
-			</ul>
-		</section>
-	{/if}
+	{#key mapKey}
+		<Map lat={parseFloat(data.lat)} lon={parseFloat(data.lon)} locations={data.pins} />
+	{/key}
+	{#each data.congregations as congregation (congregation.id)}
+		<Congregation {congregation} />
+	{/each}
+{:else}
+	<section class="empty">
+		<h2 class="result-title">No results</h2>
+		<p class="result-summary">
+			We did not find any congregations within {data.radius} miles of
+			<strong>{data.location}</strong>.
+		</p>
+		<ul class="suggestions">
+			<li>Widen the search radius in the settings menu above.</li>
+			<li>Re-enable any denominations you filtered out.</li>
+			<li>Try a nearby city or a larger metropolitan area.</li>
+		</ul>
+	</section>
+{/if}
 
-	{#if hasMultiplePages}
-		<Pagination currentPage={data.page} totalPages={data.totalPages} />
-	{/if}
-{/key}
+{#if hasMultiplePages}
+	<Pagination currentPage={data.page} totalPages={data.totalPages} />
+{/if}
 
 <style>
 	/*
