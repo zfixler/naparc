@@ -1,6 +1,5 @@
 import { v5 as uuidv5 } from 'uuid';
 import { batchUpsertCongregations } from '../utils/index.js';
-import { launchChallengeBrowser, waitForChallenge } from '../utils/browser.js';
 
 const denominationNamespace = 'e2b89f6e-17c4-40c5-8d97-381723ab732a';
 
@@ -34,47 +33,31 @@ async function fetchArpData() {
 		{ lat: 21.3069, long: -157.8583 }, // Honolulu, USA
 	];
 
-	// arpchurch.org answers datacenter IPs with a Cloudflare challenge, so the
-	// requests are issued from inside a real browser page that has cleared it
-	// rather than with a bare fetch.
-	console.log('Launching browser for ARP scraper...');
-	const browser = await launchChallengeBrowser();
+	const dataPromises = coordinates.map(async (coordinate) => {
+		const url = `https://arpchurch.org/wp-admin/admin-ajax.php?action=store_search&lat=${coordinate.lat}&lng=${coordinate.long}&max_results=100&search_radius=500`;
+		const res = await fetch(url);
 
-	try {
-		const page = await browser.newPage();
-		await page.setViewport({ width: 1920, height: 1080 });
+		// Cloudflare answers blocked requests with an HTML challenge page rather
+		// than an error status. It clears from ordinary connections but not from
+		// datacenter ranges such as GitHub Actions, so this scraper needs a
+		// non-datacenter egress. See CLAUDE.md.
+		if (!res.ok) {
+			throw new Error(
+				`ARP store_search returned HTTP ${res.status}, which usually means Cloudflare blocked this IP.`,
+			);
+		}
 
-		console.log('Clearing Cloudflare challenge for arpchurch.org...');
-		await page.goto('https://arpchurch.org/', { waitUntil: 'networkidle2', timeout: 60000 });
-		await waitForChallenge(page);
+		const contentType = res.headers.get('content-type') || 'unknown';
+		if (!contentType.includes('application/json')) {
+			throw new Error(
+				`ARP store_search returned "${contentType}" instead of JSON, which usually means Cloudflare blocked this IP.`,
+			);
+		}
 
-		console.log(`Querying store_search for ${coordinates.length} coordinates...`);
-		return await page.evaluate(async (coords) => {
-			const collected = [];
+		return await res.json();
+	});
 
-			for (const coordinate of coords) {
-				const url = `/wp-admin/admin-ajax.php?action=store_search&lat=${coordinate.lat}&lng=${coordinate.long}&max_results=100&search_radius=500`;
-				const res = await fetch(url);
-
-				if (!res.ok) {
-					throw new Error(`ARP store_search returned HTTP ${res.status} for ${url}`);
-				}
-
-				const contentType = res.headers.get('content-type') || 'unknown';
-				if (!contentType.includes('application/json')) {
-					throw new Error(
-						`ARP store_search returned "${contentType}" instead of JSON for ${url}, which usually means Cloudflare blocked the request.`,
-					);
-				}
-
-				collected.push(...(await res.json()));
-			}
-
-			return collected;
-		}, coordinates);
-	} finally {
-		await browser.close();
-	}
+	return (await Promise.all(dataPromises)).flat();
 }
 
 async function buildArpDenomination() {

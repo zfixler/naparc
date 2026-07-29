@@ -1,7 +1,11 @@
 import * as cheerio from 'cheerio';
 import { v5 as uuidv5 } from 'uuid';
 import { batchUpsertCongregations, slugify } from '../utils/index.js';
-import { launchChallengeBrowser } from '../utils/browser.js';
+
+const BROWSER_HEADERS = {
+	'user-agent':
+		'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+};
 
 /**
  * Extracts congregation URLs from HTML content.
@@ -45,16 +49,23 @@ function parseLatLong(string) {
 
 /**
  * Parse congregations individually and return an array of all
- * @param {Array<{url: string, slug: string, html: string}>} pages - Congregation pages already fetched through the browser session.
+ * @param {Array<{url: string, slug: string}>} urls
  */
-async function getDenomination(pages) {
+async function getDenomination(urls) {
 	const denomination = [];
 	const denominationNamespace = 'c35c0255-08b6-4e51-b4ee-ca473f2ad981';
 	const denominationSlug = 'rpcna';
 
-	const congregationPromises = pages.map(async (congregation) => {
+	// Parallelize fetches
+	const congregationPromises = urls.map(async (congregation) => {
 		try {
-			const $ = cheerio.load(congregation.html);
+			const response = await fetch(congregation.url, { headers: BROWSER_HEADERS });
+
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}`);
+			}
+
+			const $ = cheerio.load(await response.text());
 			const mapScript = $('.map_search_container').find('script').text();
 			const infoDiv = $('.church_info');
 			const pastorDiv = $('.cong_pastor');
@@ -132,70 +143,28 @@ async function getDenomination(pages) {
 	return denomination;
 }
 
-/**
- * The RPCNA site sits behind a Cloudflare challenge that a plain fetch cannot
- * pass. The clearance is bound to the browser session rather than just the
- * cookie, so the congregation pages are fetched from inside the cleared page
- * instead of being handed off to Node.
- * @returns {Promise<Array<{url: string, slug: string, html: string}>>}
- */
-async function fetchCongregationPages() {
-	console.log('Launching browser for RPCNA scraper...');
-	const browser = await launchChallengeBrowser();
-
-	try {
-		const page = await browser.newPage();
-		await page.setViewport({ width: 1920, height: 1080 });
-
-		console.log('Navigating to RPCNA congregation list...');
-		await page.goto('https://reformedpresbyterian.org/congregations/list/', {
-			waitUntil: 'networkidle2',
-			timeout: 60000,
-		});
-
-		// The challenge page has no directory markup, so waiting for a real
-		// congregation link is what tells us the clearance actually landed.
-		console.log('Waiting for Cloudflare challenge to clear...');
-		await page.waitForSelector('.church_directory a[href^="/congregations/info/"]', {
-			timeout: 45000,
-		});
-
-		const congregationUrls = getCongregationUrls(await page.content());
-
-		if (congregationUrls.length === 0) {
-			throw new Error('Found no congregation links on the RPCNA list page.');
-		}
-
-		console.log(`Found ${congregationUrls.length} congregation urls`);
-
-		const pages = await page.evaluate(async (targets) => {
-			const collected = [];
-			const concurrency = 5;
-
-			for (let i = 0; i < targets.length; i += concurrency) {
-				const batch = await Promise.all(
-					targets.slice(i, i + concurrency).map(async (target) => {
-						const res = await fetch(target.url);
-						return res.ok ? { ...target, html: await res.text() } : null;
-					}),
-				);
-				collected.push(...batch.filter(Boolean));
-			}
-
-			return collected;
-		}, congregationUrls);
-
-		console.log(`Fetched ${pages.length} of ${congregationUrls.length} congregation pages`);
-
-		return pages;
-	} finally {
-		await browser.close();
-	}
-}
-
 async function buildRpcnaDenomination() {
-	const pages = await fetchCongregationPages();
-	const denomination = await getDenomination(pages);
+	const response = await fetch('https://reformedpresbyterian.org/congregations/list/', {
+		headers: BROWSER_HEADERS,
+	});
+
+	// Cloudflare serves its challenge with a 403. It clears from ordinary
+	// connections but not from datacenter ranges such as GitHub Actions, so this
+	// scraper needs a non-datacenter egress. See CLAUDE.md.
+	if (!response.ok) {
+		throw new Error(
+			`RPCNA list page returned HTTP ${response.status}, which usually means Cloudflare blocked this IP.`,
+		);
+	}
+
+	const congregationUrls = getCongregationUrls(await response.text());
+
+	if (congregationUrls.length === 0) {
+		throw new Error('Found no congregation links on the RPCNA list page.');
+	}
+
+	console.log(`Found ${congregationUrls.length} congregation urls`);
+	const denomination = await getDenomination(congregationUrls);
 
 	await batchUpsertCongregations(denomination.filter((church) => church != null));
 
