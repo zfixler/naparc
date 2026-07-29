@@ -75,22 +75,27 @@ async function validateRpcna() {
 			});
 		console.log('congregation urls:', urls.length);
 
-		// Fetch a small sample the same way the scraper does.
+		// In-page fetch gets challenged, so try real navigations instead.
 		const sample = urls.slice(0, 5);
-		const pages = await page.evaluate(async (targets) => {
-			const collected = [];
-			for (const target of targets) {
-				const res = await fetch(target.url);
-				collected.push({
-					slug: target.slug,
-					status: res.status,
-					html: res.ok ? await res.text() : '',
-				});
-			}
-			return collected;
-		}, sample);
-
+		const pages = [];
+		const started = Date.now();
+		for (const target of sample) {
+			const res = await page.goto(target.url, {
+				waitUntil: 'domcontentloaded',
+				timeout: 60000,
+			});
+			pages.push({
+				slug: target.slug,
+				status: res?.status(),
+				html: res?.ok() ? await page.content() : '',
+			});
+		}
+		const elapsed = (Date.now() - started) / 1000;
 		console.log('statuses:', pages.map((p) => p.status).join(', '));
+		console.log(
+			`navigation timing: ${elapsed.toFixed(1)}s for ${sample.length} pages ` +
+				`(~${((elapsed / sample.length) * urls.length).toFixed(0)}s projected for ${urls.length})`,
+		);
 
 		const parsed = pages
 			.filter((p) => p.html)
