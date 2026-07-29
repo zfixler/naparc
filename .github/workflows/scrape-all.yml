@@ -24,7 +24,10 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        # `npm install`, not `npm ci`: @napi-rs/wasm-runtime's optional peer
+        # deps resolve differently on Linux than on the Windows machine the
+        # lock file is generated on, which `npm ci` rejects outright.
+        run: npm install
 
       - name: Run all scrapers
         run: node scripts/run-all-scrapers.js
