@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import puppeteer from 'puppeteer';
 import { v5 as uuidv5 } from 'uuid';
 import { batchUpsertCongregations, slugify } from '../utils/index.js';
 
@@ -12,13 +13,16 @@ function getCongregationUrls(html) {
 	/** @type {Array<{url: string, slug: string}>} */
 	const urls = [];
 
+	// The directory also contains mailto: anchors, so match congregation links
+	// only. The path moved from /congregations/show/ to /congregations/info/;
+	// the trailing slug is unchanged, which keeps generated ids stable.
 	$('.church_directory')
-		.find('a')
+		.find('a[href^="/congregations/info/"]')
 		.each((i, el) => {
 			const url = $(el).attr('href');
 			const result = {
 				url: `https://reformedpresbyterian.org${url}`,
-				slug: url?.replace('/congregations/show/', '') || '',
+				slug: url?.replace('/congregations/info/', '') || '',
 			};
 			urls.push(result);
 		});
@@ -42,8 +46,9 @@ function parseLatLong(string) {
 /**
  * Parse congregations individually and return an array of all
  * @param {Array<{url: string, slug: string}>} urls
+ * @param {Record<string, string>} headers - Session headers carrying the Cloudflare clearance cookie.
  */
-async function getDenomination(urls) {
+async function getDenomination(urls, headers) {
 	const denomination = [];
 	const denominationNamespace = 'c35c0255-08b6-4e51-b4ee-ca473f2ad981';
 	const denominationSlug = 'rpcna';
@@ -51,7 +56,12 @@ async function getDenomination(urls) {
 	// Parallelize fetches
 	const congregationPromises = urls.map(async (congregation) => {
 		try {
-			const response = await fetch(congregation.url);
+			const response = await fetch(congregation.url, { headers });
+
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}`);
+			}
+
 			const data = await response.text();
 			const $ = cheerio.load(data);
 			const mapScript = $('.map_search_container').find('script').text();
@@ -131,11 +141,58 @@ async function getDenomination(urls) {
 	return denomination;
 }
 
+/**
+ * The RPCNA site sits behind a Cloudflare challenge that a plain fetch cannot
+ * pass. Clear it once in a real browser, then hand the resulting clearance
+ * cookie to the per-congregation fetches so they do not each need a browser.
+ * @returns {Promise<{html: string, headers: Record<string, string>}>}
+ */
+async function fetchListPageWithClearance() {
+	console.log('Launching headless browser for RPCNA scraper...');
+	const browser = await puppeteer.launch({
+		headless: true,
+		args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
+	});
+
+	try {
+		const page = await browser.newPage();
+		await page.setViewport({ width: 1920, height: 1080 });
+
+		console.log('Navigating to RPCNA congregation list...');
+		await page.goto('https://reformedpresbyterian.org/congregations/list/', {
+			waitUntil: 'networkidle2',
+			timeout: 60000,
+		});
+
+		// The challenge page has no directory markup, so waiting for a real
+		// congregation link is what tells us the clearance actually landed.
+		console.log('Waiting for Cloudflare challenge to clear...');
+		await page.waitForSelector('.church_directory a', { timeout: 45000 });
+
+		const html = await page.content();
+		const userAgent = await browser.userAgent();
+		const cookies = await browser.cookies();
+		const cookieHeader = cookies.map(({ name, value }) => `${name}=${value}`).join('; ');
+
+		return {
+			html,
+			headers: { 'cookie': cookieHeader, 'user-agent': userAgent },
+		};
+	} finally {
+		await browser.close();
+	}
+}
+
 async function buildRpcnaDenomination() {
-	const response = await fetch('https://reformedpresbyterian.org/congregations/list/');
-	const data = await response.text();
-	const congregationUrls = getCongregationUrls(data);
-	const denomination = await getDenomination(congregationUrls);
+	const { html, headers } = await fetchListPageWithClearance();
+	const congregationUrls = getCongregationUrls(html);
+
+	if (congregationUrls.length === 0) {
+		throw new Error('Found no congregation links on the RPCNA list page.');
+	}
+
+	console.log(`Found ${congregationUrls.length} congregation urls`);
+	const denomination = await getDenomination(congregationUrls, headers);
 
 	await batchUpsertCongregations(denomination.filter((church) => church != null));
 

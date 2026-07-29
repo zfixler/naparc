@@ -1,0 +1,27 @@
+# TEMPORARY diagnostic workflow. Delete once the ARP/RPCNA findings are acted on.
+name: Diagnose scraper blocks
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      # Headed Chrome needs a display; xvfb is preinstalled on ubuntu runners.
+      - name: Run diagnostic under xvfb
+        run: xvfb-run -a node scripts/diagnose-blocks.mjs

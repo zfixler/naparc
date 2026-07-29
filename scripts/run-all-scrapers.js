@@ -72,6 +72,15 @@ async function runAllScrapers() {
 
 			const count = await supportedDenominations[denominationSlug]();
 
+			// A scraper that finds nothing has not succeeded. Every supported
+			// denomination has congregations, so an empty result means the source
+			// site changed shape or blocked the request.
+			if (!count) {
+				throw new Error(
+					`Scraper returned ${count} congregations. The source site likely changed or blocked the request.`,
+				);
+			}
+
 			const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
 			await prisma.scrapeLog.update({

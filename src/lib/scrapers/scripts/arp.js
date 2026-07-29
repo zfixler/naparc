@@ -36,6 +36,20 @@ async function fetchArpData() {
 	const dataPromises = coordinates.map(async (coordinate) => {
 		const url = `https://arpchurch.org/wp-admin/admin-ajax.php?action=store_search&lat=${coordinate.lat}&lng=${coordinate.long}&max_results=100&search_radius=500`;
 		const res = await fetch(url);
+
+		if (!res.ok) {
+			throw new Error(`ARP store_search returned HTTP ${res.status} for ${url}`);
+		}
+
+		// Cloudflare answers blocked requests with an HTML challenge page rather
+		// than an error status, which would otherwise surface as a JSON parse error.
+		const contentType = res.headers.get('content-type') || 'unknown';
+		if (!contentType.includes('application/json')) {
+			throw new Error(
+				`ARP store_search returned "${contentType}" instead of JSON, which usually means Cloudflare blocked the request.`,
+			);
+		}
+
 		return await res.json();
 	});
 	const arpData = (await Promise.all(dataPromises)).flat();
@@ -44,7 +58,7 @@ async function fetchArpData() {
 }
 
 async function buildArpDenomination() {
-	const data = await fetchArpData().catch((error) => console.log(error));
+	const data = await fetchArpData();
 
 	/** @type {Array<import('@prisma/client').Congregation>} */
 	const results = [];
