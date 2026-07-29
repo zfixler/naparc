@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
-import puppeteer from 'puppeteer';
 import { v5 as uuidv5 } from 'uuid';
 import { batchUpsertCongregations, slugify } from '../utils/index.js';
+import { launchChallengeBrowser } from '../utils/browser.js';
 
 /**
  * Extracts congregation URLs from HTML content.
@@ -148,11 +148,8 @@ async function getDenomination(urls, headers) {
  * @returns {Promise<{html: string, headers: Record<string, string>}>}
  */
 async function fetchListPageWithClearance() {
-	console.log('Launching headless browser for RPCNA scraper...');
-	const browser = await puppeteer.launch({
-		headless: true,
-		args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
-	});
+	console.log('Launching browser for RPCNA scraper...');
+	const browser = await launchChallengeBrowser();
 
 	try {
 		const page = await browser.newPage();
@@ -167,7 +164,9 @@ async function fetchListPageWithClearance() {
 		// The challenge page has no directory markup, so waiting for a real
 		// congregation link is what tells us the clearance actually landed.
 		console.log('Waiting for Cloudflare challenge to clear...');
-		await page.waitForSelector('.church_directory a', { timeout: 45000 });
+		await page.waitForSelector('.church_directory a[href^="/congregations/info/"]', {
+			timeout: 45000,
+		});
 
 		const html = await page.content();
 		const userAgent = await browser.userAgent();

@@ -30,7 +30,10 @@ jobs:
         run: npm install
 
       - name: Run all scrapers
-        run: node scripts/run-all-scrapers.js
+        # xvfb-run supplies a display for headed Chrome. Cloudflare's managed
+        # challenge never clears in headless Chrome, so the ARP and RPCNA
+        # scrapers rely on a headed browser.
+        run: xvfb-run -a node scripts/run-all-scrapers.js
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           # MAIL_TO is only needed for PRC scraper (Nominatim geocoding API)
