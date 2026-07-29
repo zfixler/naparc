@@ -16,12 +16,18 @@
 	 * @type {AbortController | null}
 	 */
 	let currentRequest;
-	/** @type {Array<OptionObject>}*/
 
-	$effect(() => {
-		selectedLabel = results.label || '';
-	});
+	let isSearching = $state(false);
 
+	/** Index of the keyboard-highlighted option; -1 when none is active. */
+	let activeIndex = $state(-1);
+
+	const listboxId = 'location-listbox';
+	const activeOptionId = $derived(
+		activeIndex > -1 && options[activeIndex]
+			? `location-option-${options[activeIndex].id}`
+			: undefined,
+	);
 	/**
 	 * @typedef {Object} ResultObject
 	 * @property {string} formatted - Formatted location name
@@ -64,37 +70,48 @@
 		if (currentRequest) currentRequest.abort();
 
 		debounceTimer = setTimeout(async () => {
+			// Return if e.target is not correct type
+			if (!(e.target instanceof HTMLInputElement)) return;
+
+			const input = e.target.value.trim();
+
+			// Return if less than three characters
+			if (input.length < 3) {
+				options = [];
+				shouldShowMenu = false;
+				isSearching = false;
+				return;
+			}
+
+			const controller = new AbortController();
+			currentRequest = controller;
+			isSearching = true;
+
 			try {
-				// Return if e.target is not correct type
-				if (!(e.target instanceof HTMLInputElement)) return;
-
-				const input = e.target.value.trim();
-
-				// Return if less than three characters
-				if (input.length < 3) {
-					options = [];
-					shouldShowMenu = false;
-					return;
-				}
-
-				const controller = new AbortController();
-				currentRequest = controller;
-
 				// Fetch locations
 				const url = `/api/geocode?input=${encodeURIComponent(input)}`;
 
-				const response = await fetch(url);
+				const response = await fetch(url, { signal: controller.signal });
 				const data = await response.json();
 
 				// Store options;
 				options = formatOptions(data);
 
 				// Show options
+				activeIndex = -1;
 				shouldShowMenu = true;
 			} catch (err) {
+				// A superseded keystroke aborts the in-flight request; that is not an error
+				if (err instanceof DOMException && err.name === 'AbortError') return;
 				console.error(err);
+				options = [];
+				shouldShowMenu = true;
 			} finally {
-				currentRequest = null;
+				// Only the newest request owns the spinner
+				if (currentRequest === controller) {
+					currentRequest = null;
+					isSearching = false;
+				}
 			}
 		}, 300);
 	}
@@ -106,8 +123,48 @@
 	function handleOptionSelection(option) {
 		// Close menu
 		shouldShowMenu = false;
-		// Attach results
+		activeIndex = -1;
+		// Reflect the choice in the input, then attach results to trigger the search
+		selectedLabel = option.body.label;
 		results = option.body;
+	}
+
+	/**
+	 * Drive the option list from the keyboard while focus stays in the input,
+	 * per the ARIA combobox pattern.
+	 * @param {KeyboardEvent} e
+	 */
+	function handleKeydown(e) {
+		if (e.key === 'Escape') {
+			shouldShowMenu = false;
+			activeIndex = -1;
+			return;
+		}
+
+		if (e.key === 'Tab') {
+			shouldShowMenu = false;
+			return;
+		}
+
+		if (!shouldShowMenu || !options.length) return;
+
+		if (e.key === 'ArrowDown') {
+			e.preventDefault();
+			activeIndex = (activeIndex + 1) % options.length;
+		} else if (e.key === 'ArrowUp') {
+			e.preventDefault();
+			activeIndex = activeIndex <= 0 ? options.length - 1 : activeIndex - 1;
+		} else if (e.key === 'Home') {
+			e.preventDefault();
+			activeIndex = 0;
+		} else if (e.key === 'End') {
+			e.preventDefault();
+			activeIndex = options.length - 1;
+		} else if (e.key === 'Enter' && activeIndex > -1) {
+			// Only intercept Enter when an option is highlighted; otherwise let the form submit
+			e.preventDefault();
+			handleOptionSelection(options[activeIndex]);
+		}
 	}
 </script>
 
@@ -126,19 +183,52 @@
 		type="text"
 		name="loc"
 		placeholder="Start typing a location..."
+		aria-label="Search by city, address, or postal code"
+		role="combobox"
+		autocomplete="off"
+		aria-autocomplete="list"
+		aria-expanded={shouldShowMenu}
+		aria-controls={listboxId}
+		aria-activedescendant={activeOptionId}
+		onkeydown={handleKeydown}
 		oninput={fetchLocationOptions}
 		bind:value={selectedLabel} />
+	{#if isSearching}
+		<span class="spinner" aria-hidden="true"></span>
+	{/if}
+</div>
+<div class="visually-hidden" role="status" aria-live="polite">
+	{#if isSearching}
+		Searching for locations…
+	{:else if shouldShowMenu}
+		{options.length} location{options.length === 1 ? '' : 's'} found.
+	{/if}
 </div>
 {#if shouldShowMenu}
 	<ClickOutside bind:shouldShowContainer={shouldShowMenu}>
 		<div class="wrapper">
-			<div class="menu" in:slide={{ duration: 250 }}>
+			<div
+				class="menu"
+				id={listboxId}
+				role="listbox"
+				aria-label="Location suggestions"
+				in:slide={{ duration: 250 }}>
 				{#if options.length === 0}
-					<div class="option">No locations found..</div>
+					<div class="option empty">No locations found.</div>
 				{:else}
-					{#each options as option (option.id)}
-						<button type="button" class="option" onclick={() => handleOptionSelection(option)}
-							>{option.body.label}</button>
+					{#each options as option, i (option.id)}
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<div
+							id="location-option-{option.id}"
+							class="option"
+							class:active={i === activeIndex}
+							role="option"
+							tabindex="-1"
+							aria-selected={i === activeIndex}
+							onmousemove={() => (activeIndex = i)}
+							onclick={() => handleOptionSelection(option)}>
+							{option.body.label}
+						</div>
 					{/each}
 				{/if}
 			</div>
@@ -170,6 +260,37 @@
 	.location-search,
 	.input {
 		background-color: var(--bg-ff);
+	}
+
+	.spinner {
+		width: 16px;
+		height: 16px;
+		flex-shrink: 0;
+		border: 2px solid var(--gray-3);
+		border-top-color: var(--accent);
+		border-radius: 50%;
+		animation: spin 0.6s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.spinner {
+			animation-duration: 2s;
+		}
+	}
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 
 	.wrapper {
@@ -209,10 +330,15 @@
 		font-size: inherit;
 	}
 
+	.option.empty {
+		cursor: default;
+		opacity: 0.75;
+	}
+
+	/* Highlight follows aria-activedescendant, so it must not rely on :focus */
 	.option:hover,
-	.option:focus {
+	.option.active {
+		background-color: var(--bg-bg);
 		color: var(--accent);
-		border: none;
-		outline: none;
 	}
 </style>

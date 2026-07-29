@@ -1,6 +1,6 @@
 import { paginateResults } from '$lib/utils';
 import { getLocationsWithinRadius } from '$lib/utils/server';
-import { fail } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ url }) {
@@ -11,21 +11,35 @@ export async function load({ url }) {
 	const pg = url.searchParams.get('pg');
 	const excluded = url.searchParams.get('excluded');
 
-	if (lat && lon && radius) {
-		const congregations = await getLocationsWithinRadius(lat, lon, radius, excluded);
-		const { page, results, totalPages, totalResults } = paginateResults(pg, congregations);
+	const isValidCoordinate = (/** @type {string|null} */ value, /** @type {number} */ limit) =>
+		value !== null &&
+		value !== '' &&
+		Number.isFinite(Number(value)) &&
+		Math.abs(Number(value)) <= limit;
 
-		return {
-			location,
-			radius,
-			lat,
-			lon,
-			congregations: results,
-			totalResults,
-			page,
-			totalPages,
-		};
+	// A search with no usable coordinates has nothing to render. Send the visitor back to
+	// the search box rather than rendering a page that reads as "no congregations found".
+	if (!isValidCoordinate(lat, 90) || !isValidCoordinate(lon, 180) || !Number(radius)) {
+		redirect(303, '/');
 	}
 
-	return fail(400, { message: 'Missing search parameters.' });
+	const congregations = await getLocationsWithinRadius(
+		/** @type {string} */ (lat),
+		/** @type {string} */ (lon),
+		/** @type {string} */ (radius),
+		excluded,
+	);
+
+	const { page, results, totalPages, totalResults } = paginateResults(pg, congregations);
+
+	return {
+		location,
+		radius,
+		lat,
+		lon,
+		congregations: results,
+		totalResults,
+		page,
+		totalPages,
+	};
 }

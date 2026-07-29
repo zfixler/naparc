@@ -32,10 +32,10 @@
 {#key search}
 	{#if data.congregations.length}
 		<section class="result-header">
-			<h2>Search Results:</h2>
-			<p>
-				{data.location}. Viewing results ({viewingResults.startIndex} to {viewingResults.endIndex}
-				of {data.totalResults}) within {data.radius} miles.
+			<h2 class="result-title">Search Results</h2>
+			<p class="result-summary">
+				Showing {viewingResults.startIndex}–{viewingResults.endIndex} of {data.totalResults}
+				congregations within {data.radius} miles of <strong>{data.location}</strong>.
 			</p>
 		</section>
 
@@ -44,7 +44,18 @@
 			<Congregation {congregation} />
 		{/each}
 	{:else}
-		<p>Your search did not return any results.</p>
+		<section class="empty">
+			<h2 class="result-title">No results</h2>
+			<p class="result-summary">
+				We did not find any congregations within {data.radius} miles of
+				<strong>{data.location}</strong>.
+			</p>
+			<ul class="suggestions">
+				<li>Widen the search radius in the settings menu above.</li>
+				<li>Re-enable any denominations you filtered out.</li>
+				<li>Try a nearby city or a larger metropolitan area.</li>
+			</ul>
+		</section>
 	{/if}
 
 	{#if hasMultiplePages}
@@ -53,10 +64,31 @@
 {/key}
 
 <style>
+	/*
+	 * Previously a 25%/auto grid, which squeezed the heading into a narrow column and
+	 * cramped the summary beside it at small widths. Stacking reads cleanly at every size.
+	 */
 	.result-header {
-		display: grid;
-		gap: 16px;
 		margin-bottom: var(--margin);
-		grid-template-columns: 25% auto;
+	}
+
+	.result-title {
+		margin-bottom: 4px;
+	}
+
+	.result-summary {
+		opacity: 0.85;
+	}
+
+	.empty {
+		background-color: var(--bg-ff);
+		border-radius: var(--brad);
+		box-shadow: var(--box-shadow);
+		padding: var(--padding);
+	}
+
+	.suggestions {
+		margin: 12px 0 0 20px;
+		line-height: 1.7;
 	}
 </style>

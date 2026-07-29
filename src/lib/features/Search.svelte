@@ -1,8 +1,9 @@
 <script>
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { Location, Settings } from '$lib/components';
 
-	/** @type {{denominations: any}} */
+	/** @type {{denominations: Array<import('../../routes/+layout.server.js').DenominationMeta>}} */
 	let { denominations } = $props();
 
 	/** @type {HTMLFormElement|undefined}*/
@@ -21,8 +22,6 @@
 		lon: '',
 		lat: '',
 	});
-
-	let selectedLabel = $state('');
 
 	/**
 	 * @type {any[]}
@@ -45,11 +44,50 @@
 	 * @property {boolean} hasSavedSettings
 	 */
 
+	/**
+	 * Read the form's state out of the query string, so the controls always describe the
+	 * search that is actually on screen.
+	 * @param {URLSearchParams} params
+	 */
+	function readSearchState(params) {
+		const excluded = new Set((params.get('excluded') || '').split(',').filter(Boolean));
+
+		return {
+			label: params.get('label') || '',
+			radius: params.get('rad') || '25',
+			included: denominations.map(({ slug, name: abbr }) => ({
+				abbr,
+				slug,
+				checked: !excluded.has(slug),
+			})),
+		};
+	}
+
+	const initial = readSearchState(page.url.searchParams);
+
+	let selectedLabel = $state(initial.label);
+
 	/** @type {Settings} */
 	let settings = $state({
-		included: [],
-		radius: '',
+		included: initial.included,
+		radius: initial.radius,
 		hasSavedSettings: false,
+	});
+
+	/**
+	 * Re-sync after every navigation. Without this the inputs fall back to their defaults,
+	 * so the settings panel would claim "all denominations, 25 miles" regardless of what
+	 * the results were actually filtered by — and re-submitting would widen the search.
+	 * The initial values above are set synchronously so SSR markup matches too.
+	 */
+	$effect(() => {
+		const next = readSearchState(page.url.searchParams);
+
+		selectedLabel = next.label;
+		settings.radius = next.radius;
+		settings.included = next.included;
+		settings.hasSavedSettings = false;
+		location = { label: '', lon: '', lat: '' };
 	});
 
 	/**
@@ -90,10 +128,6 @@
 
 		url.search = params.toString();
 		goto(url.href);
-
-		// Clear the search input after navigation
-		location = { label: '', lon: '', lat: '' };
-		selectedLabel = '';
 	}
 
 	const triggerSubmit = () => {
@@ -118,7 +152,7 @@
 		<Location bind:results={location} bind:selectedLabel bind:options bind:shouldShowMenu />
 	</div>
 	<div class="second">
-		<Settings bind:settings {denominations} />
+		<Settings bind:settings />
 	</div>
 </form>
 

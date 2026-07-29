@@ -14,11 +14,15 @@ export const getUuidChunk = (chunkNum = 5) => {
  * @returns {{results: Array<any>;page: number;totalResults: number;totalPages: number}} An object containing the paginated results details.
  */
 export function paginateResults(pg, results = []) {
-	const page = pg ? parseInt(pg) : 1;
 	const pageSize = 10;
-	const offest = (page - 1) * pageSize;
 	const totalResults = results.length;
 	const totalPages = Math.ceil(totalResults / pageSize);
+
+	// Clamp to a real page so a hand-edited or stale `pg` cannot render an empty list
+	// that is indistinguishable from "no congregations matched".
+	const requested = parseInt(pg ?? '1');
+	const page = Number.isNaN(requested) ? 1 : Math.min(Math.max(requested, 1), totalPages || 1);
+	const offest = (page - 1) * pageSize;
 
 	return {
 		results: results.slice(offest, offest + pageSize),
