@@ -2,6 +2,11 @@
 name: Diagnose scraper blocks
 
 on:
+  # workflow_dispatch only works from the default branch, so trigger on pushes
+  # to the branch this diagnostic lives on.
+  push:
+    branches:
+      - fix/scraper-silent-failures
   workflow_dispatch:
 
 jobs:
