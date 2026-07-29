@@ -80,15 +80,21 @@ async function validateRpcna() {
 		const pages = [];
 		const started = Date.now();
 		for (const target of sample) {
+			// Cloudflare serves its interstitial with a 403, then its JS solves
+			// and reloads, so the status is not a reliable signal. Wait for the
+			// real page markup instead.
 			const res = await page.goto(target.url, {
 				waitUntil: 'domcontentloaded',
 				timeout: 60000,
 			});
-			pages.push({
-				slug: target.slug,
-				status: res?.status(),
-				html: res?.ok() ? await page.content() : '',
-			});
+			let html = '';
+			try {
+				await page.waitForSelector('.page-title', { timeout: 30000 });
+				html = await page.content();
+			} catch {
+				html = '';
+			}
+			pages.push({ slug: target.slug, status: res?.status(), cleared: Boolean(html), html });
 		}
 		const elapsed = (Date.now() - started) / 1000;
 		console.log('statuses:', pages.map((p) => p.status).join(', '));
