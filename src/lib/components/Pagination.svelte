@@ -2,8 +2,14 @@
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 
-	/** @type {{currentPage?: number, totalPages?: number}} */
-	let { currentPage = 1, totalPages = 1 } = $props();
+	/** @type {{currentPage?: number, totalPages?: number, startIndex?: number, endIndex?: number, totalResults?: number}} */
+	let {
+		currentPage = 1,
+		totalPages = 1,
+		startIndex = 0,
+		endIndex = 0,
+		totalResults = 0,
+	} = $props();
 
 	const isNavigating = $derived(Boolean(navigating.to));
 
@@ -11,11 +17,25 @@
 	 * Navigate to a specific page
 	 * @param {number} pg
 	 */
-	function navigateToPage(pg) {
+	async function navigateToPage(pg) {
 		// Create a new URL instance to avoid mutating the original
 		const url = new URL(page.url);
 		url.searchParams.set('pg', (pg + 1).toString());
-		goto(url.href);
+
+		/*
+		 * SvelteKit's default is to jump to the top of the document, which now lands the
+		 * reader back on the map — the one thing paging does not change. Suppress it and
+		 * go to the top of the list instead, moving focus there so the new page is
+		 * announced rather than silently swapped underneath a screen reader.
+		 */
+		await goto(url.href, { noScroll: true });
+
+		const results = document.getElementById('results');
+		if (!results) return;
+
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		results.focus({ preventScroll: true });
+		results.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
 	}
 
 	// Memoize the pages calculation to avoid unnecessary recalculations
@@ -79,7 +99,8 @@
 			</button>
 		</li>
 	</ul>
-	<p class="context">Page {currentPage} of {totalPages}</p>
+	<!-- Scoped to the list, not the map: the map plots all {totalResults} results. -->
+	<p class="context">Showing {startIndex}–{endIndex} of {totalResults}</p>
 </nav>
 
 <style>

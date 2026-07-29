@@ -40,20 +40,29 @@
 <Head title="NAPARC Search | Results for {data.location}" />
 
 {#if data.congregations.length}
+	<!--
+		This caption sits above the map, which plots the entire result set, so it states the
+		total. The "showing x–y" range describes only the list slice and lives with the
+		paginator that controls it.
+	-->
 	<section class="result-header">
 		<h2 class="result-title">Search Results</h2>
 		<p class="result-summary">
-			Showing {viewingResults.startIndex}–{viewingResults.endIndex} of {data.totalResults}
-			congregations within {data.radius} miles of <strong>{data.location}</strong>.
+			{data.totalResults}
+			{data.totalResults === 1 ? 'congregation' : 'congregations'} within {data.radius} miles of
+			<strong>{data.location}</strong>.
 		</p>
 	</section>
 
 	{#key mapKey}
 		<Map lat={parseFloat(data.lat)} lon={parseFloat(data.lon)} locations={data.pins} />
 	{/key}
-	{#each data.congregations as congregation (congregation.id)}
-		<Congregation {congregation} />
-	{/each}
+	<!-- Scroll/focus target for the paginator, so paging lands on the list, not the map -->
+	<div id="results" class="results" tabindex="-1">
+		{#each data.congregations as congregation (congregation.id)}
+			<Congregation {congregation} />
+		{/each}
+	</div>
 {:else}
 	<section class="empty">
 		<h2 class="result-title">No results</h2>
@@ -70,7 +79,12 @@
 {/if}
 
 {#if hasMultiplePages}
-	<Pagination currentPage={data.page} totalPages={data.totalPages} />
+	<Pagination
+		currentPage={data.page}
+		totalPages={data.totalPages}
+		startIndex={viewingResults.startIndex}
+		endIndex={viewingResults.endIndex}
+		totalResults={data.totalResults} />
 {/if}
 
 <style>
@@ -88,6 +102,16 @@
 
 	.result-summary {
 		opacity: 0.85;
+	}
+
+	/*
+	 * The list container only receives focus programmatically, as a scroll target for the
+	 * paginator. It is not an interactive control, so a ring around the whole list would be
+	 * noise — screen readers still announce it on focus.
+	 */
+	.results:focus,
+	.results:focus-visible {
+		outline: none;
 	}
 
 	.empty {
