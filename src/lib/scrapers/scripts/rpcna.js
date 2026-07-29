@@ -2,6 +2,11 @@ import * as cheerio from 'cheerio';
 import { v5 as uuidv5 } from 'uuid';
 import { batchUpsertCongregations, slugify } from '../utils/index.js';
 
+const BROWSER_HEADERS = {
+	'user-agent':
+		'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+};
+
 /**
  * Extracts congregation URLs from HTML content.
  * @param {string} html - The HTML content to parse.
@@ -12,13 +17,16 @@ function getCongregationUrls(html) {
 	/** @type {Array<{url: string, slug: string}>} */
 	const urls = [];
 
+	// The directory also contains mailto: anchors, so match congregation links
+	// only. The path moved from /congregations/show/ to /congregations/info/;
+	// the trailing slug is unchanged, which keeps generated ids stable.
 	$('.church_directory')
-		.find('a')
+		.find('a[href^="/congregations/info/"]')
 		.each((i, el) => {
 			const url = $(el).attr('href');
 			const result = {
 				url: `https://reformedpresbyterian.org${url}`,
-				slug: url?.replace('/congregations/show/', '') || '',
+				slug: url?.replace('/congregations/info/', '') || '',
 			};
 			urls.push(result);
 		});
@@ -51,9 +59,13 @@ async function getDenomination(urls) {
 	// Parallelize fetches
 	const congregationPromises = urls.map(async (congregation) => {
 		try {
-			const response = await fetch(congregation.url);
-			const data = await response.text();
-			const $ = cheerio.load(data);
+			const response = await fetch(congregation.url, { headers: BROWSER_HEADERS });
+
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}`);
+			}
+
+			const $ = cheerio.load(await response.text());
 			const mapScript = $('.map_search_container').find('script').text();
 			const infoDiv = $('.church_info');
 			const pastorDiv = $('.cong_pastor');
@@ -132,9 +144,26 @@ async function getDenomination(urls) {
 }
 
 async function buildRpcnaDenomination() {
-	const response = await fetch('https://reformedpresbyterian.org/congregations/list/');
-	const data = await response.text();
-	const congregationUrls = getCongregationUrls(data);
+	const response = await fetch('https://reformedpresbyterian.org/congregations/list/', {
+		headers: BROWSER_HEADERS,
+	});
+
+	// Cloudflare serves its challenge with a 403. It clears from ordinary
+	// connections but not from datacenter ranges such as GitHub Actions, so this
+	// scraper needs a non-datacenter egress. See CLAUDE.md.
+	if (!response.ok) {
+		throw new Error(
+			`RPCNA list page returned HTTP ${response.status}, which usually means Cloudflare blocked this IP.`,
+		);
+	}
+
+	const congregationUrls = getCongregationUrls(await response.text());
+
+	if (congregationUrls.length === 0) {
+		throw new Error('Found no congregation links on the RPCNA list page.');
+	}
+
+	console.log(`Found ${congregationUrls.length} congregation urls`);
 	const denomination = await getDenomination(congregationUrls);
 
 	await batchUpsertCongregations(denomination.filter((church) => church != null));

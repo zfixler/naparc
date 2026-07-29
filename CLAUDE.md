@@ -90,6 +90,20 @@ Each denomination has a scraper in `src/lib/scrapers/scripts/` that:
 
 **Supported Denominations**: ARPC, CanRC, FRCNA, HRC, OPC, PCA, PRC, RCUS, RPCNA, URCNA
 
+**Cloudflare-blocked sources (ARPC, RPCNA)**: `arpchurch.org` and
+`reformedpresbyterian.org` sit behind Cloudflare and serve a managed challenge
+to datacenter IP ranges, including GitHub Actions runners. Both scrapers work
+from an ordinary connection and fail with an explicit "Cloudflare blocked this
+IP" error from CI. Verified on 2026-07-29:
+
+- The challenge never clears in headless Chrome, and clears in headed Chrome
+  only for RPCNA's list page — its congregation pages and all of ARP stay
+  blocked, so Puppeteer does not work around this.
+- Spoofing the user agent makes no difference; the block is IP-based.
+
+Running these two from Actions requires a non-datacenter egress (self-hosted
+runner or residential proxy), or an allowlist from the site owners.
+
 ### Testing
 
 Tests are located in `tests/` directory. Current test coverage includes scrapers for OPC, PCA, and URCNA. Run tests with `npm test` (uses Vitest).

@@ -314,7 +314,7 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 	}
 
 	console.log(
-		`Completed processing for ${denominationSlug}: ${congregations.length} total congregations`,
+		`Completed processing for ${denominationSlug ?? 'unknown denomination (empty result)'}: ${congregations.length} total congregations`,
 	);
 }
 
