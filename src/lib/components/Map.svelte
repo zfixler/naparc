@@ -117,37 +117,51 @@
 	@import 'leaflet/dist/leaflet.css';
 
 	.map {
-		border-radius: var(--brad);
-		height: 500px;
-		margin-bottom: var(--margin);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		box-shadow: var(--shadow-xs);
+		height: 460px;
+		margin-bottom: var(--space-lg);
+		overflow: hidden;
 		width: 100%;
 	}
 
 	:global(.popup),
 	:global(.legend) {
 		font-family: var(--ff-body);
-		font-size: calc(var(--fs-regular) * 0.75);
+		font-size: var(--fs-micro);
+	}
+
+	:global(.leaflet-popup-content-wrapper) {
+		border-radius: var(--radius-sm);
+		box-shadow: var(--shadow-md);
 	}
 
 	:global(.legend) {
 		background-color: var(--bg-ff);
-		border-radius: var(--brad);
-		box-shadow: var(--box-shadow);
-		padding: calc(var(--padding) / 2);
-		margin: calc(var(--margin) / 2) 0;
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
+		box-shadow: var(--shadow-sm);
+		color: var(--secondary);
+		font-weight: var(--fw-medium);
+		letter-spacing: 0.04em;
+		margin: var(--space-xs) !important;
+		padding: var(--space-2xs) var(--space-xs);
 	}
 
 	:global(.legend-item) {
 		display: flex;
 		align-items: center;
+		line-height: 1.7;
 	}
 
 	:global(.legend-dot) {
-		width: 12px;
-		height: 12px;
+		width: 8px;
+		height: 8px;
 		border-radius: 50%;
-		margin-right: 10px;
+		margin-right: var(--space-2xs);
 		display: inline-block;
+		flex-shrink: 0;
 	}
 
 	@media (max-width: 480px) {

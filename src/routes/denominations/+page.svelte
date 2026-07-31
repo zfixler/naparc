@@ -23,3 +23,16 @@
 {#each denominations as denomination (denomination.id)}
 	<Denomination {denomination} />
 {/each}
+
+<style>
+	p {
+		color: var(--muted);
+		font-size: var(--fs-small);
+		margin-bottom: var(--space-md);
+		max-width: 60ch;
+	}
+
+	p svg {
+		vertical-align: -2px;
+	}
+</style>

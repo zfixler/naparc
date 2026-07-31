@@ -1,4 +1,6 @@
-* {
+*,
+*::before,
+*::after {
 	padding: 0;
 	margin: 0;
 	box-sizing: border-box;
@@ -17,82 +19,166 @@ body {
 }
 
 :root {
-	--ff-body: 'Outfit Variable', sans-serif;
-	--fw-bold: 700;
+	--ff-body:
+		'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+		sans-serif;
+	--ff-head: 'Source Serif 4 Variable', ui-serif, Georgia, 'Times New Roman', serif;
+
 	--fw-regular: 400;
+	--fw-medium: 500;
+	--fw-semibold: 600;
+	--fw-bold: 700;
 
-	--fs-h1: 2.402rem;
-	--fs-h2: 2.202rem;
-	--fs-h3: 2.024rem;
-	--fs-h4: 1.866rem;
-	--fs-h5: 1.725rem;
-	--fs-regular: 1.6rem;
-	--fs-small: 1.2rem;
+	--fs-display: clamp(3.2rem, 2.5rem + 2.4vw, 4.4rem);
+	--fs-h1: clamp(2.7rem, 2.2rem + 1.6vw, 3.5rem);
+	--fs-h2: clamp(2.3rem, 2rem + 1.1vw, 2.9rem);
+	--fs-h3: clamp(1.95rem, 1.8rem + 0.6vw, 2.25rem);
+	--fs-h4: clamp(1.75rem, 1.65rem + 0.35vw, 1.95rem);
+	--fs-h5: 1.65rem;
+	--fs-regular: clamp(1.55rem, 1.5rem + 0.15vw, 1.65rem);
+	--fs-small: 1.35rem;
+	--fs-micro: 1.2rem;
 
-	/* Colors */
-	--black-1: #161616;
-	--black-2: #0a0f0d;
-	--black-3: #080c0b;
+	--lh-tight: 1.15;
+	--lh-snug: 1.35;
+	--lh-body: 1.65;
 
-	--gray-1: #f4f5f5;
-	--gray-2: #eaecec;
-	--gray-3: #dfdfdf;
+	--tracking-tight: -0.02em;
+	--tracking-wide: 0.08em;
 
-	--red-1: #f66451;
-	--red-2: #f5533d;
-	--red-3: #f4412a;
+	--navy-900: #0f1a24;
+	--navy-800: #14202b;
+	--navy-700: #1e2f3d;
+	--slate-600: #43566a;
+	--slate-500: #5b6e80;
 
-	--blue-1: #8591ff;
-	--blue-2: #707eff;
-	--blue-3: #5c6cff;
-	--blue-4: #3b47c9;
+	--neutral-000: #ffffff;
+	--neutral-050: #f7f9fa;
+	--neutral-100: #f1f4f6;
+	--neutral-200: #e4e9ed;
+	--neutral-300: #d3dbe1;
 
-	--primary: var(--black-3);
-	--secondary: var(--gray-1);
-	--accent: var(--blue-3);
-	/* --blue-1 measured ~2.9:1 on the light background; --blue-4 clears 4.5:1 */
-	--visited: var(--blue-4);
-	--success: var(--green-2);
-	--bg-ff: var(--gray-1);
-	--bg-bg: var(--gray-2);
+	--teal-700: #094f4b;
+	--teal-600: #0d6b66;
+	--teal-500: #12857e;
+	--teal-200: #9fd6cf;
+	--teal-100: #e4f1ef;
 
-	--box-shadow: var(--gray-2) 0px 6px 24px 0px, var(--gray-2) 0px 0px 0px 1px;
+	--indigo-500: #4b5a8f;
+	--indigo-300: #a9b4de;
 
-	--container-width: min(90%, 800px);
-	--margin: 24px;
-	--padding: 24px;
-	--brad: 4px;
+	--red-600: #a5301f;
+	--red-500: #c93c27;
+	--red-300: #e8a99e;
+
+	--green-600: #2f6d3f;
+	--green-400: #74c48b;
+
+	--black-1: var(--navy-800);
+	--black-2: var(--navy-900);
+	--black-3: var(--navy-900);
+	--gray-1: var(--neutral-100);
+	--gray-2: var(--neutral-200);
+	--gray-3: var(--neutral-300);
+	--blue-2: var(--teal-600);
+	--blue-3: var(--teal-600);
+	--red-1: var(--red-300);
+	--red-3: var(--red-600);
+
+	--primary: var(--navy-800);
+	--secondary: var(--slate-600);
+	--muted: var(--slate-500);
+	--accent: var(--teal-600);
+	--accent-strong: var(--teal-700);
+	--accent-soft: var(--teal-100);
+	--accent-ring: rgba(13, 107, 102, 0.22);
+	--on-accent: #ffffff;
+	--visited: var(--indigo-500);
+	--success: var(--green-600);
+	--danger: var(--red-600);
+	--danger-soft: var(--red-300);
+
+	--bg-ff: var(--neutral-000);
+	--bg-bg: var(--neutral-050);
+	--bg-subtle: var(--neutral-100);
+	--line: var(--neutral-200);
+	--line-strong: var(--neutral-300);
+
+	--shadow-xs: 0 1px 2px rgba(15, 26, 36, 0.05);
+	--shadow-sm: 0 1px 2px rgba(15, 26, 36, 0.04), 0 2px 8px -2px rgba(15, 26, 36, 0.06);
+	--shadow-md: 0 2px 4px rgba(15, 26, 36, 0.04), 0 12px 28px -10px rgba(15, 26, 36, 0.14);
+	--shadow-lg: 0 4px 10px rgba(15, 26, 36, 0.05), 0 24px 48px -16px rgba(15, 26, 36, 0.18);
+	--box-shadow: var(--shadow-sm);
+
+	--space-3xs: 4px;
+	--space-2xs: 8px;
+	--space-xs: 12px;
+	--space-sm: 16px;
+	--space-md: 24px;
+	--space-lg: 32px;
+	--space-xl: 48px;
+	--space-2xl: 72px;
+
+	--radius-xs: 6px;
+	--radius-sm: 10px;
+	--radius-md: 14px;
+	--radius-lg: 20px;
+	--radius-pill: 999px;
+	--brad: var(--radius-sm);
+
+	--shell-width: min(100% - 40px, 880px);
+	--container-width: var(--shell-width);
+	--margin: var(--space-md);
+	--padding: var(--space-md);
+
+	--ease: cubic-bezier(0.32, 0.72, 0.3, 1);
+	--speed: 200ms;
+
+	color-scheme: light;
 }
 
 html[data-scheme='dark'] {
-	--primary: var(--gray-3);
-	--secondary: var(--gray-1);
-	/* On the dark background the light blue is the readable one (~6.5:1) */
-	--visited: var(--blue-1);
-	--success: var(--green-1);
-	--bg-ff: var(--black-1);
-	--bg-bg: var(--black-3);
-	--box-shadow: --box-shadow: var(--black-3) 0px 6px 24px 0px, var(--black-3) 0px 0px 0px 1px;
+	--primary: #e6ecf1;
+	--secondary: #a8b8c5;
+	--muted: #92a3b1;
+	--accent: #5ecfc3;
+	--accent-strong: #8fe2d8;
+	--accent-soft: #14282b;
+	--accent-ring: rgba(94, 207, 195, 0.24);
+	--on-accent: #06231f;
+	--visited: var(--indigo-300);
+	--success: var(--green-400);
+	--danger: #ff8f7a;
+	--danger-soft: #6b2a20;
+
+	--bg-ff: #141c24;
+	--bg-bg: #0c1116;
+	--bg-subtle: #1b252e;
+	--line: #24313c;
+	--line-strong: #33434f;
+
+	--gray-1: var(--line);
+	--gray-2: var(--line);
+	--gray-3: var(--secondary);
+	--blue-2: var(--accent);
+	--red-1: #6b2a20;
+	--red-3: #ff8f7a;
+
+	--shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35), 0 2px 8px -2px rgba(0, 0, 0, 0.45);
+	--shadow-md: 0 2px 4px rgba(0, 0, 0, 0.35), 0 12px 28px -10px rgba(0, 0, 0, 0.55);
+	--shadow-lg: 0 4px 10px rgba(0, 0, 0, 0.4), 0 24px 48px -16px rgba(0, 0, 0, 0.6);
+
+	color-scheme: dark;
 }
 
 @media (max-width: 800px) {
 	:root {
-		/* More readable mobile sizes */
-		--fs-h1: 2rem;
-		--fs-h2: 1.8rem;
-		--fs-h3: 1.6rem;
-		--fs-h4: 1.4rem;
-		--fs-h5: 1.3rem;
-		--fs-regular: 1.4rem;
-		--fs-small: 1.2rem;
-
-		/* Adjusted spacing */
-		--margin: 16px;
-		--padding: 16px;
+		--margin: var(--space-sm);
+		--padding: var(--space-sm);
+		--shell-width: min(100% - 32px, 880px);
 	}
 }
-
-/* Typography */
 
 body {
 	background-color: var(--bg-bg);
@@ -100,6 +186,11 @@ body {
 	font-family: var(--ff-body);
 	font-weight: var(--fw-regular);
 	font-size: var(--fs-regular);
+	line-height: var(--lh-body);
+	font-feature-settings: 'cv05' 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
 }
 
 h1,
@@ -109,11 +200,14 @@ h4,
 h5,
 h6 {
 	font-family: var(--ff-head);
-	font-weight: var(--fw-bold);
-	position: relative;
-	width: fit-content;
+	font-weight: var(--fw-semibold);
+	line-height: var(--lh-tight);
+	letter-spacing: var(--tracking-tight);
+	color: var(--primary);
 	margin: 0;
-	text-transform: uppercase;
+	position: relative;
+	max-width: 100%;
+	text-wrap: balance;
 }
 
 h1 {
@@ -126,29 +220,41 @@ h2 {
 
 h3 {
 	font-size: var(--fs-h3);
+	line-height: var(--lh-snug);
 }
 
 h4 {
 	font-size: var(--fs-h4);
+	line-height: var(--lh-snug);
 }
 
 h5 {
 	font-size: var(--fs-h5);
+	line-height: var(--lh-snug);
 }
 
 small {
 	font-size: var(--fs-small);
+	line-height: var(--lh-snug);
 }
 
 p {
 	font-size: var(--fs-regular);
 	margin: 0;
+	text-wrap: pretty;
+}
+
+strong,
+b {
+	font-weight: var(--fw-semibold);
 }
 
 a {
 	color: var(--primary);
 	text-decoration: none;
-	transition: color ease 0.25s;
+	text-underline-offset: 0.18em;
+	text-decoration-thickness: from-font;
+	transition: color var(--speed) var(--ease);
 }
 
 a:focus,
@@ -160,14 +266,37 @@ a:visited {
 	color: var(--visited);
 }
 
-/* Every interactive control needs a visible keyboard focus indicator */
+::selection {
+	background-color: var(--accent-soft);
+	color: var(--primary);
+}
+
+.tabular {
+	font-variant-numeric: tabular-nums;
+}
+
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
 [role='option']:focus-visible,
 [tabindex]:focus-visible {
 	outline: 2px solid var(--accent);
 	outline-offset: 2px;
-	border-radius: var(--brad);
+}
+
+a:focus-visible {
+	border-radius: var(--radius-xs);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
 }

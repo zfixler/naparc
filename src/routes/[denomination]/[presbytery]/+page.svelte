@@ -46,7 +46,23 @@
 
 <style>
 	.header {
-		width: var(--container-width);
-		padding-top: 24px;
+		border-bottom: 1px solid var(--line);
+		margin-bottom: var(--space-md);
+		padding-bottom: var(--space-md);
+		width: 100%;
+	}
+
+	.denomination {
+		color: var(--muted);
+		font-family: var(--ff-body);
+		font-size: var(--fs-small);
+		font-weight: var(--fw-semibold);
+		letter-spacing: var(--tracking-wide);
+		margin-bottom: var(--space-3xs);
+		text-transform: uppercase;
+	}
+
+	.presbytery {
+		font-size: var(--fs-h2);
 	}
 </style>

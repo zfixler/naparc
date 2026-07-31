@@ -45,10 +45,20 @@
 
 <style>
 	.header {
-		width: var(--container-width);
-		padding-top: 24px;
+		border-bottom: 1px solid var(--line);
+		margin-bottom: var(--space-md);
+		padding-bottom: var(--space-md);
+		width: 100%;
 	}
+
+	.denomination {
+		font-size: var(--fs-h2);
+	}
+
 	.results {
-		margin-top: calc(var(--margin) / 2);
+		color: var(--muted);
+		font-size: var(--fs-small);
+		font-variant-numeric: tabular-nums;
+		margin-top: var(--space-2xs);
 	}
 </style>

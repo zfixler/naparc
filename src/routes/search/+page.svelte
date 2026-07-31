@@ -88,27 +88,25 @@
 {/if}
 
 <style>
-	/*
-	 * Previously a 25%/auto grid, which squeezed the heading into a narrow column and
-	 * cramped the summary beside it at small widths. Stacking reads cleanly at every size.
-	 */
 	.result-header {
-		margin-bottom: var(--margin);
+		margin-bottom: var(--space-md);
 	}
 
 	.result-title {
-		margin-bottom: 4px;
+		font-size: var(--fs-h3);
+		margin-bottom: var(--space-3xs);
 	}
 
 	.result-summary {
-		opacity: 0.85;
+		color: var(--secondary);
+		font-size: var(--fs-small);
+		max-width: 60ch;
 	}
 
-	/*
-	 * The list container only receives focus programmatically, as a scroll target for the
-	 * paginator. It is not an interactive control, so a ring around the whole list would be
-	 * noise — screen readers still announce it on focus.
-	 */
+	.result-summary strong {
+		color: var(--primary);
+	}
+
 	.results:focus,
 	.results:focus-visible {
 		outline: none;
@@ -116,13 +114,32 @@
 
 	.empty {
 		background-color: var(--bg-ff);
-		border-radius: var(--brad);
-		box-shadow: var(--box-shadow);
-		padding: var(--padding);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		box-shadow: var(--shadow-xs);
+		padding: var(--space-xl) var(--space-lg);
+		text-align: center;
+	}
+
+	.empty .result-title {
+		margin: 0 auto var(--space-2xs);
+	}
+
+	.empty .result-summary {
+		margin: 0 auto;
 	}
 
 	.suggestions {
-		margin: 12px 0 0 20px;
-		line-height: 1.7;
+		color: var(--secondary);
+		display: inline-block;
+		font-size: var(--fs-small);
+		line-height: 1.9;
+		margin: var(--space-md) 0 0;
+		padding-left: var(--space-md);
+		text-align: left;
+	}
+
+	.suggestions::marker {
+		color: var(--muted);
 	}
 </style>

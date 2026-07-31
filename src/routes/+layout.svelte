@@ -2,7 +2,9 @@
 	import { navigating } from '$app/state';
 	import { SchemeToggle } from '$lib/components';
 	import { Search } from '$lib/features';
-	import '@fontsource-variable/outfit';
+	import '@fontsource-variable/inter';
+	import '@fontsource-variable/source-serif-4';
+	import '@fontsource-variable/source-serif-4/wght-italic.css';
 	import '../app.css';
 	/** @type {{data: { denominations: Array<import('./+layout.server.js').DenominationMeta> }, children?: import('svelte').Snippet}} */
 	let { data, children } = $props();
@@ -48,22 +50,21 @@
 
 <style>
 	.header {
-		margin: 18px 0;
+		padding: var(--space-lg) 0 var(--space-2xs);
 	}
 
 	.header,
 	.slot {
-		width: min(800px, 90%);
+		width: var(--shell-width);
 		margin: 0 auto;
 	}
 
 	.slot {
 		align-self: start;
-		margin: var(--margin) auto;
+		margin: var(--space-lg) auto var(--space-2xl);
 		transition: opacity 0.15s ease;
 	}
 
-	/* Stale results stay readable but are clearly not the answer to the pending query */
 	.slot.is-loading {
 		opacity: 0.45;
 		pointer-events: none;
@@ -117,45 +118,126 @@
 	.app {
 		display: grid;
 		grid-template-rows: auto 1fr auto;
-		height: 100svh;
-		height: 100vh;
+		min-height: 100svh;
+	}
+
+	.header {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		grid-template-areas:
+			'title nav'
+			'search search';
+		align-items: center;
+		column-gap: var(--space-md);
+		row-gap: var(--space-md);
+	}
+
+	.header :global(.form) {
+		grid-area: search;
 	}
 
 	.title {
-		margin-bottom: 16px;
+		grid-area: title;
+		font-size: clamp(2rem, 1.6rem + 1.2vw, 2.6rem);
+		font-weight: var(--fw-semibold);
+		letter-spacing: var(--tracking-tight);
+		margin: 0;
 	}
 
 	.title a {
 		color: inherit;
+		display: inline-block;
 	}
 
-	.footer {
-		align-items: flex-start;
-		align-self: end;
-		display: flex;
-		justify-content: space-between;
-		padding: 16px 32px 8px;
+	.title a:hover,
+	.title a:focus-visible {
+		color: var(--accent);
 	}
 
 	.nav {
-		padding-top: 12px;
+		grid-area: nav;
 	}
 
 	.nav ul {
 		display: flex;
-		gap: var(--padding);
+		gap: var(--space-md);
 		justify-content: flex-end;
 		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
 
+	.nav a {
+		color: var(--muted);
+		font-size: var(--fs-small);
+		font-weight: var(--fw-medium);
+		letter-spacing: 0.01em;
+		padding: var(--space-3xs) 0;
+		position: relative;
+	}
+
+	.nav a::after {
+		content: '';
+		position: absolute;
+		inset: auto 0 0 0;
+		height: 1px;
+		background-color: currentColor;
+		transform: scaleX(0);
+		transition: transform var(--speed) var(--ease);
+	}
+
+	.nav a:hover,
+	.nav a:focus-visible {
+		color: var(--accent);
+	}
+
+	.nav a:hover::after,
+	.nav a:focus-visible::after {
+		transform: scaleX(1);
+	}
+
+	.footer {
+		align-items: center;
+		align-self: end;
+		border-top: 1px solid var(--line);
+		display: flex;
+		gap: var(--space-md);
+		justify-content: space-between;
+		margin: 0 auto;
+		padding: var(--space-md) 0 var(--space-lg);
+		width: var(--shell-width);
+	}
+
+	.footer small {
+		color: var(--muted);
+		font-size: var(--fs-micro);
+		line-height: 1.6;
+	}
+
+	.disclaimer {
+		max-width: 62ch;
+	}
+
+	.footer :global(button) {
+		margin-right: -8px;
+	}
+
 	@media (max-width: 800px) {
+		.header {
+			grid-template-columns: 1fr auto;
+			padding-top: var(--space-md);
+		}
+
 		.footer {
-			align-items: center;
+			align-items: flex-start;
 			flex-direction: column-reverse;
-			gap: 16px;
-			padding: 16px;
+			gap: var(--space-sm);
+			padding: var(--space-md) 0 var(--space-lg);
+		}
+
+		.footer :global(button) {
+			margin-left: -8px;
+			margin-right: 0;
 		}
 	}
 </style>

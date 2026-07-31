@@ -158,26 +158,49 @@
 
 <style>
 	.form {
-		align-items: start;
+		align-items: center;
 		background-color: var(--bg-ff);
-		border-radius: var(--brad);
-		border: 2px solid var(--gray-1);
-		box-shadow: var(--box-shadow);
-		color: var(--gray-3);
+		border-radius: var(--radius-pill);
+		border: 1px solid var(--line-strong);
+		box-shadow: var(--shadow-md);
+		color: var(--muted);
 		display: flex;
-		gap: 4px;
-		padding: 10px;
-		transition: border-color 0.25s ease;
+		gap: var(--space-2xs);
+		padding: var(--space-2xs) var(--space-xs) var(--space-2xs) var(--space-sm);
+		transition:
+			border-color var(--speed) var(--ease),
+			box-shadow var(--speed) var(--ease),
+			color var(--speed) var(--ease);
 		width: 100%;
 		position: relative;
 	}
 
+	.form:hover {
+		border-color: var(--muted);
+	}
+
 	:global(.form:has(.input:focus)) {
 		border-color: var(--accent);
+		box-shadow:
+			var(--shadow-md),
+			0 0 0 4px var(--accent-ring);
 		color: var(--accent);
 	}
 
 	.first {
 		flex-grow: 1;
+		min-width: 0;
+	}
+
+	.second {
+		border-left: 1px solid var(--line);
+		display: flex;
+		padding-left: var(--space-2xs);
+	}
+
+	@media (max-width: 600px) {
+		.form {
+			padding: var(--space-2xs) var(--space-2xs) var(--space-2xs) var(--space-xs);
+		}
 	}
 </style>

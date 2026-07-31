@@ -240,33 +240,44 @@
 	.location-search {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		transition: color 0.25s ease;
+		gap: var(--space-xs);
+		transition: color var(--speed) var(--ease);
+		min-height: 44px;
 	}
 
 	.glass {
 		color: inherit;
+		flex-shrink: 0;
+		height: 20px;
+		width: 20px;
 	}
 
 	.input {
 		border: none;
 		color: var(--primary);
 		font-family: inherit;
-		font-size: inherit;
+		font-size: var(--fs-regular);
+		letter-spacing: 0.01em;
+		min-width: 0;
 		outline: none;
 		width: 100%;
 	}
 
+	.input::placeholder {
+		color: var(--muted);
+		opacity: 1;
+	}
+
 	.location-search,
 	.input {
-		background-color: var(--bg-ff);
+		background-color: transparent;
 	}
 
 	.spinner {
 		width: 16px;
 		height: 16px;
 		flex-shrink: 0;
-		border: 2px solid var(--gray-3);
+		border: 2px solid var(--line-strong);
 		border-top-color: var(--accent);
 		border-radius: 50%;
 		animation: spin 0.6s linear infinite;
@@ -297,48 +308,53 @@
 		display: flex;
 		justify-content: center;
 		left: 0;
-		margin-left: -2px;
-		margin-right: -2px;
 		position: absolute;
 		right: 0;
-		top: 50px;
+		top: calc(100% + var(--space-2xs));
 		z-index: 1000;
 	}
 
 	.menu {
 		width: 100%;
-		margin-top: 8px;
-		border: 2px solid var(--accent);
-		border-radius: var(--brad);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
 		background-color: var(--bg-ff);
+		box-shadow: var(--shadow-lg);
 		display: flex;
 		flex-direction: column;
-	}
-
-	.menu:focus-within {
-		border-color: var(--accent);
+		overflow: hidden;
+		padding: var(--space-3xs);
 	}
 
 	.option {
 		background: none;
 		border: none;
+		border-radius: var(--radius-xs);
 		text-align: left;
 		color: var(--primary);
-		padding: 8px;
+		padding: var(--space-xs) var(--space-sm);
 		cursor: pointer;
 		font-family: inherit;
-		font-size: inherit;
+		font-size: var(--fs-regular);
+		line-height: var(--lh-snug);
+		transition:
+			background-color 120ms var(--ease),
+			color 120ms var(--ease);
 	}
 
 	.option.empty {
 		cursor: default;
-		opacity: 0.75;
+		color: var(--muted);
 	}
 
-	/* Highlight follows aria-activedescendant, so it must not rely on :focus */
 	.option:hover,
 	.option.active {
-		background-color: var(--bg-bg);
-		color: var(--accent);
+		background-color: var(--accent-soft);
+		color: var(--accent-strong);
+	}
+
+	.option.empty:hover {
+		background-color: transparent;
+		color: var(--muted);
 	}
 </style>

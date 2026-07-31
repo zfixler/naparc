@@ -107,7 +107,7 @@
 	.container {
 		display: grid;
 		place-items: center;
-		padding: var(--padding);
+		padding: var(--space-lg) 0 var(--space-md);
 	}
 
 	.pages {
@@ -115,53 +115,66 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		gap: 8px;
+		gap: var(--space-3xs);
 	}
 
 	.current {
 		pointer-events: none;
-		background-color: var(--bg-bg);
-		color: var(--accent);
+		background-color: var(--accent);
+		border-color: var(--accent);
+		color: var(--on-accent);
 	}
 
 	.context {
+		color: var(--muted);
 		font-size: var(--fs-small);
-		margin-top: 8px;
-		opacity: 0.75;
+		font-variant-numeric: tabular-nums;
+		margin-top: var(--space-xs);
 	}
 
 	button {
 		background-color: var(--bg-ff);
-		border: none;
-		border-radius: var(--brad);
-		/* 44px keeps the tap target usable on touch devices */
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
 		min-width: 44px;
 		min-height: 44px;
-		padding: 0.5rem;
-		color: var(--primary);
+		padding: 0 var(--space-2xs);
+		color: var(--secondary);
 		cursor: pointer;
 		font-family: inherit;
-		font-size: inherit;
-		font-weight: bold;
-		transition: color 0.25s ease;
+		font-size: var(--fs-small);
+		font-variant-numeric: tabular-nums;
+		font-weight: var(--fw-semibold);
+		transition:
+			color var(--speed) var(--ease),
+			background-color var(--speed) var(--ease),
+			border-color var(--speed) var(--ease);
 	}
 
 	button:hover:not(:disabled) {
-		color: var(--accent);
+		background-color: var(--accent-soft);
+		border-color: var(--accent-soft);
+		color: var(--accent-strong);
 	}
 
 	button:disabled {
 		cursor: default;
 	}
 
+	.step {
+		padding: 0 var(--space-xs);
+	}
+
 	.step:disabled {
-		opacity: 0.4;
+		color: var(--muted);
+		opacity: 0.5;
 	}
 
 	.ellipsis {
+		color: var(--muted);
 		display: inline-flex;
 		align-items: center;
 		min-height: 44px;
-		padding: 0 4px;
+		padding: 0 var(--space-3xs);
 	}
 </style>
