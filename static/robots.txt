@@ -1,3 +1,4 @@
+# Search engines
 User-agent: Googlebot
 User-agent: Bingbot
 User-agent: Slurp
@@ -5,6 +6,22 @@ User-agent: DuckDuckBot
 User-agent: Baiduspider
 User-agent: YandexBot
 Allow: /
+Disallow: /search
+Disallow: /api/
+
+# Link preview crawlers. These fetch a page only to read its Open Graph tags,
+# so they must be allowed or shared links render as a bare URL with no card.
+User-agent: facebookexternalhit
+User-agent: Twitterbot
+User-agent: LinkedInBot
+User-agent: Slackbot-LinkExpanding
+User-agent: Discordbot
+User-agent: WhatsApp
+User-agent: TelegramBot
+User-agent: Applebot
+Allow: /
 
 User-agent: *
 Disallow: /
+
+Sitemap: https://www.naparcsearch.com/sitemap.xml

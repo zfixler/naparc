@@ -41,10 +41,12 @@
 	let isValid = $derived(Object.values(validation).every((input) => input.isValid));
 </script>
 
-<Head title="NAPARC Search | Contact" />
+<Head
+	title="Contact | NAPARC Search"
+	description="Report a missing or out-of-date congregation, or send a question or correction to the maintainer of NAPARC Search." />
 
 <div class="container">
-	<h2>Contact Form</h2>
+	<h1>Contact Form</h1>
 	{#if form?.success}
 		<p class="thanks">Thank you, your message has been received!</p>
 	{:else}
@@ -86,7 +88,7 @@
 		padding: var(--space-lg);
 	}
 
-	.container h2 {
+	.container h1 {
 		font-size: var(--fs-h3);
 		margin-bottom: var(--space-lg);
 	}

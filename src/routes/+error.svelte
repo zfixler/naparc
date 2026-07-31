@@ -10,11 +10,11 @@
 	);
 </script>
 
-<Head title="NAPARC Search | {status}" />
+<Head title="{status} | NAPARC Search" description={message} noindex />
 
 <section class="container">
 	<p class="status">{status}</p>
-	<h2 class="title">{status === 404 ? 'Page not found' : 'Something went wrong'}</h2>
+	<h1 class="title">{status === 404 ? 'Page not found' : 'Something went wrong'}</h1>
 	<p class="message">{message}</p>
 	<p class="actions">
 		<a class="link" href="/">Back to search</a>

@@ -6,7 +6,11 @@
 	const denominations = $derived(data.denominations);
 </script>
 
-<Head title="NAPARC Search | Denominations" />
+<Head
+	title="NAPARC Denominations & Presbyteries | NAPARC Search"
+	description="Browse the ten Presbyterian and Continental Reformed denominations of NAPARC, their presbyteries and classes, and the congregations in each." />
+
+<h1 class="page-title">NAPARC Denominations</h1>
 
 <p>
 	Denominations that are currently supported by this search are indicated with <svg
@@ -25,6 +29,11 @@
 {/each}
 
 <style>
+	.page-title {
+		font-size: var(--fs-h2);
+		margin-bottom: var(--space-2xs);
+	}
+
 	p {
 		color: var(--muted);
 		font-size: var(--fs-small);

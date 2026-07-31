@@ -32,7 +32,7 @@
 				</li>
 			</ul>
 		</nav>
-		<h1 class="title"><a href="/">NAPARC Search</a></h1>
+		<div class="title"><a href="/">NAPARC Search</a></div>
 		<Search denominations={data.denominations} />
 	</header>
 	<div class="slot" class:is-loading={isNavigating} aria-busy={isNavigating}>
@@ -138,9 +138,11 @@
 
 	.title {
 		grid-area: title;
+		font-family: var(--ff-head);
 		font-size: clamp(2rem, 1.6rem + 1.2vw, 2.6rem);
 		font-weight: var(--fw-semibold);
 		letter-spacing: var(--tracking-tight);
+		line-height: var(--lh-tight);
 		margin: 0;
 	}
 

@@ -1,14 +1,19 @@
 <script>
-	import { Head } from '$lib/components';
+	import { page } from '$app/state';
+	import { Head, StructuredData } from '$lib/components';
+	import { websiteSchema } from '$lib/utils/structuredData';
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
+
+	const schema = $derived(websiteSchema(page.url.origin));
 </script>
 
 <Head />
+<StructuredData data={schema} />
 
 <section class="intro">
-	<h2 class="intro-title">Find a confessional church near you</h2>
+	<h1 class="intro-title">Find a confessional church near you</h1>
 	<p class="intro-copy">
 		Search congregations across the denominations of the North American Presbyterian and Reformed
 		Council by city, address, or postal code.

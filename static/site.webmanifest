@@ -1,0 +1,28 @@
+{
+	"name": "NAPARC Search",
+	"short_name": "NAPARC Search",
+	"description": "Search congregations across the denominations of the North American Presbyterian and Reformed Council.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"background_color": "#f7f9fa",
+	"theme_color": "#0c1116",
+	"icons": [
+		{
+			"src": "/android-chrome-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "/android-chrome-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		},
+		{
+			"src": "/android-chrome-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable"
+		}
+	]
+}

@@ -37,7 +37,18 @@
 	let hasMultiplePages = $derived(data.totalPages ? data.totalPages > 1 : false);
 </script>
 
-<Head title="NAPARC Search | Results for {data.location}" />
+<!--
+	Result pages are one page per lat/lon/radius/filter combination, so they are
+	an unbounded set of near-duplicates. Indexing them wastes crawl budget and
+	competes with the pages worth ranking; `follow` still passes link equity on
+	to the congregation and presbytery pages listed here.
+-->
+<Head
+	title="Churches near {data.location} | NAPARC Search"
+	description="{data.totalResults} NAPARC {data.totalResults === 1
+		? 'congregation'
+		: 'congregations'} within {data.radius} miles of {data.location}."
+	noindex />
 
 {#if data.congregations.length}
 	<!--
@@ -46,7 +57,7 @@
 		paginator that controls it.
 	-->
 	<section class="result-header">
-		<h2 class="result-title">Search Results</h2>
+		<h1 class="result-title">Search Results</h1>
 		<p class="result-summary">
 			{data.totalResults}
 			{data.totalResults === 1 ? 'congregation' : 'congregations'} within {data.radius} miles of
@@ -65,7 +76,7 @@
 	</div>
 {:else}
 	<section class="empty">
-		<h2 class="result-title">No results</h2>
+		<h1 class="result-title">No results</h1>
 		<p class="result-summary">
 			We did not find any congregations within {data.radius} miles of
 			<strong>{data.location}</strong>.
