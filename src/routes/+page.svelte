@@ -1,14 +1,19 @@
 <script>
-	import { Head } from '$lib/components';
+	import { page } from '$app/state';
+	import { Head, StructuredData } from '$lib/components';
+	import { websiteSchema } from '$lib/utils/structuredData';
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
+
+	const schema = $derived(websiteSchema(page.url.origin));
 </script>
 
 <Head />
+<StructuredData data={schema} />
 
 <section class="intro">
-	<h2 class="intro-title">Find a confessional church near you</h2>
+	<h1 class="intro-title">Find a confessional church near you</h1>
 	<p class="intro-copy">
 		Search congregations across the denominations of the North American Presbyterian and Reformed
 		Council by city, address, or postal code.
@@ -49,107 +54,148 @@
 
 <style>
 	.intro {
+		margin: 0 auto;
+		max-width: 34ch;
+		padding: var(--space-xl) 0 var(--space-lg);
 		text-align: center;
 	}
 
 	.intro-title {
-		margin: 0 auto 12px;
+		font-size: var(--fs-display);
+		font-weight: var(--fw-semibold);
+		letter-spacing: -0.025em;
+		line-height: 1.1;
+		margin: 0 0 var(--space-sm);
 	}
 
 	.intro-copy {
+		color: var(--secondary);
 		margin: 0 auto;
-		max-width: 60ch;
-		line-height: 1.6;
-		opacity: 0.85;
+		max-width: 52ch;
 	}
 
 	.stats-container {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
-		gap: 16px;
-		margin-top: 32px;
+		gap: var(--space-xs);
+		margin-top: var(--space-lg);
 	}
 
 	.stat-card {
 		background: var(--bg-ff);
-		border-radius: var(--brad);
-		padding: 24px 16px;
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		box-shadow: var(--shadow-xs);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2xs);
+		justify-content: center;
+		padding: var(--space-md) var(--space-sm);
 		text-align: center;
+		transition:
+			transform var(--speed) var(--ease),
+			box-shadow var(--speed) var(--ease),
+			border-color var(--speed) var(--ease);
+	}
+
+	.stat-card:hover {
+		border-color: var(--line-strong);
+		box-shadow: var(--shadow-sm);
+		transform: translateY(-2px);
 	}
 
 	.stat-number {
-		font-size: var(--fs-h1);
-		font-weight: 700;
-		color: var(--accent);
+		color: var(--primary);
+		font-family: var(--ff-head);
+		font-size: clamp(2.6rem, 2rem + 1.8vw, 3.4rem);
+		font-variant-numeric: tabular-nums;
+		font-weight: var(--fw-semibold);
+		letter-spacing: var(--tracking-tight);
 		line-height: 1;
-		margin-bottom: 6px;
 	}
 
 	.stat-label {
-		font-size: var(--fs-small);
-		color: var(--primary);
-		opacity: 0.75;
+		color: var(--muted);
+		font-size: var(--fs-micro);
+		font-weight: var(--fw-semibold);
+		letter-spacing: var(--tracking-wide);
+		line-height: 1.35;
 		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		font-weight: 500;
 	}
 
 	.verse-container {
-		margin-top: 40px;
+		border-top: 1px solid var(--line);
+		margin-top: var(--space-2xl);
+		padding-top: var(--space-xl);
 		text-align: center;
 	}
 
 	.verse {
-		font-style: italic;
-		color: var(--primary);
-		opacity: 0.9;
-		max-width: 560px;
+		color: var(--secondary);
 		margin: 0 auto;
+		max-width: 46ch;
+		position: relative;
+	}
+
+	.verse::before {
+		content: '\201C';
+		color: var(--accent);
+		display: block;
+		font-family: var(--ff-head);
+		font-size: 4.8rem;
+		line-height: 0.6;
+		margin-bottom: var(--space-xs);
+		opacity: 0.45;
 	}
 
 	.verse p {
-		font-size: var(--fs-h5);
-		line-height: 1.6;
-		margin-bottom: 12px;
+		font-family: var(--ff-head);
+		font-size: clamp(1.9rem, 1.6rem + 1vw, 2.4rem);
+		font-style: italic;
+		font-weight: var(--fw-regular);
+		line-height: 1.5;
+		margin-bottom: var(--space-sm);
+		text-wrap: balance;
 	}
 
 	.verse footer {
+		color: var(--muted);
+		font-size: var(--fs-small);
 		font-style: normal;
-		font-size: var(--fs-regular);
-		opacity: 0.75;
+		font-weight: var(--fw-medium);
+		letter-spacing: 0.02em;
 	}
 
 	.verse a {
-		color: var(--accent);
-		text-decoration: none;
+		color: var(--muted);
+		text-decoration: underline;
+		text-decoration-color: var(--line-strong);
 	}
 
-	.verse a:hover {
-		text-decoration: underline;
+	.verse a:hover,
+	.verse a:focus-visible {
+		color: var(--accent);
+		text-decoration-color: currentColor;
 	}
 
 	@media (max-width: 600px) {
+		.intro {
+			padding: var(--space-lg) 0 var(--space-md);
+		}
+
 		.stats-container {
 			grid-template-columns: repeat(2, 1fr);
-			gap: 12px;
-			margin-top: 24px;
+			gap: var(--space-2xs);
+			margin-top: var(--space-md);
 		}
 
 		.stat-card {
-			padding: 16px 12px;
-		}
-
-		.stat-number {
-			font-size: var(--fs-h2);
-			margin-bottom: 4px;
+			padding: var(--space-sm) var(--space-xs);
 		}
 
 		.verse-container {
-			margin-top: 28px;
-		}
-
-		.verse p {
-			font-size: var(--fs-h4);
+			margin-top: var(--space-xl);
+			padding-top: var(--space-lg);
 		}
 	}
 </style>

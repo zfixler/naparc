@@ -1,8 +1,9 @@
 <script>
 	import { page } from '$app/state';
-	import { Head, Pagination } from '$lib/components';
+	import { Head, Pagination, StructuredData } from '$lib/components';
 	import { Congregation } from '$lib/features';
 	import { calculateViewedResults } from '$lib/utils';
+	import { congregationListSchema } from '$lib/utils/structuredData';
 
 	/**
 	 * @type {{
@@ -19,11 +20,19 @@
 
 	let viewingResults = $derived(calculateViewedResults(data.page, data.totalResults));
 	let hasMultiplePages = $derived(data.totalPages ? data.totalPages > 1 : false);
+
+	// Scoped to the congregations actually rendered on this page, so the markup
+	// always matches what a crawler can see.
+	const schema = $derived(
+		congregationListSchema(data.congregations, `${data.denomination.name} congregations`),
+	);
 </script>
 
 <Head
-	title="NAPARC Search | {data.denomination.abbr}"
-	description={data.denomination.description} />
+	title="{data.denomination.name} Congregations | NAPARC Search"
+	description="Browse all {data.totalResults} {data.denomination
+		.abbr} congregations, with addresses, pastors, and contact details for each church." />
+<StructuredData data={schema} />
 
 <header class="header">
 	<h1 class="denomination">{data.denomination.name}</h1>
@@ -45,10 +54,20 @@
 
 <style>
 	.header {
-		width: var(--container-width);
-		padding-top: 24px;
+		border-bottom: 1px solid var(--line);
+		margin-bottom: var(--space-md);
+		padding-bottom: var(--space-md);
+		width: 100%;
 	}
+
+	.denomination {
+		font-size: var(--fs-h2);
+	}
+
 	.results {
-		margin-top: calc(var(--margin) / 2);
+		color: var(--muted);
+		font-size: var(--fs-small);
+		font-variant-numeric: tabular-nums;
+		margin-top: var(--space-2xs);
 	}
 </style>

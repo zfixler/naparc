@@ -37,7 +37,18 @@
 	let hasMultiplePages = $derived(data.totalPages ? data.totalPages > 1 : false);
 </script>
 
-<Head title="NAPARC Search | Results for {data.location}" />
+<!--
+	Result pages are one page per lat/lon/radius/filter combination, so they are
+	an unbounded set of near-duplicates. Indexing them wastes crawl budget and
+	competes with the pages worth ranking; `follow` still passes link equity on
+	to the congregation and presbytery pages listed here.
+-->
+<Head
+	title="Churches near {data.location} | NAPARC Search"
+	description="{data.totalResults} NAPARC {data.totalResults === 1
+		? 'congregation'
+		: 'congregations'} within {data.radius} miles of {data.location}."
+	noindex />
 
 {#if data.congregations.length}
 	<!--
@@ -46,7 +57,7 @@
 		paginator that controls it.
 	-->
 	<section class="result-header">
-		<h2 class="result-title">Search Results</h2>
+		<h1 class="result-title">Search Results</h1>
 		<p class="result-summary">
 			{data.totalResults}
 			{data.totalResults === 1 ? 'congregation' : 'congregations'} within {data.radius} miles of
@@ -65,7 +76,7 @@
 	</div>
 {:else}
 	<section class="empty">
-		<h2 class="result-title">No results</h2>
+		<h1 class="result-title">No results</h1>
 		<p class="result-summary">
 			We did not find any congregations within {data.radius} miles of
 			<strong>{data.location}</strong>.
@@ -88,27 +99,25 @@
 {/if}
 
 <style>
-	/*
-	 * Previously a 25%/auto grid, which squeezed the heading into a narrow column and
-	 * cramped the summary beside it at small widths. Stacking reads cleanly at every size.
-	 */
 	.result-header {
-		margin-bottom: var(--margin);
+		margin-bottom: var(--space-md);
 	}
 
 	.result-title {
-		margin-bottom: 4px;
+		font-size: var(--fs-h3);
+		margin-bottom: var(--space-3xs);
 	}
 
 	.result-summary {
-		opacity: 0.85;
+		color: var(--secondary);
+		font-size: var(--fs-small);
+		max-width: 60ch;
 	}
 
-	/*
-	 * The list container only receives focus programmatically, as a scroll target for the
-	 * paginator. It is not an interactive control, so a ring around the whole list would be
-	 * noise — screen readers still announce it on focus.
-	 */
+	.result-summary strong {
+		color: var(--primary);
+	}
+
 	.results:focus,
 	.results:focus-visible {
 		outline: none;
@@ -116,13 +125,32 @@
 
 	.empty {
 		background-color: var(--bg-ff);
-		border-radius: var(--brad);
-		box-shadow: var(--box-shadow);
-		padding: var(--padding);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		box-shadow: var(--shadow-xs);
+		padding: var(--space-xl) var(--space-lg);
+		text-align: center;
+	}
+
+	.empty .result-title {
+		margin: 0 auto var(--space-2xs);
+	}
+
+	.empty .result-summary {
+		margin: 0 auto;
 	}
 
 	.suggestions {
-		margin: 12px 0 0 20px;
-		line-height: 1.7;
+		color: var(--secondary);
+		display: inline-block;
+		font-size: var(--fs-small);
+		line-height: 1.9;
+		margin: var(--space-md) 0 0;
+		padding-left: var(--space-md);
+		text-align: left;
+	}
+
+	.suggestions::marker {
+		color: var(--muted);
 	}
 </style>

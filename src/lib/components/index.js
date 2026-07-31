@@ -10,4 +10,5 @@ export { default as Pagination } from './Pagination.svelte';
 export { default as Phone } from './Phone.svelte';
 export { default as SchemeToggle } from './SchemeToggle.svelte';
 export { default as Settings } from './Settings.svelte';
+export { default as StructuredData } from './StructuredData.svelte';
 export { default as Website } from './Website.svelte';

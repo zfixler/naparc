@@ -42,36 +42,79 @@
 
 <style>
 	button {
-		display: inline-block;
-		width: 48px;
-		height: 24px;
-		gap: 4px;
-		background-color: var(--accent);
+		align-items: center;
+		background: none;
 		border: none;
-		border-radius: 20px;
+		border-radius: var(--radius-pill);
+		color: var(--muted);
+		cursor: pointer;
+		display: inline-flex;
+		flex-shrink: 0;
+		height: 40px;
+		justify-content: center;
 		padding: 0;
 		position: relative;
-		cursor: pointer;
+		width: 40px;
+		transition:
+			background-color var(--speed) var(--ease),
+			color var(--speed) var(--ease),
+			transform var(--speed) var(--ease);
 	}
 
-	.light:before,
-	.dark:before {
+	button:hover {
+		background-color: var(--accent-soft);
+		color: var(--accent-strong);
+	}
+
+	button:active {
+		transform: scale(0.94);
+	}
+
+	button::before,
+	button::after {
 		content: '';
 		position: absolute;
-		display: inline-block;
-		height: 18px;
-		width: 18px;
-		top: 3px;
-		left: 6px;
-		background-color: var(--accent);
-		border-radius: 100%;
-		box-shadow: inset 6px -1px 0px 0px var(--primary);
-		transition: all 250ms ease;
+		top: 50%;
+		left: 50%;
+		background-color: currentColor;
+		border-radius: var(--radius-pill);
+		transition:
+			opacity 220ms var(--ease),
+			transform 320ms var(--ease);
 	}
 
-	.light:before {
-		transform: translate(95%);
-		background-color: var(--bg-ff);
-		box-shadow: none;
+	button::before {
+		height: 18px;
+		width: 18px;
+		-webkit-mask-image: radial-gradient(circle 9px at 13px 5px, transparent 99%, #000 100%);
+		mask-image: radial-gradient(circle 9px at 13px 5px, transparent 99%, #000 100%);
+		opacity: 0;
+		transform: translate(-50%, -50%) rotate(35deg) scale(0.5);
+	}
+
+	button::after {
+		height: 10px;
+		width: 10px;
+		box-shadow:
+			0 -13px 0 -3.5px currentColor,
+			0 13px 0 -3.5px currentColor,
+			-13px 0 0 -3.5px currentColor,
+			13px 0 0 -3.5px currentColor,
+			9px 9px 0 -3.5px currentColor,
+			-9px 9px 0 -3.5px currentColor,
+			9px -9px 0 -3.5px currentColor,
+			-9px -9px 0 -3.5px currentColor;
+		opacity: 1;
+		transform: translate(-50%, -50%) rotate(0) scale(1);
+	}
+
+	:global(html[data-scheme='dark']) button::before {
+		opacity: 1;
+		transform: translate(-50%, -50%) rotate(0) scale(1);
+	}
+
+	:global(html[data-scheme='dark']) button::after {
+		opacity: 0;
+		transform: translate(-50%, -50%) rotate(-35deg) scale(0.5);
 	}
 </style>

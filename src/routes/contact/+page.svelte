@@ -41,10 +41,12 @@
 	let isValid = $derived(Object.values(validation).every((input) => input.isValid));
 </script>
 
-<Head title="NAPARC Search | Contact" />
+<Head
+	title="Contact | NAPARC Search"
+	description="Report a missing or out-of-date congregation, or send a question or correction to the maintainer of NAPARC Search." />
 
 <div class="container">
-	<h2>Contact Form</h2>
+	<h1>Contact Form</h1>
 	{#if form?.success}
 		<p class="thanks">Thank you, your message has been received!</p>
 	{:else}
@@ -76,8 +78,26 @@
 </div>
 
 <style>
-	.container h2 {
-		margin-bottom: var(--margin);
+	.container {
+		background-color: var(--bg-ff);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		box-shadow: var(--shadow-xs);
+		margin: 0 auto;
+		max-width: 60ch;
+		padding: var(--space-lg);
+	}
+
+	.container h1 {
+		font-size: var(--fs-h3);
+		margin-bottom: var(--space-lg);
+	}
+
+	.thanks {
+		background-color: var(--accent-soft);
+		border-radius: var(--radius-sm);
+		color: var(--accent-strong);
+		padding: var(--space-sm);
 	}
 
 	.contact {
@@ -86,78 +106,113 @@
 	}
 
 	.contact label {
+		color: var(--secondary);
 		display: flex;
 		flex-direction: column;
-		font-size: var(--fs-h4);
-		margin-bottom: var(--margin);
+		font-size: var(--fs-small);
+		font-weight: var(--fw-semibold);
+		letter-spacing: 0.01em;
+		margin-bottom: var(--space-md);
 	}
 
 	.contact input,
 	.contact textarea {
 		background-color: var(--bg-ff);
-		border-radius: var(--brad);
-		border: 2px solid var(--bg-ff);
+		border-radius: var(--radius-sm);
+		border: 1px solid var(--line-strong);
 		color: var(--primary);
 		font-family: inherit;
 		font-size: var(--fs-regular);
-		margin-top: calc(var(--margin) / 4);
+		font-weight: var(--fw-regular);
+		margin-top: var(--space-2xs);
 		outline: none;
-		padding: calc(var(--padding) / 2);
-		transition: color 0.25s ease;
+		padding: var(--space-xs) var(--space-sm);
+		transition:
+			border-color var(--speed) var(--ease),
+			box-shadow var(--speed) var(--ease);
 		width: 100%;
 	}
 
 	.contact textarea {
-		height: 150px;
+		height: 160px;
+		line-height: var(--lh-body);
+		resize: vertical;
+	}
+
+	.contact input:hover,
+	.contact textarea:hover {
+		border-color: var(--muted);
 	}
 
 	.contact input:focus,
 	.contact textarea:focus {
 		border-color: var(--accent);
+		box-shadow: 0 0 0 3px var(--accent-ring);
 	}
 
 	.submit {
 		align-self: end;
-		background-color: var(--blue-2);
-		border-radius: var(--brad);
+		background-color: var(--accent);
+		border-radius: var(--radius-pill);
 		border: none;
-		box-shadow: var(--box-shadow);
-		color: #fff;
+		box-shadow: var(--shadow-xs);
+		color: var(--on-accent);
 		cursor: pointer;
 		font-family: inherit;
-		font-weight: bold;
-		letter-spacing: 1px;
-		padding: 8px 16px;
-		transition: background-color ease 0.25s;
+		font-size: var(--fs-small);
+		font-weight: var(--fw-semibold);
+		letter-spacing: 0.01em;
+		min-height: 44px;
+		padding: var(--space-2xs) var(--space-lg);
+		transition:
+			background-color var(--speed) var(--ease),
+			box-shadow var(--speed) var(--ease),
+			transform var(--speed) var(--ease);
 	}
 
-	.submit:focus,
-	.submit:hover {
-		background-color: var(--accent);
+	.submit:focus-visible,
+	.submit:hover:not(:disabled) {
+		background-color: var(--accent-strong);
+		box-shadow: var(--shadow-sm);
+		transform: translateY(-1px);
+	}
+
+	.submit:active:not(:disabled) {
+		transform: translateY(0);
 	}
 
 	.submit:disabled {
-		background-color: var(--bg-ff);
-		color: var(--primary);
+		background-color: var(--bg-subtle);
+		box-shadow: none;
+		color: var(--muted);
 		cursor: not-allowed;
-		opacity: 0.5;
+		transform: none;
 	}
 
 	.error {
-		color: var(--red-3);
+		color: var(--danger);
 	}
 
 	.error p {
-		margin: calc(var(--margin) / 4) 0;
+		font-size: var(--fs-small);
+		font-weight: var(--fw-regular);
+		margin: var(--space-2xs) 0 0;
 	}
 
 	.error input,
 	.error textarea {
-		border-color: var(--red-1);
+		border-color: var(--danger-soft);
 	}
 
 	.error input:focus,
 	.error textarea:focus {
-		border-color: var(--red-3);
+		border-color: var(--danger);
+		box-shadow: none;
+	}
+
+	@media (max-width: 600px) {
+		.container {
+			padding: var(--space-md);
+		}
 	}
 </style>
