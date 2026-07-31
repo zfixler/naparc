@@ -41,9 +41,8 @@
 	<footer class="footer">
 		<small>&copy; {year}, Zachary Fixler</small>
 		<small class="disclaimer"
-			>Disclaimer: This website has no official affiliation with NAPARC. All the data contained on
-			this website is publically available online. Statistics reflect searchable data on this site
-			and may not represent all NAPARC congregations.</small>
+			>Not affiliated with NAPARC. All data is publicly available online; counts reflect what is
+			searchable here and may not include every NAPARC congregation.</small>
 		<SchemeToggle />
 	</footer>
 </main>
