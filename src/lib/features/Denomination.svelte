@@ -72,7 +72,7 @@
 		border-radius: var(--radius-md);
 		box-shadow: var(--shadow-xs);
 		margin-top: var(--space-xs);
-		padding: var(--space-2xs) var(--space-md) var(--space-md);
+		padding: var(--space-2xs) var(--space-md) 0;
 		transition:
 			border-color var(--speed) var(--ease),
 			box-shadow var(--speed) var(--ease);
@@ -84,6 +84,7 @@
 
 	.section[open] {
 		box-shadow: var(--shadow-sm);
+		padding-bottom: var(--space-md);
 	}
 
 	.denomination {
@@ -211,7 +212,11 @@
 
 	@media (max-width: 800px) {
 		.section {
-			padding: var(--space-2xs) var(--space-sm) var(--space-sm);
+			padding: var(--space-2xs) var(--space-sm) 0;
+		}
+
+		.section[open] {
+			padding-bottom: var(--space-sm);
 		}
 
 		summary {
