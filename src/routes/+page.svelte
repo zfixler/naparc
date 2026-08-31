@@ -46,7 +46,7 @@
 			of my God, than to dwell in the tents of wickedness.
 		</p>
 		<footer>
-			— <a href="https://relight.app/bible/Ps.84.9" target="_blank" rel="noopener noreferrer"
+			— <a href="https://relight.app/bible/Ps.84.10" target="_blank" rel="noopener noreferrer"
 				>Psalm 84:10 (KJV)</a>
 		</footer>
 	</blockquote>
