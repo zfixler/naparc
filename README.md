@@ -37,8 +37,8 @@ npm run build
 ```
 
 The deployed application runs as a Cloudflare Worker with a D1 database. Copy
-`.dev.vars.example` to `.dev.vars` for local secrets, and replace the placeholder
-production database ID in `wrangler.jsonc` after creating the D1 database.
+`.dev.vars.example` to `.dev.vars` for local secrets. Production bindings and
+routes are configured in `wrangler.jsonc`.
 
 Apply migrations with:
 

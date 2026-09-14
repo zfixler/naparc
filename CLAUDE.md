@@ -13,7 +13,7 @@ NAPARC Search is a SvelteKit application that provides a searchable directory of
 - **Database**: Cloudflare D1 (SQLite) through the native Worker binding
 - **Testing**: Vitest
 - **Deployment**: Cloudflare Workers with Workers Static Assets
-- **Key Dependencies**: Puppeteer (scraping), Cheerio (HTML parsing), Leaflet (maps), Nodemailer (email)
+- **Key Dependencies**: Puppeteer (scraping), Cheerio (HTML parsing), Leaflet (maps), Resend (email API)
 
 ## Common Commands
 
@@ -102,7 +102,6 @@ Required environment variables (see `.env.example` if available):
 
 - `GEOAPIFY_KEY` - Geoapify geocoding API key
 - `RESEND_API_KEY`, `CONTACT_TO` - Resend API key and contact-form destination
-- `TURNSTILE_KEY` - Cloudflare Turnstile key
 - `MAIL_TO` - Email for Nominatim geocoding API (used by PRC scraper)
 
 ## Git Hooks

@@ -8,11 +8,7 @@ declare global {
 		// interface Locals {}
 		// interface PageData {}
 		interface Platform {
-			env: Cloudflare.Env & {
-				RESEND_API_KEY: string;
-				CONTACT_TO: string;
-				CONTACT_FROM: string;
-			};
+			env: Cloudflare.Env;
 			context: ExecutionContext;
 			caches: CacheStorage;
 		}
