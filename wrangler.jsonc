@@ -11,6 +11,16 @@
 		"directory": ".svelte-kit/cloudflare",
 		"binding": "ASSETS",
 	},
+	"routes": [
+		{
+			"pattern": "naparcsearch.com/*",
+			"zone_name": "naparcsearch.com",
+		},
+		{
+			"pattern": "www.naparcsearch.com/*",
+			"zone_name": "naparcsearch.com",
+		},
+	],
 	"d1_databases": [
 		{
 			"binding": "DB",
