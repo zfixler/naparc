@@ -49,7 +49,12 @@
 </div>
 
 {#if hasMultiplePages}
-	<Pagination currentPage={data.page} totalPages={data.totalPages} />
+	<Pagination
+		currentPage={data.page}
+		totalPages={data.totalPages}
+		startIndex={viewingResults.startIndex}
+		endIndex={viewingResults.endIndex}
+		totalResults={data.totalResults} />
 {/if}
 
 <style>
