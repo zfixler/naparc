@@ -6,7 +6,7 @@ import { batchUpsertCongregations, delayFetch } from '../utils/index.js';
  * Fetches and parses congregation information from a given URL.
  *
  * @param {string} url - The URL of the congregation page to fetch.
- * @returns {Promise<import('@prisma/client').Congregation>} A promise that resolves to a Congregation object containing the parsed data.
+ * @returns {Promise<Record<string, any>>} A promise that resolves to a congregation record.
  *
  */
 async function fetchCongregation(url) {
@@ -27,7 +27,7 @@ async function fetchCongregation(url) {
 	const mapCanvas = $('#maranatha-map-section-canvas');
 	const locationContent = $('#maranatha-location-content');
 
-	/**@type {import('@prisma/client').Congregation} */
+	/** @type {Record<string, any>} */
 	const congregation = {
 		lat: parseFloat(mapCanvas.attr('data-ctfw-map-lat') || ''),
 		lon: parseFloat(mapCanvas.attr('data-ctfw-map-lng') || ''),

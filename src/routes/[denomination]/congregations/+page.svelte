@@ -11,8 +11,8 @@
 	 *     page: number;
 	 *     totalResults: number;
 	 *     totalPages: number;
-	 *     denomination: import('@prisma/client').Denomination;
-	 *     congregations: Array<import('@prisma/client').Congregation>;
+	 *     denomination: Record<string, any>;
+	 *     congregations: Array<Record<string, any>>;
 	 *   }
 	 * }}
 	 */

@@ -3,9 +3,9 @@
 	import { Congregation } from '$lib/features';
 	import { congregationListSchema } from '$lib/utils/structuredData';
 	/**
-	 * @typedef {import('@prisma/client').Presbytery} Presbytery
-	 * @typedef {import('@prisma/client').Denomination} Denomination
-	 * @typedef {import('@prisma/client').Congregation} Congregation
+	 * @typedef {Record<string, any>} Presbytery
+	 * @typedef {Record<string, any>} Denomination
+	 * @typedef {Record<string, any>} Congregation
 	 */
 
 	/**

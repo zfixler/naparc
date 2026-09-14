@@ -12,8 +12,8 @@ import {
 	slugify,
 } from '../utils/index.js';
 
-/** @typedef {import("@prisma/client").Presbytery} Presbytery */
-/** @typedef {import("@prisma/client").Congregation & {presbytery: Presbytery}} Congregation */
+/** @typedef {Record<string, any>} Presbytery */
+/** @typedef {Record<string, any> & {presbytery: Presbytery}} Congregation */
 
 /**
  * @param {string} presbyteryId

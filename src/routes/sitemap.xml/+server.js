@@ -1,6 +1,4 @@
-import { getPrisma } from '$lib/prisma';
-
-const prisma = getPrisma();
+import { asDate, getDatabase } from '$lib/server/database';
 
 /**
  * Escape the five XML entities. Presbytery and denomination slugs are scraped,
@@ -24,17 +22,34 @@ const urlEntry = (loc, lastmod) =>
 	`\n\t</url>`;
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({ url, setHeaders }) {
+export async function GET({ url, setHeaders, platform }) {
+	const db = getDatabase(platform);
 	const { origin } = url;
 
-	const denominations = await prisma.denomination.findMany({
-		select: {
-			slug: true,
-			presbyteries: { select: { slug: true } },
-			scrapeLogs: { select: { completedAt: true } },
-			_count: { select: { congregations: true } },
-		},
-	});
+	const [denominationRows, presbyteryRows, logRows] = /** @type {any} */ (
+		await db.batch([
+			db.prepare(`SELECT d.slug, COUNT(c.id) AS congregationCount FROM Denomination d
+			LEFT JOIN Congregation c ON c.denominationSlug = d.slug GROUP BY d.slug`),
+			db.prepare('SELECT denominationSlug, slug FROM Presbytery'),
+			db.prepare('SELECT denominationSlug, completedAt FROM ScrapeLog'),
+		])
+	);
+	const denominations = denominationRows.results.map(
+		(/** @type {Record<string, any>} */ denomination) => ({
+			...denomination,
+			presbyteries: presbyteryRows.results.filter(
+				(/** @type {Record<string, any>} */ p) => p.denominationSlug === denomination.slug,
+			),
+			scrapeLogs: logRows.results
+				.filter(
+					(/** @type {Record<string, any>} */ log) => log.denominationSlug === denomination.slug,
+				)
+				.map((/** @type {Record<string, any>} */ log) => ({
+					completedAt: asDate(log.completedAt),
+				})),
+			_count: { congregations: Number(denomination.congregationCount) },
+		}),
+	);
 
 	/** @type {string[]} */
 	const entries = [

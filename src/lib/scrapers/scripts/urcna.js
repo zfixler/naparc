@@ -57,8 +57,8 @@ function removePhoneNumbers(str) {
  * @property {string} upd - The last update date of the church information.
  */
 
-/** @typedef {import("@prisma/client").Presbytery} Presbytery */
-/** @typedef {import("@prisma/client").Congregation & {presbytery: Presbytery}} Congregation */
+/** @typedef {Record<string, any>} Presbytery */
+/** @typedef {Record<string, any> & {presbytery: Presbytery}} Congregation */
 
 /**
  * Extract the argument to loadDialog(...) safely.

@@ -34,7 +34,7 @@ async function scrapeCongregation(page) {
 	const html = await response.text();
 	const $ = cheerio.load(html);
 
-	/** @type {import('@prisma/client').Congregation} */
+	/** @type {Record<string, any>} */
 	const congregation = {
 		id: uuidv5(page, denominationNamespace),
 		name: $('h3.font_3').text(),

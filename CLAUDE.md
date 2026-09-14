@@ -10,9 +10,9 @@ NAPARC Search is a SvelteKit application that provides a searchable directory of
 
 - **Framework**: SvelteKit 2 with Svelte 5
 - **Build Tool**: Vite
-- **Database**: PostgreSQL with Prisma ORM
+- **Database**: Cloudflare D1 (SQLite) through the native Worker binding
 - **Testing**: Vitest
-- **Deployment**: Vercel (configured with maxDuration: 30)
+- **Deployment**: Cloudflare Workers with Workers Static Assets
 - **Key Dependencies**: Puppeteer (scraping), Cheerio (HTML parsing), Leaflet (maps), Nodemailer (email)
 
 ## Common Commands
@@ -25,9 +25,9 @@ npm run preview          # Preview production build
 
 # Database
 npm run seed             # Seed database with denominations from config/denominations.js
-npx prisma studio        # Open Prisma Studio database GUI
-npx prisma migrate dev   # Run database migrations
-npx prisma generate      # Generate Prisma client (runs automatically on postinstall)
+npm run db:migrate:local # Apply migrations to the local D1 database
+npm run db:migrate:production # Apply migrations to production D1
+npm run cf-typegen       # Regenerate Worker binding/runtime types
 
 # Code Quality
 npm run lint             # Check formatting with Prettier
@@ -52,7 +52,9 @@ Hierarchical structure: **Denomination → Presbytery → Congregation**
 - **Congregation**: Individual churches with location data (lat/lon), contact info, pastor
 - **ScrapeLog**: Tracks scraper runs for each denomination (timestamps, status, count)
 
-**Important**: Always use the `getPrisma()` function from `src/lib/prisma.js` to get a Prisma client instance. This ensures proper connection pooling and prevents multiple database connections. The Prisma client uses the `@prisma/adapter-pg` with a cached pg.Pool.
+Server routes obtain the native D1 binding with `getDatabase(platform)` from
+`src/lib/server/database.js`. Keep access request-scoped; do not cache request
+bindings in module-level mutable state.
 
 ### Directory Structure
 
@@ -71,7 +73,7 @@ Hierarchical structure: **Denomination → Presbytery → Congregation**
 - `src/hooks.server.js` - SvelteKit server hooks (handles theme scheme via cookies)
 - `config/` - Configuration files (denominations.js)
 - `scripts/` - Utility scripts (run-all-scrapers.js)
-- `prisma/` - Database schema and migrations
+- `migrations/` - D1 SQL migrations
 
 ### Scrapers
 
@@ -98,10 +100,8 @@ Tests are located in `tests/` directory. Current test coverage includes scrapers
 
 Required environment variables (see `.env.example` if available):
 
-- `DATABASE_URL` - PostgreSQL connection string (used by Prisma with pooling)
-- `DIRECT_URL` - Direct database connection (for migrations)
 - `GEOAPIFY_KEY` - Geoapify geocoding API key
-- `MAIL_SERVICE`, `MAIL_USER`, `MAIL_PASS`, `MAIL_ADDRESS` - Nodemailer configuration
+- `RESEND_API_KEY`, `CONTACT_TO` - Resend API key and contact-form destination
 - `TURNSTILE_KEY` - Cloudflare Turnstile key
 - `MAIL_TO` - Email for Nominatim geocoding API (used by PRC scraper)
 
@@ -114,4 +114,6 @@ Husky is configured with:
 
 ## Deployment
 
-Deployed to Vercel using `@sveltejs/adapter-vercel`. The adapter is configured with `maxDuration: 30` seconds for serverless functions. GitHub Actions workflow handles automated scraping independently.
+Deployed to Cloudflare Workers using `@sveltejs/adapter-cloudflare`, with static
+assets and D1 configured in `wrangler.jsonc`. GitHub Actions continues to run the
+automated scrapers and writes to production D1 with a narrowly scoped API token.
