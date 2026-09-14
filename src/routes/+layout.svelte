@@ -1,6 +1,6 @@
 <script>
 	import { navigating } from '$app/state';
-	import { SchemeToggle } from '$lib/components';
+	import { KoFiSupport, SchemeToggle } from '$lib/components';
 	import { Search } from '$lib/features';
 	import '@fontsource-variable/inter';
 	import '@fontsource-variable/source-serif-4';
@@ -39,11 +39,19 @@
 		{@render children?.()}
 	</div>
 	<footer class="footer">
-		<small>&copy; {year}, Zachary Fixler</small>
+		<small class="copyright"
+			>&copy; {year}, Zachary Fixler <span aria-hidden="true">&middot;</span>
+			<a href="/privacy">Privacy</a></small>
 		<small class="disclaimer"
 			>Not affiliated with NAPARC. All data is publicly available online; counts reflect what is
 			searchable here and may not include every NAPARC congregation.</small>
-		<SchemeToggle />
+		<div class="footer-actions">
+			<div class="support-prompt">
+				<small>Help cover hosting and upkeep.</small>
+				<KoFiSupport />
+			</div>
+			<SchemeToggle />
+		</div>
 	</footer>
 </main>
 
@@ -215,12 +223,39 @@
 		line-height: 1.6;
 	}
 
-	.disclaimer {
-		max-width: 62ch;
+	.footer a,
+	.footer a:visited {
+		color: var(--muted);
+		text-decoration: underline;
+		text-decoration-color: var(--line-strong);
 	}
 
-	.footer :global(button) {
-		margin-right: -8px;
+	.footer a:hover,
+	.footer a:focus-visible {
+		color: var(--accent);
+		text-decoration-color: currentColor;
+	}
+
+	.footer-actions {
+		align-items: flex-end;
+		display: flex;
+		flex: 0 0 auto;
+		gap: var(--space-xs);
+	}
+
+	.support-prompt {
+		align-items: flex-end;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3xs);
+	}
+
+	.support-prompt small {
+		white-space: nowrap;
+	}
+
+	.disclaimer {
+		max-width: 62ch;
 	}
 
 	@media (max-width: 800px) {
@@ -236,9 +271,14 @@
 			padding: var(--space-md) 0 var(--space-lg);
 		}
 
-		.footer :global(button) {
-			margin-left: -8px;
-			margin-right: 0;
+		.footer-actions {
+			align-items: center;
+			align-self: stretch;
+			justify-content: space-between;
+		}
+
+		.support-prompt {
+			align-items: flex-start;
 		}
 	}
 </style>

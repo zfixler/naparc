@@ -57,6 +57,11 @@ Preview the production build:
 npm run preview
 ```
 
+### Support dialog
+
+The site footer opens the NAPARC Search Ko-fi form in an on-site dialog. Ko-fi content is loaded
+only after a visitor opens the dialog; payment credentials are not handled by the application.
+
 ## Contributing
 
 Contributions are welcome!
