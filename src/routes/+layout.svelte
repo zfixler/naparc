@@ -1,6 +1,6 @@
 <script>
 	import { navigating } from '$app/state';
-	import { SchemeToggle } from '$lib/components';
+	import { KoFiWidget, SchemeToggle } from '$lib/components';
 	import { Search } from '$lib/features';
 	import '@fontsource-variable/inter';
 	import '@fontsource-variable/source-serif-4';
@@ -39,12 +39,15 @@
 		{@render children?.()}
 	</div>
 	<footer class="footer">
-		<small>&copy; {year}, Zachary Fixler</small>
+		<small class="copyright"
+			>&copy; {year}, Zachary Fixler <span aria-hidden="true">&middot;</span>
+			<a href="/privacy">Privacy</a></small>
 		<small class="disclaimer"
 			>Not affiliated with NAPARC. All data is publicly available online; counts reflect what is
 			searchable here and may not include every NAPARC congregation.</small>
 		<SchemeToggle />
 	</footer>
+	<KoFiWidget />
 </main>
 
 <style>
@@ -213,6 +216,19 @@
 		color: var(--muted);
 		font-size: var(--fs-micro);
 		line-height: 1.6;
+	}
+
+	.footer a,
+	.footer a:visited {
+		color: var(--muted);
+		text-decoration: underline;
+		text-decoration-color: var(--line-strong);
+	}
+
+	.footer a:hover,
+	.footer a:focus-visible {
+		color: var(--accent);
+		text-decoration-color: currentColor;
 	}
 
 	.disclaimer {
