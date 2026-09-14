@@ -46,7 +46,10 @@
 			>Not affiliated with NAPARC. All data is publicly available online; counts reflect what is
 			searchable here and may not include every NAPARC congregation.</small>
 		<div class="footer-actions">
-			<KoFiSupport />
+			<div class="support-prompt">
+				<small>Help cover hosting and upkeep.</small>
+				<KoFiSupport />
+			</div>
 			<SchemeToggle />
 		</div>
 	</footer>
@@ -234,10 +237,21 @@
 	}
 
 	.footer-actions {
-		align-items: center;
+		align-items: flex-end;
 		display: flex;
 		flex: 0 0 auto;
 		gap: var(--space-xs);
+	}
+
+	.support-prompt {
+		align-items: flex-end;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3xs);
+	}
+
+	.support-prompt small {
+		white-space: nowrap;
 	}
 
 	.disclaimer {
@@ -258,8 +272,13 @@
 		}
 
 		.footer-actions {
+			align-items: center;
 			align-self: stretch;
 			justify-content: space-between;
+		}
+
+		.support-prompt {
+			align-items: flex-start;
 		}
 	}
 </style>

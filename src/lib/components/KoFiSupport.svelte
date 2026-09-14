@@ -18,7 +18,7 @@
 	}
 </script>
 
-<button class="trigger" type="button" onclick={openDialog}>Support me</button>
+<button class="trigger" type="button" onclick={openDialog}>Support NAPARC Search</button>
 
 <dialog bind:this={dialog} aria-label="Support NAPARC Search" onclick={closeFromBackdrop}>
 	<button class="close" type="button" aria-label="Close support panel" onclick={closeDialog}
@@ -40,24 +40,28 @@
 
 <style>
 	.trigger {
-		background-color: #000000;
-		border: 1px solid #000000;
+		background-color: transparent;
+		border: 1px solid var(--line-strong);
 		border-radius: var(--radius-xs);
-		color: #ffffff;
+		color: var(--secondary);
 		cursor: pointer;
 		font-family: inherit;
 		font-size: var(--fs-small);
 		font-weight: var(--fw-semibold);
 		line-height: 1;
-		padding: var(--space-xs) var(--space-sm);
+		padding: var(--space-2xs) var(--space-xs);
+		transition:
+			background-color var(--speed) var(--ease),
+			border-color var(--speed) var(--ease),
+			color var(--speed) var(--ease);
 		white-space: nowrap;
 	}
 
 	.trigger:hover,
 	.trigger:focus-visible {
-		background-color: var(--primary);
-		border-color: var(--primary);
-		color: var(--bg-bg);
+		background-color: var(--accent-soft);
+		border-color: var(--accent);
+		color: var(--accent-strong);
 	}
 
 	dialog {
