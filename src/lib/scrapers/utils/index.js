@@ -158,12 +158,37 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 		.filter((c, index, self) => self.findIndex((candidate) => candidate.id === c.id) === index);
 
 	const now = new Date().toISOString();
-	const statements = uniquePresbyteries.map((presbytery) => ({
-		sql: `INSERT INTO Presbytery (id, name, slug, denominationSlug) VALUES (?, ?, ?, ?)
+	const congregationCounts = new Map();
+	for (const congregation of congregations) {
+		if (congregation.presbyteryId) {
+			congregationCounts.set(
+				congregation.presbyteryId,
+				(congregationCounts.get(congregation.presbyteryId) ?? 0) + 1,
+			);
+		}
+	}
+	const statements = [
+		{
+			sql: 'UPDATE Presbytery SET congregationCount = 0 WHERE denominationSlug = ?',
+			params: [denominationSlug],
+		},
+	];
+	statements.push(
+		...uniquePresbyteries.map((presbytery) => ({
+			sql: `INSERT INTO Presbytery (id, name, slug, denominationSlug, congregationCount)
+			VALUES (?, ?, ?, ?, ?)
 			ON CONFLICT(id) DO UPDATE SET name = excluded.name, slug = excluded.slug,
-			denominationSlug = excluded.denominationSlug`,
-		params: [presbytery.id, presbytery.name, presbytery.slug, presbytery.denominationSlug],
-	}));
+			denominationSlug = excluded.denominationSlug,
+			congregationCount = excluded.congregationCount`,
+			params: [
+				presbytery.id,
+				presbytery.name,
+				presbytery.slug,
+				presbytery.denominationSlug,
+				congregationCounts.get(presbytery.id) ?? 0,
+			],
+		})),
+	);
 	statements.push({
 		sql: 'DELETE FROM Congregation WHERE denominationSlug = ?',
 		params: [denominationSlug],

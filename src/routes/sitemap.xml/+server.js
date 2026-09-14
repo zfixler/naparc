@@ -26,12 +26,11 @@ export async function GET({ url, setHeaders, platform }) {
 	const db = getDatabase(platform);
 	const { origin } = url;
 
-	const [denominationRows, presbyteryRows, logRows] = /** @type {any} */ (
+	const [denominationRows, presbyteryRows] = /** @type {any} */ (
 		await db.batch([
-			db.prepare(`SELECT d.slug, COALESCE(s.count, 0) AS congregationCount
+			db.prepare(`SELECT d.slug, COALESCE(s.count, 0) AS congregationCount, s.completedAt
 				FROM Denomination d LEFT JOIN ScrapeLog s ON s.denominationSlug = d.slug`),
 			db.prepare('SELECT denominationSlug, slug FROM Presbytery'),
-			db.prepare('SELECT denominationSlug, completedAt FROM ScrapeLog'),
 		])
 	);
 	const denominations = denominationRows.results.map(
@@ -40,13 +39,7 @@ export async function GET({ url, setHeaders, platform }) {
 			presbyteries: presbyteryRows.results.filter(
 				(/** @type {Record<string, any>} */ p) => p.denominationSlug === denomination.slug,
 			),
-			scrapeLogs: logRows.results
-				.filter(
-					(/** @type {Record<string, any>} */ log) => log.denominationSlug === denomination.slug,
-				)
-				.map((/** @type {Record<string, any>} */ log) => ({
-					completedAt: asDate(log.completedAt),
-				})),
+			scrapeLogs: [{ completedAt: asDate(denomination.completedAt) }],
 			_count: { congregations: Number(denomination.congregationCount) },
 		}),
 	);

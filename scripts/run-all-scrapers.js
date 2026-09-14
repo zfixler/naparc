@@ -1,4 +1,5 @@
 import { queryD1 } from './d1-client.js';
+import { countRegions } from '../src/lib/utils/regions.js';
 import {
 	buildArpDenomination,
 	buildCanrcDenomionation,
@@ -26,6 +27,33 @@ const supportedDenominations = {
 	urcna: buildUrcnaDenomination,
 };
 
+async function refreshHomeStats() {
+	const [statsResult, congregationsResult] = await Promise.all([
+		queryD1(`SELECT COALESCE(SUM(count), 0) AS totalCongregations,
+			COUNT(CASE WHEN count > 0 THEN 1 END) AS totalDenominations FROM ScrapeLog`),
+		queryD1('SELECT addressLabel FROM Congregation WHERE addressLabel IS NOT NULL'),
+	]);
+	const { totalStates, totalProvinces } = countRegions(congregationsResult.results);
+	await queryD1(
+		`INSERT INTO HomeStats
+			(id, totalCongregations, totalDenominations, totalStates, totalProvinces, updatedAt)
+		 VALUES (1, ?, ?, ?, ?, ?)
+		 ON CONFLICT(id) DO UPDATE SET
+			totalCongregations = excluded.totalCongregations,
+			totalDenominations = excluded.totalDenominations,
+			totalStates = excluded.totalStates,
+			totalProvinces = excluded.totalProvinces,
+			updatedAt = excluded.updatedAt`,
+		[
+			Number(statsResult.results[0]?.totalCongregations ?? 0),
+			Number(statsResult.results[0]?.totalDenominations ?? 0),
+			totalStates,
+			totalProvinces,
+			new Date().toISOString(),
+		],
+	);
+}
+
 async function runAllScrapers() {
 	console.log('Starting scraper job...');
 	console.log(`Timestamp: ${new Date().toISOString()}`);
@@ -43,6 +71,8 @@ async function runAllScrapers() {
 	);
 
 	if (denominationsToScrape.length === 0) {
+		await refreshHomeStats();
+		console.log('✓ Refreshed homepage statistics.');
 		console.log('✓ No denominations need scraping at this time.');
 		return;
 	}
@@ -101,6 +131,8 @@ async function runAllScrapers() {
 	console.log(`✗ Failed: ${failureCount}`);
 	console.log(`Total: ${denominationsToScrape.length}`);
 	console.log(`Completed at: ${new Date().toISOString()}`);
+	await refreshHomeStats();
+	console.log('✓ Refreshed homepage statistics.');
 
 	// Exit with error code if any scrapers failed
 	if (failureCount > 0) {
