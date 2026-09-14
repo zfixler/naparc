@@ -48,11 +48,11 @@
 	<section>
 		<h2>Supporting the project</h2>
 		<p>
-			The optional floating support button and payment panel are provided by
+			The optional support button opens a payment form provided by
 			<a href="https://ko-fi.com/naparcsearch" target="_blank" rel="noopener noreferrer">Ko-fi</a>.
-			Ko-fi's widget script loads with the site. Ko-fi and the payment provider you select may
-			process device, cookie, contact, and transaction information under their own policies. NAPARC
-			Search does not receive or store your complete payment-card information.
+			The Ko-fi form is not loaded until you choose to open it. Ko-fi and the payment provider you
+			select may then process device, cookie, contact, and transaction information under their own
+			policies. NAPARC Search does not receive or store your complete payment-card information.
 		</p>
 		<p>
 			Review the
@@ -79,10 +79,8 @@
 		<h2>Retention and your choices</h2>
 		<p>
 			Contact correspondence is retained only as long as reasonably needed to respond, maintain the
-			directory, or meet applicable legal obligations. You can block third-party content through
-			your browser settings, and you can ask about or request deletion of contact information by
-			using the
-			<a href="/contact">contact form</a>.
+			directory, or meet applicable legal obligations. You can ask about or request deletion of
+			contact information by using the <a href="/contact">contact form</a>.
 		</p>
 	</section>
 

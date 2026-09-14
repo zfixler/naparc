@@ -57,10 +57,10 @@ Preview the production build:
 npm run preview
 ```
 
-### Support banner
+### Support dialog
 
-The site loads Ko-fi's floating support widget from `KoFiWidget.svelte`. The widget opens the
-NAPARC Search Ko-fi profile without requiring payment credentials in the application.
+The site footer opens the NAPARC Search Ko-fi form in an on-site dialog. Ko-fi content is loaded
+only after a visitor opens the dialog; payment credentials are not handled by the application.
 
 ## Contributing
 

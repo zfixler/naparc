@@ -1,6 +1,6 @@
 <script>
 	import { navigating } from '$app/state';
-	import { KoFiWidget, SchemeToggle } from '$lib/components';
+	import { KoFiSupport, SchemeToggle } from '$lib/components';
 	import { Search } from '$lib/features';
 	import '@fontsource-variable/inter';
 	import '@fontsource-variable/source-serif-4';
@@ -45,9 +45,11 @@
 		<small class="disclaimer"
 			>Not affiliated with NAPARC. All data is publicly available online; counts reflect what is
 			searchable here and may not include every NAPARC congregation.</small>
-		<SchemeToggle />
+		<div class="footer-actions">
+			<KoFiSupport />
+			<SchemeToggle />
+		</div>
 	</footer>
-	<KoFiWidget />
 </main>
 
 <style>
@@ -231,12 +233,15 @@
 		text-decoration-color: currentColor;
 	}
 
-	.disclaimer {
-		max-width: 62ch;
+	.footer-actions {
+		align-items: center;
+		display: flex;
+		flex: 0 0 auto;
+		gap: var(--space-xs);
 	}
 
-	.footer :global(button) {
-		margin-right: -8px;
+	.disclaimer {
+		max-width: 62ch;
 	}
 
 	@media (max-width: 800px) {
@@ -252,9 +257,9 @@
 			padding: var(--space-md) 0 var(--space-lg);
 		}
 
-		.footer :global(button) {
-			margin-left: -8px;
-			margin-right: 0;
+		.footer-actions {
+			align-self: stretch;
+			justify-content: space-between;
 		}
 	}
 </style>

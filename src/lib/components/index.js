@@ -4,7 +4,7 @@ export { default as Contact } from './Contact.svelte';
 export { default as Email } from './Email.svelte';
 export { default as Head } from './Head.svelte';
 export { default as Header } from './Header.svelte';
-export { default as KoFiWidget } from './KoFiWidget.svelte';
+export { default as KoFiSupport } from './KoFiSupport.svelte';
 export { default as Location } from './Location.svelte';
 export { default as Map } from './Map.svelte';
 export { default as Pagination } from './Pagination.svelte';
