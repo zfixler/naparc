@@ -72,11 +72,11 @@
 		color: #14202b;
 		inset: 0;
 		margin: auto;
-		max-height: calc(100svh - 32px);
+		max-height: calc(100dvh - 32px);
 		max-width: calc(100% - 32px);
 		overflow: auto;
 		padding: var(--space-xs) var(--space-xs) var(--space-sm);
-		position: relative;
+		position: fixed;
 		width: 520px;
 	}
 
