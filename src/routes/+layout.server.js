@@ -1,5 +1,4 @@
-import { getPrisma } from '$lib/prisma';
-const prisma = getPrisma();
+import { getDatabase } from '$lib/server/database';
 
 /**
  * @typedef {Object} DenominationMeta
@@ -10,25 +9,24 @@ const prisma = getPrisma();
  * @property {number} _count.congregations - The total number of congregations for the denomination.
  */
 
-/** @type {import('@sveltejs/kit').Load} */
-export async function load() {
-	/**
-	 * @type {DenominationMeta[]}
-	 */
-	const denominations = await prisma.denomination.findMany({
-		select: {
-			slug: true,
-			name: true,
-			id: true,
-			_count: {
-				select: {
-					congregations: true,
-				},
-			},
-		},
-	});
+/** @type {import('./$types').LayoutServerLoad} */
+export async function load({ platform }) {
+	const db = getDatabase(platform);
+	/** @type {{ results: DenominationMeta[] }} */
+	const { results: denominations } = await db
+		.prepare(
+			`
+			SELECT d.slug, d.name, d.id, COUNT(c.id) AS congregationCount
+			FROM Denomination d
+			LEFT JOIN Congregation c ON c.denominationSlug = d.slug
+			GROUP BY d.id, d.slug, d.name
+			HAVING COUNT(c.id) > 0
+			ORDER BY d.name
+		`,
+		)
+		.all();
 
 	return {
-		denominations: denominations.filter(({ _count }) => _count.congregations > 0),
+		denominations,
 	};
 }

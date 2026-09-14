@@ -1,6 +1,5 @@
 import { setTimeout as sleep } from 'node:timers/promises';
-import { getPrisma } from '../../prisma.js';
-const prisma = getPrisma();
+import { batchD1 } from '../../../../scripts/d1-client.js';
 
 /**
  * Extracts the pastor's name from the provided text.
@@ -114,7 +113,7 @@ export function getAddressLabel(addressString) {
 	}
 	return addressString;
 }
-/**@typedef {import('@prisma/client').Congregation & { presbytery?: import('@prisma/client').Presbytery }} CongregationWithPresbytery */
+/** @typedef {Record<string, any> & { presbytery?: Record<string, any> }} CongregationWithPresbytery */
 
 /**
  * Batch upserts congregations into the database.
@@ -139,183 +138,65 @@ export async function batchUpsertCongregations(congregationsArray, batchSize = 1
 		console.log(`Processing ${congregationsArray.length} congregations for ${denominationSlug}`);
 	}
 
-	// For large datasets, use bulk replace for speed
-	if (congregationsArray.length > 500) {
-		if (denominationSlug) {
-			console.log('Using bulk replace for large dataset');
-			// Extract and create presbyteries
-			const presbyteries = congregationsArray
-				.map((c) => c.presbytery)
-				.filter((p) => p && p.id && !p.id.includes('undefined'));
-			if (presbyteries && presbyteries.length) {
-				await prisma.presbytery.createMany({
-					data: presbyteries.filter((p) => p !== undefined),
-					skipDuplicates: true,
-				});
-			}
-			// Bulk replace in a transaction for safety
-			await prisma.$transaction(
-				async (tx) => {
-					// Delete all existing congregations for this denomination
-					await tx.congregation.deleteMany({ where: { denominationSlug } });
-					// Insert all new ones
-					const congregations = congregationsArray.map(({ presbytery, ...rest }) => ({
-						...rest,
-						presbyteryId: presbytery?.id,
-						createdAt: new Date(),
-						updatedAt: new Date(),
-					}));
-					await tx.congregation.createMany({ data: congregations });
-				},
-				{
-					timeout: 30000, // 30 seconds
-				},
-			);
-			console.log(
-				`Bulk replaced ${congregationsArray.length} congregations for ${denominationSlug}`,
-			);
-			return;
-		}
+	if (!denominationSlug || congregationsArray.length === 0) {
+		console.warn('No valid congregation snapshot; leaving existing data unchanged.');
+		return;
 	}
 
-	// Extract presbyteries from congregations
-	const presbyteries = congregationsArray
-		.map((c) => c.presbytery)
-		.filter((p) => p && p.id && !p.id.includes('undefined'));
+	const presbyteries = /** @type {Array<Record<string, any>>} */ (
+		congregationsArray.map((c) => c.presbytery).filter((p) => p?.id && !p.id.includes('undefined'))
+	);
+	const uniquePresbyteries = presbyteries.filter(
+		(p, index, self) => self.findIndex((candidate) => candidate.id === p.id) === index,
+	);
+	const mappedCongregations = congregationsArray.map(({ presbytery, ...rest }) => ({
+		...rest,
+		presbyteryId: presbytery?.id ?? null,
+	}));
+	const congregations = /** @type {Array<Record<string, any>>} */ (mappedCongregations)
+		.filter((c) => c.id && typeof c.id === 'string' && !c.id.includes('undefined'))
+		.filter((c, index, self) => self.findIndex((candidate) => candidate.id === c.id) === index);
 
-	// Create missing presbyteries
-	if (presbyteries && presbyteries.length) {
-		await prisma.presbytery.createMany({
-			data: presbyteries.filter((p) => p !== undefined),
-			skipDuplicates: true,
+	const now = new Date().toISOString();
+	const statements = uniquePresbyteries.map((presbytery) => ({
+		sql: `INSERT INTO Presbytery (id, name, slug, denominationSlug) VALUES (?, ?, ?, ?)
+			ON CONFLICT(id) DO UPDATE SET name = excluded.name, slug = excluded.slug,
+			denominationSlug = excluded.denominationSlug`,
+		params: [presbytery.id, presbytery.name, presbytery.slug, presbytery.denominationSlug],
+	}));
+	statements.push({
+		sql: 'DELETE FROM Congregation WHERE denominationSlug = ?',
+		params: [denominationSlug],
+	});
+	for (const congregation of congregations) {
+		statements.push({
+			sql: `INSERT INTO Congregation
+				(id, pastor, name, website, phone, email, address, addressLabel, contact, lon, lat,
+				 presbyteryId, denominationSlug, createdAt, updatedAt)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+			params: [
+				congregation.id,
+				congregation.pastor ?? null,
+				congregation.name ?? null,
+				congregation.website ?? null,
+				congregation.phone ?? null,
+				congregation.email ?? null,
+				congregation.address ?? null,
+				congregation.addressLabel ?? null,
+				congregation.contact ?? null,
+				congregation.lon ?? null,
+				congregation.lat ?? null,
+				congregation.presbyteryId,
+				congregation.denominationSlug,
+				now,
+				now,
+			],
 		});
 	}
 
-	// Transform data to match schema
-	const congregations = congregationsArray
-		.map(({ presbytery, ...rest }) => ({
-			...rest,
-			presbyteryId: presbytery?.id,
-		}))
-		.filter(
-			(/** @type {{ id: string | string[]; }} */ c) =>
-				c.id && typeof c.id === 'string' && !c.id.includes('undefined'),
-		)
-		.filter(
-			(/** @type {{ id: any; }} */ c, /** @type {any} */ index, /** @type {any[]} */ self) =>
-				c && self.findIndex((/** @type {{ id: any; }} */ t) => t.id === c.id) === index,
-		);
+	await batchD1(statements);
 
-	const batches = [];
-
-	for (let i = 0; i < congregations.length; i += batchSize) {
-		batches.push(congregations.slice(i, i + batchSize));
-	}
-
-	let successCount = 0;
-	for (const batch of batches) {
-		let retries = 3;
-		while (retries > 0) {
-			try {
-				await prisma.$transaction(
-					async (tx) => {
-						// Find existing congregations
-						const existingIds = (
-							await tx.congregation.findMany({
-								where: { id: { in: batch.map((/** @type {{ id: any; }} */ c) => c.id) } },
-								select: { id: true },
-							})
-						).map((c) => c.id);
-
-						// Split into creates and updates
-						const toCreate = batch.filter(
-							(/** @type {{ id: string; }} */ c) => !existingIds.includes(c.id),
-						);
-						const toUpdate = batch.filter((/** @type {{ id: string; }} */ c) =>
-							existingIds.includes(c.id),
-						);
-
-						// Perform batch operations
-						if (toCreate.length) {
-							await tx.congregation.createMany({
-								data: toCreate.map((congregation) => ({
-									...congregation,
-									createdAt: new Date(),
-								})),
-							});
-						}
-
-						// Parallelize updates
-						const updatePromises = toUpdate.map((congregation) => {
-							const { id, ...updateData } = congregation;
-							return tx.congregation.update({
-								where: { id },
-								data: { ...updateData, updatedAt: new Date() },
-							});
-						});
-						await Promise.all(updatePromises);
-					},
-					{
-						timeout: 30000, // 30 seconds
-					},
-				);
-
-				successCount += batch.length;
-				console.log(`Processed ${successCount} congregations for ${denominationSlug}`);
-				break; // Success, exit retry loop
-			} catch (error) {
-				retries--;
-				if (retries === 0) {
-					if (error instanceof Error && error.message) {
-						console.error(`Failed to process batch after retries: ${error.message}`);
-						console.error('Failed batch data:', batch);
-					}
-				} else {
-					console.warn(
-						`Retrying batch (${retries} attempts left): ${error instanceof Error ? error.message : String(error)}`,
-					);
-					await sleep(1000); // Wait before retry
-				}
-			}
-		}
-	}
-
-	// --- Scoped deletion of congregations no longer present ---
-	const scrapedIds = congregations.map((c) => c.id);
-
-	if (!denominationSlug) {
-		console.warn('No denominationSlug found, skipping deletion of missing congregations.');
-	}
-
-	if (scrapedIds.length > 0 && denominationSlug) {
-		try {
-			const existingIds = (
-				await prisma.congregation.findMany({
-					where: { denominationSlug },
-					select: { id: true },
-				})
-			).map((c) => c.id);
-
-			const toDelete = existingIds.filter((id) => !scrapedIds.includes(id));
-
-			if (toDelete.length > 0) {
-				await prisma.congregation.deleteMany({
-					where: { id: { in: toDelete } },
-				});
-				console.log(`Deleted ${toDelete.length} congregations for ${denominationSlug}`);
-			}
-		} catch (error) {
-			console.error('Failed to remove missing congregations:', error);
-		}
-	} else {
-		console.warn(
-			`Skipping deletion: scrapedIds.length=${scrapedIds.length}, denominationSlug=${denominationSlug}`,
-		);
-	}
-
-	console.log(
-		`Completed processing for ${denominationSlug}: ${congregations.length} total congregations`,
-	);
+	console.log(`Replaced ${denominationSlug}: ${congregations.length} total congregations`);
 }
 
 /**

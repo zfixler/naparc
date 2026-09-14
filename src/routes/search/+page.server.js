@@ -1,6 +1,7 @@
 import { PAGE_SIZE, paginateResults } from '$lib/utils';
 import { getLocationsWithinRadius } from '$lib/utils/server';
 import { redirect } from '@sveltejs/kit';
+import { getDatabase } from '$lib/server/database';
 
 /**
  * @typedef {Object} MapPin
@@ -14,7 +15,7 @@ import { redirect } from '@sveltejs/kit';
  */
 
 /** @type {import('./$types').PageServerLoad} */
-export async function load({ url }) {
+export async function load({ url, platform }) {
 	const location = url.searchParams.get('label');
 	const lat = url.searchParams.get('lat');
 	const lon = url.searchParams.get('lon');
@@ -35,6 +36,7 @@ export async function load({ url }) {
 	}
 
 	const congregations = await getLocationsWithinRadius(
+		getDatabase(platform),
 		/** @type {string} */ (lat),
 		/** @type {string} */ (lon),
 		/** @type {string} */ (radius),

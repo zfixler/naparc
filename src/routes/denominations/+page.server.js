@@ -1,8 +1,7 @@
-import { getPrisma } from '$lib/prisma';
-const prisma = getPrisma();
+import { asBoolean, asDate, getDatabase } from '$lib/server/database';
 
 /**
- * @typedef {import('@prisma/client').Denomination} BaseDenomination
+ * @typedef {Record<string, any>} BaseDenomination
  */
 
 /**
@@ -17,7 +16,7 @@ const prisma = getPrisma();
 
 /**
  * @typedef {BaseDenomination & {
- *   presbyteries: import('@prisma/client').Presbytery[];
+ *   presbyteries: Array<Record<string, any>>;
  *   _count: DenominationCount;
  *   scrapeLogs: ScrapeLog[];
  * }} ExtendedDenomination
@@ -28,35 +27,41 @@ const prisma = getPrisma();
  */
 
 /** @type {import('./$types').PageServerLoad} */
-export async function load() {
+export async function load({ platform }) {
+	const db = getDatabase(platform);
 	/** @type {DenominationList} */
-	const denominations = await prisma.denomination.findMany({
-		include: {
-			presbyteries: true,
-			_count: {
-				select: {
-					congregations: true,
-				},
-			},
-			scrapeLogs: {
-				select: {
-					completedAt: true,
-				},
-			},
-		},
-		orderBy: [
-			{
-				presbyteries: {
-					_count: 'desc',
-				},
-			},
-			{
-				congregations: {
-					_count: 'desc',
-				},
-			},
-		],
-	});
+	const [denominationRows, presbyteryRows, logRows] = /** @type {any} */ (
+		await db.batch([
+			db.prepare(`
+			SELECT d.*, COUNT(DISTINCT p.id) AS presbyteryCount, COUNT(DISTINCT c.id) AS congregationCount
+			FROM Denomination d
+			LEFT JOIN Presbytery p ON p.denominationSlug = d.slug
+			LEFT JOIN Congregation c ON c.denominationSlug = d.slug
+			GROUP BY d.id
+			ORDER BY presbyteryCount DESC, congregationCount DESC
+		`),
+			db.prepare('SELECT * FROM Presbytery ORDER BY name'),
+			db.prepare('SELECT denominationSlug, completedAt FROM ScrapeLog'),
+		])
+	);
+	const denominations = denominationRows.results.map(
+		(/** @type {Record<string, any>} */ denomination) => ({
+			...denomination,
+			continental: asBoolean(denomination.continental),
+			presbyteries: presbyteryRows.results.filter(
+				(/** @type {Record<string, any>} */ presbytery) =>
+					presbytery.denominationSlug === denomination.slug,
+			),
+			_count: { congregations: Number(denomination.congregationCount) },
+			scrapeLogs: logRows.results
+				.filter(
+					(/** @type {Record<string, any>} */ log) => log.denominationSlug === denomination.slug,
+				)
+				.map((/** @type {Record<string, any>} */ log) => ({
+					completedAt: asDate(log.completedAt),
+				})),
+		}),
+	);
 
 	return {
 		denominations,

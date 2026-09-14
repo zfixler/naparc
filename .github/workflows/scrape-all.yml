@@ -32,7 +32,9 @@ jobs:
       - name: Run all scrapers
         run: node scripts/run-all-scrapers.js
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           # MAIL_TO is only needed for PRC scraper (Nominatim geocoding API)
           # Can be a plain email address, doesn't need to be secret
           MAIL_TO: ${{ secrets.MAIL_TO || 'contact@yourdomain.com' }}

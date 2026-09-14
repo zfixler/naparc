@@ -1,25 +1,20 @@
-import { getPrisma } from '$lib/prisma.js';
+import { getDatabase } from '$lib/server/database';
 
 /** @type {import('./$types').PageServerLoad} */
-export async function load() {
-	const prisma = getPrisma();
+export async function load({ platform }) {
+	const db = getDatabase(platform);
 
 	// Get total counts
-	const [totalCongregations, denominationsWithData, congregations] = await Promise.all([
-		prisma.congregation.count(),
-		// Only count denominations that have at least one congregation
-		prisma.congregation.findMany({
-			distinct: ['denominationSlug'],
-			select: { denominationSlug: true },
-		}),
-		// Get all congregations with addressLabel to parse states
-		prisma.congregation.findMany({
-			select: { addressLabel: true },
-			where: { addressLabel: { not: null } },
-		}),
-	]);
-
-	const totalDenominations = denominationsWithData.length;
+	const [countResult, denominationsResult, congregationsResult] = /** @type {any} */ (
+		await db.batch([
+			db.prepare('SELECT COUNT(*) AS count FROM Congregation'),
+			db.prepare('SELECT COUNT(DISTINCT denominationSlug) AS count FROM Congregation'),
+			db.prepare('SELECT addressLabel FROM Congregation WHERE addressLabel IS NOT NULL'),
+		])
+	);
+	const totalCongregations = Number(countResult.results[0]?.count ?? 0);
+	const totalDenominations = Number(denominationsResult.results[0]?.count ?? 0);
+	const congregations = congregationsResult.results;
 
 	// Parse states/provinces from addressLabel (format: "address<br>city, state/province zip<br>country")
 	// Separate US states from Canadian provinces

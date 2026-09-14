@@ -1,0 +1,28 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "naparc",
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"compatibility_date": "2026-09-14",
+	"compatibility_flags": ["nodejs_compat"],
+	"vars": {
+		"CONTACT_FROM": "NAPARC Search <contact@naparcsearch.com>",
+	},
+	"assets": {
+		"directory": ".svelte-kit/cloudflare",
+		"binding": "ASSETS",
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "naparc",
+			"database_id": "b5d5407c-f4d0-4e8c-a75a-4df62c4ab9a5",
+			"migrations_dir": "migrations",
+		},
+	],
+	"observability": {
+		"enabled": true,
+		"traces": {
+			"enabled": true,
+		},
+	},
+}

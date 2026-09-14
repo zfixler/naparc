@@ -26,6 +26,7 @@ npm install
 Run the development server:
 
 ```bash
+npm run db:migrate:local
 npm run dev
 ```
 
@@ -34,6 +35,21 @@ Build the project for production:
 ```bash
 npm run build
 ```
+
+The deployed application runs as a Cloudflare Worker with a D1 database. Copy
+`.dev.vars.example` to `.dev.vars` for local secrets, and replace the placeholder
+production database ID in `wrangler.jsonc` after creating the D1 database.
+
+Apply migrations with:
+
+```bash
+npm run db:migrate:local
+npm run db:migrate:production
+```
+
+The daily Puppeteer scrapers remain in GitHub Actions. They write to D1 through
+the Cloudflare API and require `CLOUDFLARE_ACCOUNT_ID`,
+`CLOUDFLARE_D1_DATABASE_ID`, and `CLOUDFLARE_API_TOKEN` repository secrets.
 
 Preview the production build:
 

@@ -46,7 +46,7 @@ async function fetchArpData() {
 async function buildArpDenomination() {
 	const data = await fetchArpData().catch((error) => console.log(error));
 
-	/** @type {Array<import('@prisma/client').Congregation>} */
+	/** @type {Array<Record<string, any>>} */
 	const results = [];
 
 	if (data) {

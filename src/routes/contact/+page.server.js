@@ -1,6 +1,5 @@
 import { validateEmail, validateMessage, validateName } from '$lib/utils/validation';
 import { fail } from '@sveltejs/kit';
-import nodemailer from 'nodemailer';
 
 const requestCounts = new Map();
 const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
@@ -8,7 +7,7 @@ const MAX_REQUESTS_PER_WINDOW = 5;
 
 /** @satisfies {import('./$types').Actions} */
 export const actions = {
-	default: async ({ request, getClientAddress }) => {
+	default: async ({ request, getClientAddress, platform }) => {
 		const ip = getClientAddress();
 		const now = Date.now();
 
@@ -66,38 +65,53 @@ export const actions = {
 			return fail(400, { email, incorrect: true });
 		}
 
-		const transporter = nodemailer.createTransport({
-			service: process.env.MAIL_SERVICE,
-			auth: {
-				user: process.env.MAIL_USER || '',
-				pass: process.env.MAIL_PASS || '',
-			},
-		});
-
-		const mailOptions = {
-			from: {
-				name: 'NAPARC Search',
-				address: process.env.MAIL_USER || '',
-			},
-			to: process.env.MAIL_USER,
-			subject: 'New Contact Form Submission',
-			html: `<h1>New Contact Form Submission</h1>
-         <p><strong>Name:</strong> ${sanitized_name}</p>
-         <p><strong>Email:</strong> ${sanitized_email}</p>
-         <p><strong>Message:</strong></p>
-         <p>${sanitized_message}</p>`,
-		};
-
 		try {
-			const info = await transporter.sendMail(mailOptions);
-			console.log('Email sent:', info.response);
+			const resendApiKey = platform?.env.RESEND_API_KEY;
+			const contactTo = platform?.env.CONTACT_TO;
+			const contactFrom = platform?.env.CONTACT_FROM;
+			if (!resendApiKey || !contactTo || !contactFrom) {
+				throw new Error('Contact email is not configured');
+			}
+
+			const response = await fetch('https://api.resend.com/emails', {
+				method: 'POST',
+				headers: {
+					'Authorization': `Bearer ${resendApiKey}`,
+					'Content-Type': 'application/json',
+					'Idempotency-Key': crypto.randomUUID(),
+				},
+				body: JSON.stringify({
+					from: contactFrom,
+					to: [contactTo],
+					reply_to: sanitized_email,
+					subject: 'New Contact Form Submission',
+					text: `Name: ${sanitized_name}\nEmail: ${sanitized_email}\n\n${sanitized_message}`,
+					html: `<h1>New Contact Form Submission</h1>
+						<p><strong>Name:</strong> ${sanitized_name}</p>
+						<p><strong>Email:</strong> ${sanitized_email}</p>
+						<p><strong>Message:</strong></p>
+						<p>${sanitized_message.replace(/\n/g, '<br>')}</p>`,
+				}),
+			});
+
+			if (!response.ok) {
+				const error = await response.text();
+				throw new Error(`Resend returned ${response.status}: ${error}`);
+			}
+			const result = await response.json();
+			console.log(JSON.stringify({ event: 'contact_email_sent', id: result.id }));
 
 			return {
 				success: true,
 				message: 'Form submitted successfully!',
 			};
 		} catch (err) {
-			console.error('Error sending email:', err);
+			console.error(
+				JSON.stringify({
+					event: 'contact_email_failed',
+					error: err instanceof Error ? err.message : String(err),
+				}),
+			);
 			return fail(500, { error: 'Failed to send email' });
 		}
 	},
