@@ -7,11 +7,9 @@
 		"build": "vite build",
 		"preview": "wrangler dev",
 		"deploy": "wrangler deploy",
-		"cf-typegen": "wrangler types",
+		"cf-typegen": "wrangler types --env-file .dev.vars.example",
 		"db:migrate:local": "wrangler d1 migrations apply naparc --local",
 		"db:migrate:production": "wrangler d1 migrations apply naparc --remote",
-		"db:transfer:supabase": "node scripts/migrate-supabase-to-d1.js",
-		"db:export:supabase": "node scripts/export-supabase-sql.js",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
 		"seed": "node scripts/seed.js",
@@ -33,7 +31,6 @@
 		"eslint-plugin-svelte": "^3.22.0",
 		"globals": "^17.7.0",
 		"husky": "^9.1.7",
-		"pg": "^8.23.0",
 		"prettier": "^3.9.6",
 		"prettier-plugin-svelte": "^4.1.1",
 		"svelte": "^5.56.7",
@@ -44,6 +41,9 @@
 		"wrangler": "^4.68.0"
 	},
 	"type": "module",
+	"engines": {
+		"node": ">=22.13.0"
+	},
 	"dependencies": {
 		"@fontsource-variable/inter": "^5.3.0",
 		"@fontsource-variable/source-serif-4": "^5.3.0",

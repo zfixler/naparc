@@ -11,6 +11,7 @@
 		"directory": ".svelte-kit/cloudflare",
 		"binding": "ASSETS",
 	},
+	"preview_urls": true,
 	"routes": [
 		{
 			"pattern": "naparcsearch.com/*",
