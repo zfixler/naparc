@@ -16,11 +16,10 @@ export async function load({ platform }) {
 	const { results: denominations } = await db
 		.prepare(
 			`
-			SELECT d.slug, d.name, d.id, COUNT(c.id) AS congregationCount
+			SELECT d.slug, d.name, d.id, s.count AS congregationCount
 			FROM Denomination d
-			LEFT JOIN Congregation c ON c.denominationSlug = d.slug
-			GROUP BY d.id, d.slug, d.name
-			HAVING COUNT(c.id) > 0
+			JOIN ScrapeLog s ON s.denominationSlug = d.slug
+			WHERE s.count > 0
 			ORDER BY d.name
 		`,
 		)

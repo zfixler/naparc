@@ -28,8 +28,8 @@ export async function GET({ url, setHeaders, platform }) {
 
 	const [denominationRows, presbyteryRows, logRows] = /** @type {any} */ (
 		await db.batch([
-			db.prepare(`SELECT d.slug, COUNT(c.id) AS congregationCount FROM Denomination d
-			LEFT JOIN Congregation c ON c.denominationSlug = d.slug GROUP BY d.slug`),
+			db.prepare(`SELECT d.slug, COALESCE(s.count, 0) AS congregationCount
+				FROM Denomination d LEFT JOIN ScrapeLog s ON s.denominationSlug = d.slug`),
 			db.prepare('SELECT denominationSlug, slug FROM Presbytery'),
 			db.prepare('SELECT denominationSlug, completedAt FROM ScrapeLog'),
 		])
