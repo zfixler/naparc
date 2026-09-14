@@ -224,6 +224,10 @@
 			min-height: 48px;
 		}
 
+		.section[open] summary {
+			margin-bottom: var(--space-xs);
+		}
+
 		.updated {
 			text-align: left;
 		}
