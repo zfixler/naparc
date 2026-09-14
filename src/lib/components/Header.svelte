@@ -34,7 +34,7 @@
 		grid-template-areas:
 			'title dist'
 			'aside dist';
-		grid-template-columns: 1fr auto;
+		grid-template-columns: minmax(0, 1fr) auto;
 		column-gap: var(--space-sm);
 		row-gap: var(--space-2xs);
 		padding-bottom: var(--space-md);
@@ -45,6 +45,8 @@
 		font-size: var(--fs-h4);
 		font-weight: var(--fw-semibold);
 		letter-spacing: -0.01em;
+		min-width: 0;
+		overflow-wrap: anywhere;
 		scroll-margin-top: var(--space-xl);
 	}
 

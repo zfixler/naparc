@@ -58,6 +58,8 @@
 		box-shadow: var(--shadow-xs);
 		padding: var(--space-md);
 		margin: var(--space-sm) 0;
+		min-width: 0;
+		overflow-wrap: anywhere;
 		width: 100%;
 		transition:
 			border-color var(--speed) var(--ease),
@@ -75,6 +77,10 @@
 		grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));
 		grid-row-gap: var(--space-xs);
 		column-gap: var(--space-lg);
+	}
+
+	.content > div {
+		min-width: 0;
 	}
 
 	.address {
@@ -100,6 +106,7 @@
 		border-radius: var(--radius-xs);
 		gap: var(--space-2xs);
 		min-height: 24px;
+		min-width: 0;
 	}
 
 	.content :global(a.link) {

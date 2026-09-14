@@ -1,6 +1,8 @@
 <script>
-	import { Head, StructuredData } from '$lib/components';
+	import { page } from '$app/state';
+	import { Head, Pagination, StructuredData } from '$lib/components';
 	import { Congregation } from '$lib/features';
+	import { calculateViewedResults } from '$lib/utils';
 	import { congregationListSchema } from '$lib/utils/structuredData';
 	/**
 	 * @typedef {Record<string, any>} Presbytery
@@ -11,6 +13,9 @@
 	/**
 	 * @type {{
 	 *   data: {
+	 *     page: number,
+	 *     totalResults: number,
+	 *     totalPages: number,
 	 *     presbytery: Presbytery & {
 	 *       denomination: Denomination,
 	 *       congregations: Congregation[]
@@ -20,6 +25,8 @@
 	 */
 	let { data } = $props();
 	const presbytery = $derived(data.presbytery);
+	const viewingResults = $derived(calculateViewedResults(data.page, data.totalResults));
+	const hasMultiplePages = $derived(data.totalPages > 1);
 
 	const schema = $derived(
 		congregationListSchema(
@@ -39,8 +46,7 @@
 	title="{presbytery.name} {presbytery.denomination.continental
 		? 'Classis'
 		: 'Presbytery'} | {presbytery.denomination.abbr} | NAPARC Search"
-	description="{presbytery.congregations.length} {presbytery.denomination.abbr} {presbytery
-		.congregations.length === 1
+	description="{data.totalResults} {presbytery.denomination.abbr} {data.totalResults === 1
 		? 'congregation'
 		: 'congregations'} in the {presbytery.name} {presbytery.denomination.continental
 		? 'Classis'
@@ -58,12 +64,25 @@
 				Presbytery
 			{/if}
 		</h2>
+		<p class="results">
+			Viewing results {viewingResults.startIndex} to {viewingResults.endIndex} of {data.totalResults}.
+		</p>
 	</header>
 	<div class="container">
-		{#each presbytery.congregations as congregation (congregation.id)}
-			<Congregation {congregation} />
-		{/each}
+		{#key page.url}
+			{#each presbytery.congregations as congregation (congregation.id)}
+				<Congregation {congregation} />
+			{/each}
+		{/key}
 	</div>
+	{#if hasMultiplePages}
+		<Pagination
+			currentPage={data.page}
+			totalPages={data.totalPages}
+			startIndex={viewingResults.startIndex}
+			endIndex={viewingResults.endIndex}
+			totalResults={data.totalResults} />
+	{/if}
 {/if}
 
 <style>
@@ -86,5 +105,12 @@
 
 	.presbytery {
 		font-size: var(--fs-h2);
+	}
+
+	.results {
+		color: var(--muted);
+		font-size: var(--fs-small);
+		font-variant-numeric: tabular-nums;
+		margin-top: var(--space-2xs);
 	}
 </style>
