@@ -60,7 +60,14 @@ async function runAllScrapers() {
 			console.log(`\n📥 Starting scrape for ${denominationSlug}...`);
 			const startTime = Date.now();
 
-			const count = await supportedDenominations[denominationSlug]();
+			await supportedDenominations[denominationSlug]();
+			// Materialize the exact count once after ingestion. Request handlers can then
+			// read a single ScrapeLog row instead of scanning Congregation on every visit.
+			const countResult = await queryD1(
+				'SELECT COUNT(*) AS count FROM Congregation WHERE denominationSlug = ?',
+				[denominationSlug],
+			);
+			const count = Number(countResult.results[0]?.count ?? 0);
 
 			const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
@@ -68,7 +75,7 @@ async function runAllScrapers() {
 			await queryD1(
 				`UPDATE ScrapeLog SET completedAt = ?, attemptedAt = ?, count = ?, message = 'success'
 				 WHERE denominationSlug = ?`,
-				[completedAt, completedAt, count ?? null, denominationSlug],
+				[completedAt, completedAt, count, denominationSlug],
 			);
 
 			console.log(`✓ Completed ${denominationSlug}: ${count} congregations (${duration}s)`);

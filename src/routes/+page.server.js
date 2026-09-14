@@ -5,15 +5,15 @@ export async function load({ platform }) {
 	const db = getDatabase(platform);
 
 	// Get total counts
-	const [countResult, denominationsResult, congregationsResult] = /** @type {any} */ (
+	const [statsResult, congregationsResult] = /** @type {any} */ (
 		await db.batch([
-			db.prepare('SELECT COUNT(*) AS count FROM Congregation'),
-			db.prepare('SELECT COUNT(DISTINCT denominationSlug) AS count FROM Congregation'),
+			db.prepare(`SELECT COALESCE(SUM(count), 0) AS totalCongregations,
+				COUNT(CASE WHEN count > 0 THEN 1 END) AS totalDenominations FROM ScrapeLog`),
 			db.prepare('SELECT addressLabel FROM Congregation WHERE addressLabel IS NOT NULL'),
 		])
 	);
-	const totalCongregations = Number(countResult.results[0]?.count ?? 0);
-	const totalDenominations = Number(denominationsResult.results[0]?.count ?? 0);
+	const totalCongregations = Number(statsResult.results[0]?.totalCongregations ?? 0);
+	const totalDenominations = Number(statsResult.results[0]?.totalDenominations ?? 0);
 	const congregations = congregationsResult.results;
 
 	// Parse states/provinces from addressLabel (format: "address<br>city, state/province zip<br>country")
