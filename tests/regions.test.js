@@ -15,7 +15,22 @@ describe('countRegions', () => {
 
 	it('ignores missing and unrecognized address labels', () => {
 		expect(
-			countRegions([{ addressLabel: null }, { addressLabel: 'No structured address' }]),
+			countRegions([
+				{ addressLabel: null },
+				{ addressLabel: 'No structured address' },
+				{ addressLabel: '1 Example Rd.<br>Unknown ZZ 12345' },
+			]),
 		).toEqual({ totalStates: 0, totalProvinces: 0 });
+	});
+
+	it('recognizes KAPC addresses without commas before region codes', () => {
+		expect(
+			countRegions([
+				{ addressLabel: '420 Melrose Ave.,<br> Santa Cruz CA 95062' },
+				{ addressLabel: '300 Chapel Rd.,<br> Manchester CT 06042' },
+				{ addressLabel: '43 Forest Grove Dr.,<br> Toronto ON M2K 1Z4' },
+				{ addressLabel: '2097 Union Ave.,<br> Montreal QB H3A 2C3' },
+			]),
+		).toEqual({ totalStates: 2, totalProvinces: 2 });
 	});
 });
