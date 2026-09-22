@@ -3,6 +3,7 @@ import { countRegions } from '../src/lib/utils/regions.js';
 import {
 	buildArpDenomination,
 	buildCanrcDenomionation,
+	buildErqDenomination,
 	buildFrcnaDenomination,
 	buildHrcDenomination,
 	buildOpcDenomination,
@@ -17,6 +18,7 @@ import {
 const supportedDenominations = {
 	arpc: buildArpDenomination,
 	canrc: buildCanrcDenomionation,
+	erq: buildErqDenomination,
 	frcna: buildFrcnaDenomination,
 	hrc: buildHrcDenomination,
 	opc: buildOpcDenomination,

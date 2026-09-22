@@ -241,13 +241,15 @@ export async function delayFetch() {
  * removing components to improve the chances of finding a valid geocoding result.
  *
  * @param {Array<string>} address - An array of address components (e.g., street, city, state, zip code).
+ * @param {string} [countryCode] - Optional ISO 3166-1 alpha-2 country filter.
  * @returns {Promise<{latitude: number, longitude: number} | null>} - Returns an object with latitude and longitude if successful, or null if all attempts fail.
  */
-export async function geocodeAddress(address) {
+export async function geocodeAddress(address, countryCode) {
 	for (let i = 0; i < address.length + 1; i++) {
 		if (i > 0) address.shift();
 		const attempt = address.join(', ');
-		const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(attempt)}&format=json&limit=1`;
+		const countryFilter = countryCode ? `&countrycodes=${encodeURIComponent(countryCode)}` : '';
+		const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(attempt)}&format=json&limit=1${countryFilter}`;
 
 		try {
 			const response = await fetch(url, {
