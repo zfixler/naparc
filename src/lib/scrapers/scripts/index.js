@@ -4,6 +4,7 @@ export { default as buildErqDenomination } from './erq.js';
 export { default as buildFrcnaDenomination } from './frcna.js';
 export { default as buildHrcDenomination } from './hrc.js';
 export { default as buildKapcDenomination } from './kapc.js';
+export { default as buildKpcaDenomination } from './kpca.js';
 export { default as buildOpcDenomination } from './opc.js';
 export { default as buildPcaDenomination } from './pca.js';
 export { default as buildPrcDenomination } from './prc.js';
