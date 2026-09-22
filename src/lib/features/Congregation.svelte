@@ -17,6 +17,12 @@
 	const presbyterySlug = $derived(congregation.presbyterySlug);
 	const isContinental = $derived(congregation.isContinental);
 	const id = $derived(congregation.id);
+	const detailCount = $derived(
+		Number(Boolean(contact || pastor)) +
+			Number(Boolean(email)) +
+			Number(Boolean(website)) +
+			Number(Boolean(phone)),
+	);
 </script>
 
 <article class="container">
@@ -35,18 +41,28 @@
 		<div class="address">
 			<Address {address} {addressLabel} {name} />
 		</div>
-		<div class="contact">
-			<Contact {contact} {pastor} />
-		</div>
-		<div class="email">
-			<Email {email} />
-		</div>
-		<div class="website">
-			<Website {website} />
-		</div>
-		<div class="phone">
-			<Phone {phone} />
-		</div>
+		{#if contact || pastor}
+			<div
+				class:align-right={detailCount % 2 === 1 && !email && !website && !phone}
+				class="contact">
+				<Contact {contact} {pastor} />
+			</div>
+		{/if}
+		{#if email}
+			<div class:align-right={detailCount % 2 === 1 && !website && !phone} class="email">
+				<Email {email} />
+			</div>
+		{/if}
+		{#if website}
+			<div class:align-right={detailCount % 2 === 1 && !phone} class="website">
+				<Website {website} />
+			</div>
+		{/if}
+		{#if phone}
+			<div class:align-right={detailCount % 2 === 1} class="phone">
+				<Phone {phone} />
+			</div>
+		{/if}
 	</div>
 </article>
 
@@ -85,6 +101,10 @@
 
 	.address {
 		grid-row: 1 / 3;
+	}
+
+	.align-right {
+		grid-column: -2;
 	}
 
 	.content :global(p),
