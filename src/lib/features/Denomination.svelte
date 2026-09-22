@@ -72,7 +72,7 @@
 		border-radius: var(--radius-md);
 		box-shadow: var(--shadow-xs);
 		margin-top: var(--space-xs);
-		padding: var(--space-2xs) var(--space-md) 0;
+		padding: var(--space-2xs) var(--space-md);
 		transition:
 			border-color var(--speed) var(--ease),
 			box-shadow var(--speed) var(--ease);
@@ -212,7 +212,7 @@
 
 	@media (max-width: 800px) {
 		.section {
-			padding: var(--space-2xs) var(--space-sm) 0;
+			padding: var(--space-2xs) var(--space-sm);
 		}
 
 		.section[open] {
